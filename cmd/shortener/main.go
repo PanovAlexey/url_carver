@@ -62,7 +62,7 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 		return
 	}
 
-	if len(queryParamArray) > 2 || queryParamArray[1] != "" || longUrl == nil {
+	if len(queryParamArray) > 2 || queryParamArray[1] != "" || len(longUrl) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
