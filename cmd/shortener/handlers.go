@@ -63,6 +63,7 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 		h.URL[shortURLCode] = string(longURL)
 	}
 
+	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(getShortURLByLongURL(string(longURL))))
 }
