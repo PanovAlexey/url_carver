@@ -71,7 +71,7 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 	if len(h.URL[shortUrlCode]) == 0 {
 		h.URL[shortUrlCode] = string(longUrl)
 	}
-	
+
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(getShortUrlByLongUrl(string(longUrl))))
 }
