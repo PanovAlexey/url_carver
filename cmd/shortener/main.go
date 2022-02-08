@@ -53,7 +53,7 @@ func handleGetRequest(queryParamArray []string, w http.ResponseWriter, r *http.R
 }
 
 func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.Request, h MainHandler) {
-	longUrl, err := io.ReadAll(r.Body)
+	longURL, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 
 	if err != nil {
@@ -61,19 +61,19 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 		return
 	}
 
-	if len(queryParamArray) > 2 || queryParamArray[1] != "" || len(longUrl) == 0 {
+	if len(queryParamArray) > 2 || queryParamArray[1] != "" || len(longURL) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	shortUrlCode := getShortUrlCode(string(longUrl))
+	shortURLCode := getShortURLCode(string(longURL))
 
-	if len(h.URL[shortUrlCode]) == 0 {
-		h.URL[shortUrlCode] = string(longUrl)
+	if len(h.URL[shortURLCode]) == 0 {
+		h.URL[shortURLCode] = string(longURL)
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(getShortUrlByLongUrl(string(longUrl))))
+	w.Write([]byte(getShortURLByLongURL(string(longURL))))
 }
 
 func getInitialURLMap() map[string]string {
@@ -90,10 +90,10 @@ func getServerPort() string {
 	return ":" + fmt.Sprint(serverPort)
 }
 
-func getShortUrlCode(longUrl string) string {
-	return fmt.Sprint(len(longUrl) + 1)
+func getShortURLCode(longURL string) string {
+	return fmt.Sprint(len(longURL) + 1)
 }
 
-func getShortUrlByLongUrl(longUrl string) string {
-	return "https://clck.ru/" + getShortUrlCode(longUrl)
+func getShortURLByLongURL(longURL string) string {
+	return "https://clck.ru/" + getShortURLCode(longURL)
 }
