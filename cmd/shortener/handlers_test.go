@@ -12,7 +12,7 @@ func Test_getShortURLByLongURL(t *testing.T) {
 		want  string
 	}{
 		{
-			name:  "Test by vk.com service with http scheme",
+			name:  "Test by vk.com service without scheme",
 			value: "vk.com",
 			want:  "http://localhost:8080/7",
 		},
