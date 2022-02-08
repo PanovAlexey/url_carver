@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
 const serverPort uint16 = 8080
 
 type MainHandler struct {
-	URL map[int64]string
+	URL map[string]string
 }
 
 func (h MainHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -41,14 +40,14 @@ func handleGetRequest(queryParamArray []string, w http.ResponseWriter, r *http.R
 		return
 	}
 
-	id, err := strconv.Atoi(queryParamArray[1])
+	id := queryParamArray[1]
 
-	if id == 0 || err != nil || h.URL[int64(id)] == "" {
+	if len(id) == 0 || h.URL[(id)] == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", h.URL[int64(id)])
+	w.Header().Add("location", h.URL[id])
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }
@@ -67,16 +66,21 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 		return
 	}
 
-	h.URL[int64(len(h.URL)+1)] = string(longUrl)
+	shortUrlCode := getShortUrlCode(string(longUrl))
+
+	if len(h.URL[shortUrlCode]) == 0 {
+		h.URL[shortUrlCode] = string(longUrl)
+	}
+	
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(getShortUrlByLongUrl(string(longUrl))))
 }
 
-func getInitialURLMap() map[int64]string {
-	urlMap := map[int64]string{
-		1: "https://www.yandex.ru",
-		2: "https://www.google.com",
-		3: "http://www.codeblog.pro",
+func getInitialURLMap() map[string]string {
+	urlMap := map[string]string{
+		"yandex": "https://www.yandex.ru",
+		"google": "https://www.google.com",
+		"meta":   "https://about.facebook.com/meta/",
 	}
 
 	return urlMap
@@ -86,6 +90,10 @@ func getServerPort() string {
 	return ":" + fmt.Sprint(serverPort)
 }
 
+func getShortUrlCode(longUrl string) string {
+	return fmt.Sprint(len(longUrl) + 1)
+}
+
 func getShortUrlByLongUrl(longUrl string) string {
-	return "https://temp_" + fmt.Sprint(len((longUrl))) + ".com"
+	return "https://clck.ru/" + getShortUrlCode(longUrl)
 }
