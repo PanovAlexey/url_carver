@@ -78,9 +78,9 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 
 func getInitialURLMap() map[string]string {
 	urlMap := map[string]string{
-		"yandex": "https://www.yandex.ru",
-		"google": "https://www.google.com",
-		"meta":   "https://about.facebook.com/meta/",
+		"yandex": "http://www.yandex.ru",
+		"google": "http://www.google.com",
+		"meta":   "http://about.facebook.com/meta/",
 	}
 
 	return urlMap
@@ -95,5 +95,5 @@ func getShortURLCode(longURL string) string {
 }
 
 func getShortURLByLongURL(longURL string) string {
-	return "https://clck.ru/" + getShortURLCode(longURL)
+	return "http://localhost:8080/" + getShortURLCode(longURL)
 }
