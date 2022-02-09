@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -87,7 +88,7 @@ func Test_handlePostRequest(t *testing.T) {
 			body:    []byte(`http://ya.ru`),
 			want: want{
 				code:        http.StatusCreated,
-				response:    `http://localhost:8080/21`,
+				response:    `http://localhost:8080/13`,
 				contentType: "text/plain;charset=utf-8",
 			},
 		},
@@ -98,7 +99,7 @@ func Test_handlePostRequest(t *testing.T) {
 			body:    nil,
 			want: want{
 				code:        http.StatusBadRequest,
-				response:    `http://localhost:8080/21`,
+				response:    ``,
 				contentType: "text/plain;charset=utf-8",
 			},
 		},
@@ -109,7 +110,7 @@ func Test_handlePostRequest(t *testing.T) {
 			body:    []byte(`http://ya.ru`),
 			want: want{
 				code:        http.StatusBadRequest,
-				response:    `http://localhost:8080/21`,
+				response:    ``,
 				contentType: "text/plain;charset=utf-8",
 			},
 		},
@@ -126,7 +127,16 @@ func Test_handlePostRequest(t *testing.T) {
 			mainHandler.ServeHTTP(w, request)
 			res := w.Result()
 
+			defer res.Body.Close()
+			resBody, err := io.ReadAll(res.Body)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			assert.Equal(t, res.StatusCode, testData.want.code)
+			assert.Equal(t, res.Header.Get("Content-Type"), testData.want.contentType)
+			assert.Equal(t, string(resBody), testData.want.response)
 		})
 	}
 }

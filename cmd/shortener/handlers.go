@@ -44,8 +44,10 @@ func handleGetRequest(queryParamArray []string, w http.ResponseWriter, r *http.R
 }
 
 func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.Request, h MainHandler) {
-	longURL, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
+
+	longURL, err := io.ReadAll(r.Body)
+	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -63,7 +65,6 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 		h.URL[shortURLCode] = string(longURL)
 	}
 
-	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(getShortURLByLongURL(string(longURL))))
 }
