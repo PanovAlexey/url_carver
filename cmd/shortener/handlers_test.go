@@ -67,6 +67,62 @@ func Test_getShortURLCode(t *testing.T) {
 	}
 }
 
+func Test_handleGetRequest(t *testing.T) {
+	type want struct {
+		code           int
+		locationHeader string
+		response       string
+	}
+	tests := []struct {
+		name    string
+		urlPath string
+		method  string
+		want    want
+	}{
+		{
+			name:    "Positive test. Get long URL for google",
+			urlPath: "/google",
+			method:  http.MethodGet,
+			want: want{
+				code:           http.StatusTemporaryRedirect,
+				locationHeader: "http://www.google.com",
+				response:       "",
+			},
+		},
+		{
+			name:    "Negative test. Get long URL for unknown url",
+			urlPath: "/unknown-url",
+			method:  http.MethodGet,
+			want: want{
+				code:           http.StatusNotFound,
+				locationHeader: "",
+				response:       "",
+			},
+		},
+	}
+	for _, testData := range tests {
+		t.Run(testData.name, func(t *testing.T) {
+			request := httptest.NewRequest(testData.method, testData.urlPath, nil)
+
+			mainHandler := MainHandler{
+				URL: getInitialURLMap(),
+			}
+			w := httptest.NewRecorder()
+
+			mainHandler.ServeHTTP(w, request)
+			res := w.Result()
+			resBody, err := io.ReadAll(res.Body)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assert.Equal(t, res.StatusCode, testData.want.code)
+			assert.Equal(t, res.Header.Get("location"), testData.want.locationHeader)
+			assert.Equal(t, string(resBody), testData.want.response)
+		})
+	}
+}
 
 func Test_handlePostRequest(t *testing.T) {
 	type want struct {
