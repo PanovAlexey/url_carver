@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -59,6 +62,71 @@ func Test_getShortURLCode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, getShortURLCode(tt.value), tt.want)
+		})
+	}
+}
+
+
+func Test_handlePostRequest(t *testing.T) {
+	type want struct {
+		code        int
+		response    string
+		contentType string
+	}
+	tests := []struct {
+		name    string
+		urlPath string
+		method  string
+		body    []byte
+		want    want
+	}{
+		{
+			name:    "Positive test. Cut long facebook URL",
+			urlPath: "/",
+			method:  http.MethodPost,
+			body:    []byte(`http://ya.ru`),
+			want: want{
+				code:        http.StatusCreated,
+				response:    `http://localhost:8080/21`,
+				contentType: "text/plain;charset=utf-8",
+			},
+		},
+		{
+			name:    "Negative test. Empty body.",
+			urlPath: "/",
+			method:  http.MethodPost,
+			body:    nil,
+			want: want{
+				code:        http.StatusBadRequest,
+				response:    `http://localhost:8080/21`,
+				contentType: "text/plain;charset=utf-8",
+			},
+		},
+		{
+			name:    "Negative test. Not main route.",
+			urlPath: "/a/b/c",
+			method:  http.MethodPost,
+			body:    []byte(`http://ya.ru`),
+			want: want{
+				code:        http.StatusBadRequest,
+				response:    `http://localhost:8080/21`,
+				contentType: "text/plain;charset=utf-8",
+			},
+		},
+	}
+	for _, testData := range tests {
+		t.Run(testData.name, func(t *testing.T) {
+			request := httptest.NewRequest(testData.method, testData.urlPath, bytes.NewBuffer(testData.body))
+
+			mainHandler := MainHandler{
+				URL: getInitialURLMap(),
+			}
+			w := httptest.NewRecorder()
+
+			mainHandler.ServeHTTP(w, request)
+			res := w.Result()
+
+			assert.Equal(t, res.StatusCode, testData.want.code)
 		})
 	}
 }
