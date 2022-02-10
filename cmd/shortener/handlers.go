@@ -7,46 +7,31 @@ import (
 	"strings"
 )
 
-type MainHandler struct {
-	URL map[string]string
-}
-
-func (h MainHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func handleGetUrl(w http.ResponseWriter, r *http.Request) {
 	queryParamArray := strings.Split(r.URL.Path, "/")
 
-	switch r.Method {
-	case http.MethodPost:
-		handlePostRequest(queryParamArray, w, r, h)
-	case http.MethodGet:
-		handleGetRequest(queryParamArray, w, r, h)
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte(""))
-	}
-}
-
-func handleGetRequest(queryParamArray []string, w http.ResponseWriter, r *http.Request, h MainHandler) {
 	if len(queryParamArray) != 2 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	id := queryParamArray[1]
-
-	if len(id) == 0 || h.URL[(id)] == "" {
+	if len(id) == 0 || !globalURLs.IsExistEmailByKey(id) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", h.URL[id])
+	w.Header().Add("location", globalURLs.GetEmailByKey(id))
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }
 
-func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.Request, h MainHandler) {
-	defer r.Body.Close()
+func handleAddUrl(w http.ResponseWriter, r *http.Request) {
+	queryParamArray := strings.Split(r.URL.Path, "/")
 
+	defer r.Body.Close()
 	longURL, err := io.ReadAll(r.Body)
+
 	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 
 	if err != nil {
@@ -61,8 +46,8 @@ func handlePostRequest(queryParamArray []string, w http.ResponseWriter, r *http.
 
 	shortURLCode := getShortURLCode(string(longURL))
 
-	if len(h.URL[shortURLCode]) == 0 {
-		h.URL[shortURLCode] = string(longURL)
+	if !globalURLs.IsExistEmailByKey(shortURLCode) {
+		globalURLs.AddEmail(shortURLCode, string(longURL))
 	}
 
 	w.WriteHeader(http.StatusCreated)
