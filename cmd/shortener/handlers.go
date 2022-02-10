@@ -7,18 +7,18 @@ import (
 	"strings"
 )
 
-type StorageInterface interface {
+type shortURLServiceInterface interface {
 	AddEmail(key string, email string) bool
 	GetEmailByKey(key string) string
 	IsExistEmailByKey(key string) bool
 }
 
 type httpHandler struct {
-	storage StorageInterface
+	shortURLService shortURLServiceInterface
 }
 
-func GetHttpHandler(storage StorageInterface) *httpHandler {
-	return &httpHandler{storage: storage}
+func GetHttpHandler(shortURLService shortURLServiceInterface) *httpHandler {
+	return &httpHandler{shortURLService: shortURLService}
 }
 
 func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
@@ -30,12 +30,12 @@ func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := queryParamArray[1]
-	if len(id) == 0 || !h.storage.IsExistEmailByKey(id) {
+	if len(id) == 0 || !h.shortURLService.IsExistEmailByKey(id) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", h.storage.GetEmailByKey(id))
+	w.Header().Add("location", h.shortURLService.GetEmailByKey(id))
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }
@@ -60,8 +60,8 @@ func (h *httpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
 
 	shortURLCode := getShortURLCode(string(longURL))
 
-	if !h.storage.IsExistEmailByKey(shortURLCode) {
-		h.storage.AddEmail(shortURLCode, string(longURL))
+	if !h.shortURLService.IsExistEmailByKey(shortURLCode) {
+		h.shortURLService.AddEmail(shortURLCode, string(longURL))
 	}
 
 	w.WriteHeader(http.StatusCreated)
