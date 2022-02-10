@@ -1,5 +1,7 @@
 package main
 
+var GlobalURLs = URLs{}
+
 type URLs struct {
 	urlMap map[string]string
 }
@@ -30,10 +32,8 @@ func (u *URLs) IsExistEmailByKey(key string) bool {
 	return false
 }
 
-var globalURLs = URLs{}
-
 func InitialURLMap() {
-	globalURLs.AddEmail("yandex", "http://www.yandex.ru")
-	globalURLs.AddEmail("google", "http://www.google.com")
-	globalURLs.AddEmail("meta", "http://about.facebook.com/meta/")
+	GlobalURLs.AddEmail("yandex", "http://www.yandex.ru")
+	GlobalURLs.AddEmail("google", "http://www.google.com")
+	GlobalURLs.AddEmail("meta", "http://about.facebook.com/meta/")
 }

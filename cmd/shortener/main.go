@@ -1,6 +1,7 @@
 package main
 
 func main() {
-	httpHandler := GetHttpHandler()
+	storage := &GlobalURLs
+	httpHandler := GetHttpHandler(storage)
 	runServer(httpHandler)
 }
