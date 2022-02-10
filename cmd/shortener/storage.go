@@ -18,7 +18,7 @@ func (u *URLs) AddEmail(key string, email string) bool {
 	return true
 }
 
-func (u *URLs) GetEmailByKey(key string) string {
+func (u URLs) GetEmailByKey(key string) string {
 	return u.urlMap[key]
 }
 
