@@ -10,13 +10,19 @@ import (
 
 const serverPort uint16 = 8080
 
-func runServer() {
+type HandlerInterface interface {
+	HandleGetUrl(w http.ResponseWriter, r *http.Request)
+	HandleAddUrl(w http.ResponseWriter, r *http.Request)
+}
+
+func runServer(handler HandlerInterface) {
 	InitialURLMap()
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Get("/{id}", handleGetUrl)
-	router.Post("/", handleAddUrl)
+	router.Get("/{id}", handler.HandleGetUrl)
+	router.Post("/", handler.HandleAddUrl)
+
 	log.Println("Starting server...")
 	http.ListenAndServe(getServerPort(), router)
 	log.Println("Server stopped.")

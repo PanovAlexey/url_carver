@@ -7,7 +7,14 @@ import (
 	"strings"
 )
 
-func handleGetUrl(w http.ResponseWriter, r *http.Request) {
+type HttpHandler struct {
+}
+
+func GetHttpHandler() *HttpHandler {
+	return &HttpHandler{}
+}
+
+func (h *HttpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
 	queryParamArray := strings.Split(r.URL.Path, "/")
 
 	if len(queryParamArray) != 2 {
@@ -26,7 +33,7 @@ func handleGetUrl(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(""))
 }
 
-func handleAddUrl(w http.ResponseWriter, r *http.Request) {
+func (h *HttpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
 	queryParamArray := strings.Split(r.URL.Path, "/")
 
 	defer r.Body.Close()
