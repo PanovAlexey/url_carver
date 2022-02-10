@@ -1,4 +1,4 @@
-package main
+package servers
 
 import (
 	"fmt"
@@ -10,14 +10,12 @@ import (
 
 const serverPort uint16 = 8080
 
-type HandlerInterface interface {
+type handlerInterface interface {
 	HandleGetUrl(w http.ResponseWriter, r *http.Request)
 	HandleAddUrl(w http.ResponseWriter, r *http.Request)
 }
 
-func runServer(handler HandlerInterface) {
-	InitialURLMap()
-
+func RunServer(handler handlerInterface) {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Get("/{id}", handler.HandleGetUrl)
