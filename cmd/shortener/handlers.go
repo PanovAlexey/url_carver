@@ -7,14 +7,21 @@ import (
 	"strings"
 )
 
-type HttpHandler struct {
+type StorageInterface interface {
+	AddEmail(key string, email string) bool
+	GetEmailByKey(key string) string
+	IsExistEmailByKey(key string) bool
 }
 
-func GetHttpHandler() *HttpHandler {
-	return &HttpHandler{}
+type httpHandler struct {
+	storage StorageInterface
 }
 
-func (h *HttpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
+func GetHttpHandler(storage StorageInterface) *httpHandler {
+	return &httpHandler{storage: storage}
+}
+
+func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
 	queryParamArray := strings.Split(r.URL.Path, "/")
 
 	if len(queryParamArray) != 2 {
@@ -23,17 +30,17 @@ func (h *HttpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := queryParamArray[1]
-	if len(id) == 0 || !globalURLs.IsExistEmailByKey(id) {
+	if len(id) == 0 || !h.storage.IsExistEmailByKey(id) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", globalURLs.GetEmailByKey(id))
+	w.Header().Add("location", h.storage.GetEmailByKey(id))
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }
 
-func (h *HttpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
 	queryParamArray := strings.Split(r.URL.Path, "/")
 
 	defer r.Body.Close()
@@ -53,8 +60,8 @@ func (h *HttpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
 
 	shortURLCode := getShortURLCode(string(longURL))
 
-	if !globalURLs.IsExistEmailByKey(shortURLCode) {
-		globalURLs.AddEmail(shortURLCode, string(longURL))
+	if !h.storage.IsExistEmailByKey(shortURLCode) {
+		h.storage.AddEmail(shortURLCode, string(longURL))
 	}
 
 	w.WriteHeader(http.StatusCreated)
