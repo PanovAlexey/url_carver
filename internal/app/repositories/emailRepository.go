@@ -7,8 +7,6 @@ type shortURLs struct {
 var globalURLs = shortURLs{}
 
 func GetEmailRepository() *shortURLs {
-	InitialURLMap()
-
 	return &globalURLs
 }
 
@@ -36,10 +34,4 @@ func (u *shortURLs) IsExistEmailByKey(key string) bool {
 	}
 
 	return false
-}
-
-func InitialURLMap() {
-	globalURLs.AddEmail("yandex", "http://www.yandex.ru")
-	globalURLs.AddEmail("google", "http://www.google.com")
-	globalURLs.AddEmail("meta", "http://about.facebook.com/meta/")
 }
