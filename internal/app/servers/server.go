@@ -22,7 +22,12 @@ func RunServer(handler handlerInterface) {
 	router.Post("/", handler.HandleAddUrl)
 
 	log.Println("Starting server...")
-	http.ListenAndServe(getServerPort(), router)
+	err := http.ListenAndServe(getServerPort(), router)
+
+	if err != nil {
+		log.Println(err)
+	}
+
 	log.Println("Server stopped.")
 }
 
