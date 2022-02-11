@@ -21,6 +21,8 @@ func GetHttpHandler(shortURLService shortURLServiceInterface) *httpHandler {
 }
 
 func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
+
 	urlId := chi.URLParam(r, "id")
 	if len(urlId) == 0 || !h.shortURLService.IsExistEmailByKey(urlId) {
 		w.WriteHeader(http.StatusNotFound)
@@ -33,10 +35,10 @@ func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *httpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
+
 	defer r.Body.Close()
 	longURL, err := io.ReadAll(r.Body)
-
-	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
