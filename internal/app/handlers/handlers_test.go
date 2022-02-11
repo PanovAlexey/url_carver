@@ -28,10 +28,9 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []
 	response, err := client.Do(req)
 	require.NoError(t, err)
 
+	defer response.Body.Close()
 	respBody, err := ioutil.ReadAll(response.Body)
 	require.NoError(t, err)
-
-	defer response.Body.Close()
 
 	return response, string(respBody)
 }
@@ -132,9 +131,10 @@ func Test_handleGetRequest(t *testing.T) {
 	}
 
 	for _, testData := range tests {
-		response, body := testRequest(t, server, testData.method, testData.urlPath, testData.body)
+		response, bodyString := testRequest(t, server, testData.method, testData.urlPath, testData.body)
+
 		assert.Equal(t, testData.want.code, response.StatusCode)
-		assert.Equal(t, body, testData.want.response)
+		assert.Equal(t, bodyString, testData.want.response)
 		assert.Equal(t, response.Header.Get("Content-Type"), testData.want.contentTypeHeader)
 		assert.Equal(t, response.Header.Get("location"), testData.want.locationHeader)
 	}
