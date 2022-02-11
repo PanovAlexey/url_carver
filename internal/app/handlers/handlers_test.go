@@ -28,8 +28,9 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []
 	response, err := client.Do(req)
 	require.NoError(t, err)
 
-	defer response.Body.Close()
 	respBody, err := ioutil.ReadAll(response.Body)
+	defer response.Body.Close()
+
 	require.NoError(t, err)
 
 	return response, string(respBody)
@@ -133,6 +134,10 @@ func Test_handleGetRequest(t *testing.T) {
 	for _, testData := range tests {
 		response, bodyString := testRequest(t, server, testData.method, testData.urlPath, testData.body)
 
+		if response != nil {
+			defer response.Body.Close()
+		}
+
 		assert.Equal(t, testData.want.code, response.StatusCode)
 		assert.Equal(t, bodyString, testData.want.response)
 		assert.Equal(t, response.Header.Get("Content-Type"), testData.want.contentTypeHeader)
@@ -143,7 +148,7 @@ func Test_handleGetRequest(t *testing.T) {
 func getRouterForRouteTest() chi.Router {
 	emailRepository := repositories.GetEmailRepository()
 	shortURLService := services.GetShortURLService(emailRepository)
-	httpHandler := GetHttpHandler(shortURLService)
+	httpHandler := GetHTTPHandler(shortURLService)
 
 	return servers.NewRouter(httpHandler)
 }

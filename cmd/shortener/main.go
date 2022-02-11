@@ -10,6 +10,6 @@ import (
 func main() {
 	emailRepository := repositories.GetEmailRepository()
 	shortURLService := services.GetShortURLService(emailRepository)
-	httpHandler := handlers.GetHttpHandler(shortURLService)
+	httpHandler := handlers.GetHTTPHandler(shortURLService)
 	servers.RunServer(httpHandler)
 }

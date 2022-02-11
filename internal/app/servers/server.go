@@ -11,8 +11,8 @@ import (
 const serverPort uint16 = 8080
 
 type handlerInterface interface {
-	HandleGetUrl(w http.ResponseWriter, r *http.Request)
-	HandleAddUrl(w http.ResponseWriter, r *http.Request)
+	HandleGetURL(w http.ResponseWriter, r *http.Request)
+	HandleAddURL(w http.ResponseWriter, r *http.Request)
 }
 
 func RunServer(handler handlerInterface) {
@@ -33,8 +33,8 @@ func NewRouter(handler handlerInterface) chi.Router {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
 
-	router.Get("/{id}", handler.HandleGetUrl)
-	router.Post("/", handler.HandleAddUrl)
+	router.Get("/{id}", handler.HandleGetURL)
+	router.Post("/", handler.HandleAddURL)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")

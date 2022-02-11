@@ -16,25 +16,25 @@ type httpHandler struct {
 	shortURLService shortURLServiceInterface
 }
 
-func GetHttpHandler(shortURLService shortURLServiceInterface) *httpHandler {
+func GetHTTPHandler(shortURLService shortURLServiceInterface) *httpHandler {
 	return &httpHandler{shortURLService: shortURLService}
 }
 
-func (h *httpHandler) HandleGetUrl(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleGetURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 
-	urlId := chi.URLParam(r, "id")
-	if len(urlId) == 0 || !h.shortURLService.IsExistEmailByKey(urlId) {
+	urlID := chi.URLParam(r, "id")
+	if len(urlID) == 0 || !h.shortURLService.IsExistEmailByKey(urlID) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", h.shortURLService.GetEmailByKey(urlId))
+	w.Header().Add("location", h.shortURLService.GetEmailByKey(urlID))
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }
 
-func (h *httpHandler) HandleAddUrl(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 
 	defer r.Body.Close()
