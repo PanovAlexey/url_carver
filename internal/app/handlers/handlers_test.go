@@ -2,134 +2,54 @@ package handlers
 
 import (
 	"bytes"
+	"github.com/PanovAlexey/url_carver/internal/app/repositories"
+	"github.com/PanovAlexey/url_carver/internal/app/servers"
+	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
-	"io"
+	"github.com/stretchr/testify/require"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func Test_getShortURLByLongURL(t *testing.T) {
-	tests := []struct {
-		name  string
-		value string
-		want  string
-	}{
-		{
-			name:  "Test by vk.com service without scheme",
-			value: "vk.com",
-			want:  "http://localhost:8080/7",
-		},
-		{
-			name:  "Test by mamba service with http scheme",
-			value: "http://mamba.ru",
-			want:  "http://localhost:8080/16",
-		},
-		{
-			name:  "Test by facebook service with https scheme",
-			value: "https://facebook.com",
-			want:  "http://localhost:8080/21",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, getShortURLByLongURL(tt.value), tt.want)
-		})
-	}
-}
+func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []byte) (*http.Response, string) {
+	bodyIoReader := bytes.NewBuffer(body)
+	req, err := http.NewRequest(method, ts.URL+path, bodyIoReader)
+	require.NoError(t, err)
 
-func Test_getShortURLCode(t *testing.T) {
-	tests := []struct {
-		name  string
-		value string
-		want  string
-	}{
-		{
-			name:  "Test by vk.com service with http scheme",
-			value: "vk.com",
-			want:  "7",
-		},
-		{
-			name:  "Test by mamba service with http scheme",
-			value: "http://mamba.ru",
-			want:  "16",
-		},
-		{
-			name:  "Test by facebook service with https scheme",
-			value: "https://facebook.com",
-			want:  "21",
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, getShortURLCode(tt.value), tt.want)
-		})
-	}
+
+	response, err := client.Do(req)
+	require.NoError(t, err)
+
+	respBody, err := ioutil.ReadAll(response.Body)
+	require.NoError(t, err)
+
+	defer response.Body.Close()
+
+	return response, string(respBody)
 }
 
 func Test_handleGetRequest(t *testing.T) {
+	router := getRouterForRouteTest()
+
+	server := httptest.NewServer(router)
+
+	defer server.Close()
+
 	type want struct {
-		code           int
-		locationHeader string
-		response       string
+		code              int
+		response          string
+		locationHeader    string
+		contentTypeHeader string
 	}
-	tests := []struct {
-		name    string
-		urlPath string
-		method  string
-		want    want
-	}{
-		{
-			name:    "Positive test. Get long URL for google",
-			urlPath: "/google",
-			method:  http.MethodGet,
-			want: want{
-				code:           http.StatusTemporaryRedirect,
-				locationHeader: "http://www.google.com",
-				response:       "",
-			},
-		},
-		{
-			name:    "Negative test. Get long URL for unknown url",
-			urlPath: "/unknown-url",
-			method:  http.MethodGet,
-			want: want{
-				code:           http.StatusNotFound,
-				locationHeader: "",
-				response:       "",
-			},
-		},
-	}
-	for _, testData := range tests {
-		t.Run(testData.name, func(t *testing.T) {
-			request := httptest.NewRequest(testData.method, testData.urlPath, nil)
 
-			mainHandler := MainHandler{
-				URL: getInitialURLMap(),
-			}
-			w := httptest.NewRecorder()
-
-			mainHandler.ServeHTTP(w, request)
-			res := w.Result()
-			resBody, err := io.ReadAll(res.Body)
-
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assert.Equal(t, res.StatusCode, testData.want.code)
-			assert.Equal(t, res.Header.Get("location"), testData.want.locationHeader)
-			assert.Equal(t, string(resBody), testData.want.response)
-		})
-	}
-}
-
-func Test_handlePostRequest(t *testing.T) {
-	type want struct {
-		code        int
-		response    string
-		contentType string
-	}
 	tests := []struct {
 		name    string
 		urlPath string
@@ -138,61 +58,92 @@ func Test_handlePostRequest(t *testing.T) {
 		want    want
 	}{
 		{
-			name:    "Positive test. Cut long facebook URL",
-			urlPath: "/",
-			method:  http.MethodPost,
-			body:    []byte(`http://ya.ru`),
-			want: want{
-				code:        http.StatusCreated,
-				response:    `http://localhost:8080/13`,
-				contentType: "text/plain;charset=utf-8",
-			},
-		},
-		{
-			name:    "Negative test. Empty body.",
-			urlPath: "/",
-			method:  http.MethodPost,
+			name:    "Negative test. Get short url by wrong url",
+			urlPath: "/wrong/url/a",
+			method:  http.MethodGet,
 			body:    nil,
 			want: want{
-				code:        http.StatusBadRequest,
-				response:    ``,
-				contentType: "text/plain;charset=utf-8",
+				code:              http.StatusNotFound,
+				response:          ``,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "",
 			},
 		},
 		{
-			name:    "Negative test. Not main route.",
-			urlPath: "/a/b/c",
+			name:    "Negative test. Get short url without code sending",
+			urlPath: "/",
+			method:  http.MethodGet,
+			body:    nil,
+			want: want{
+				code:              http.StatusMethodNotAllowed,
+				response:          ``,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "Negative test. Get short url for Pikabu site before it was added.",
+			urlPath: "/18",
+			method:  http.MethodGet,
+			body:    nil,
+			want: want{
+				code:              http.StatusNotFound,
+				response:          ``,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "Positive test. Add Yandex site url.",
+			urlPath: "/",
 			method:  http.MethodPost,
 			body:    []byte(`http://ya.ru`),
 			want: want{
-				code:        http.StatusBadRequest,
-				response:    ``,
-				contentType: "text/plain;charset=utf-8",
+				code:              http.StatusCreated,
+				response:          `http://localhost:8080/13`,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "Positive test. Add Pikabu site url.",
+			urlPath: "/",
+			method:  http.MethodPost,
+			body:    []byte(`http://pikabu.com`),
+			want: want{
+				code:              http.StatusCreated,
+				response:          `http://localhost:8080/18`,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "Positive test. Get short url for Pikabu site after it was added.",
+			urlPath: "/18",
+			method:  http.MethodGet,
+			body:    nil,
+			want: want{
+				code:              http.StatusTemporaryRedirect,
+				response:          ``,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "http://pikabu.com",
 			},
 		},
 	}
+
 	for _, testData := range tests {
-		t.Run(testData.name, func(t *testing.T) {
-			request := httptest.NewRequest(testData.method, testData.urlPath, bytes.NewBuffer(testData.body))
-
-			mainHandler := MainHandler{
-				URL: getInitialURLMap(),
-			}
-			w := httptest.NewRecorder()
-
-			mainHandler.ServeHTTP(w, request)
-			res := w.Result()
-
-			defer res.Body.Close()
-			resBody, err := io.ReadAll(res.Body)
-
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assert.Equal(t, res.StatusCode, testData.want.code)
-			assert.Equal(t, res.Header.Get("Content-Type"), testData.want.contentType)
-			assert.Equal(t, string(resBody), testData.want.response)
-		})
+		response, body := testRequest(t, server, testData.method, testData.urlPath, testData.body)
+		assert.Equal(t, testData.want.code, response.StatusCode)
+		assert.Equal(t, body, testData.want.response)
+		assert.Equal(t, response.Header.Get("Content-Type"), testData.want.contentTypeHeader)
+		assert.Equal(t, response.Header.Get("location"), testData.want.locationHeader)
 	}
+}
+
+func getRouterForRouteTest() chi.Router {
+	emailRepository := repositories.GetEmailRepository()
+	shortURLService := services.GetShortURLService(emailRepository)
+	httpHandler := GetHttpHandler(shortURLService)
+
+	return servers.NewRouter(httpHandler)
 }
