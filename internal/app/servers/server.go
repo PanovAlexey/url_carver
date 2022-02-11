@@ -16,10 +16,7 @@ type handlerInterface interface {
 }
 
 func RunServer(handler handlerInterface) {
-	router := chi.NewRouter()
-	router.Use(middleware.Logger)
-	router.Get("/{id}", handler.HandleGetUrl)
-	router.Post("/", handler.HandleAddUrl)
+	router := NewRouter(handler)
 
 	log.Println("Starting server...")
 	err := http.ListenAndServe(getServerPort(), router)
@@ -29,6 +26,26 @@ func RunServer(handler handlerInterface) {
 	}
 
 	log.Println("Server stopped.")
+}
+
+func NewRouter(handler handlerInterface) chi.Router {
+	router := chi.NewRouter()
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+
+	router.Get("/{id}", handler.HandleGetUrl)
+	router.Post("/", handler.HandleAddUrl)
+
+	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
+		w.WriteHeader(404)
+	})
+	router.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
+		w.WriteHeader(405)
+	})
+
+	return router
 }
 
 func getServerPort() string {
