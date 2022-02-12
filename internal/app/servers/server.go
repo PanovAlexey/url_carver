@@ -21,6 +21,7 @@ func RunServer(handler handlerInterface) {
 	log.Println("Starting server...")
 	err := http.ListenAndServe(getServerPort(), router)
 
+	log.Fatal(http.ListenAndServe(getServerPort(), router))
 	if err != nil {
 		log.Println(err)
 	}
