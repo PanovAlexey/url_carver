@@ -29,9 +29,6 @@ func (u shortURLs) GetEmailByKey(key string) string {
 }
 
 func (u *shortURLs) IsExistEmailByKey(key string) bool {
-	if _, ok := u.urlMap[key]; ok {
-		return true
-	}
-
-	return false
+	_, ok := u.urlMap[key]
+	return ok
 }
