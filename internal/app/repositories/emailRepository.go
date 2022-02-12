@@ -4,17 +4,15 @@ type shortURLs struct {
 	urlMap map[string]string
 }
 
-var globalURLs = shortURLs{}
+var globalURLs = shortURLs{
+	urlMap: make(map[string]string),
+}
 
 func GetEmailRepository() *shortURLs {
 	return &globalURLs
 }
 
 func (u *shortURLs) AddEmail(key string, email string) bool {
-	if u.urlMap == nil {
-		u.urlMap = make(map[string]string)
-	}
-
 	if u.IsExistEmailByKey(key) {
 		return false
 	}
