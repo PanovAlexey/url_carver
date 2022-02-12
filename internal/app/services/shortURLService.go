@@ -2,7 +2,7 @@ package services
 
 import "fmt"
 
-const currentHost = "http://localhost:8080"
+const currentHost = "http://localhost:8080/"
 
 type RepositoryInterface interface {
 	AddEmail(key string, email string) bool
