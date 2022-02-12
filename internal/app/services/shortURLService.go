@@ -2,6 +2,8 @@ package services
 
 import "fmt"
 
+const currentHost = "http://localhost:8080"
+
 type RepositoryInterface interface {
 	AddEmail(key string, email string) bool
 	GetEmailByKey(key string) string
@@ -36,5 +38,5 @@ func getShortURLCode(longURL string) string {
 }
 
 func getShortEmailWithDomain(shortURLCode string) string {
-	return "http://localhost:8080/" + shortURLCode // @ToDo: move to .env
+	return currentHost + shortURLCode
 }
