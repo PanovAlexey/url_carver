@@ -18,19 +18,19 @@ func GetShortURLService(repository RepositoryInterface) *shortURLService {
 	return &shortURLService{repository: repository}
 }
 
-func (service shortURLService) CutAndAddEmail(longURL string) string {
-	shortURLCode := getShortURLCode(longURL)
-	service.repository.AddEmail(shortURLCode, longURL)
-
-	return getShortEmailWithDomain(shortURLCode)
-}
-
 func (service shortURLService) GetEmailByKey(key string) string {
 	return service.repository.GetEmailByKey(key)
 }
 
 func (service shortURLService) IsExistEmailByKey(key string) bool {
 	return service.repository.IsExistEmailByKey(key)
+}
+
+func (service shortURLService) cutAndAddEmail(longURL string) string {
+	shortURLCode := getShortURLCode(longURL)
+	service.repository.AddEmail(shortURLCode, longURL)
+
+	return getShortEmailWithDomain(shortURLCode)
 }
 
 func getShortURLCode(longURL string) string {

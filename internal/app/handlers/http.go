@@ -7,7 +7,6 @@ import (
 )
 
 type shortURLServiceInterface interface {
-	CutAndAddEmail(email string) string
 	GetEmailByKey(key string) string
 	IsExistEmailByKey(key string) bool
 }
