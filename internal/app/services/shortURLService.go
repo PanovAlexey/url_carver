@@ -1,6 +1,10 @@
 package services
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+)
 
 const currentHost = "http://localhost:8080/"
 
@@ -24,6 +28,18 @@ func (service shortURLService) GetEmailByKey(key string) string {
 
 func (service shortURLService) IsExistEmailByKey(key string) bool {
 	return service.repository.IsExistEmailByKey(key)
+}
+
+func (service shortURLService) CreateLongURLDto() dto.LongURL {
+	return dto.GetLongURLByValue("")
+}
+
+func (service shortURLService) GetURLByLongURLDto(longURLDto dto.LongURL) url.URL {
+	return url.New(longURLDto.Value, service.cutAndAddEmail(longURLDto.Value))
+}
+
+func (service shortURLService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
+	return dto.GetShortURLByValue(url.ShortURL)
 }
 
 func (service shortURLService) cutAndAddEmail(longURL string) string {
