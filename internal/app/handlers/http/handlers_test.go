@@ -3,7 +3,6 @@ package http
 import (
 	"bytes"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
-	"github.com/PanovAlexey/url_carver/internal/app/servers"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -150,5 +149,5 @@ func getRouterForRouteTest() chi.Router {
 	shortURLService := services.GetShortURLService(emailRepository)
 	httpHandler := GetHTTPHandler(shortURLService)
 
-	return servers.NewRouter(httpHandler)
+	return httpHandler.NewRouter()
 }
