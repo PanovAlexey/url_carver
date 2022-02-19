@@ -38,7 +38,6 @@ func Test_getShortURLCode(t *testing.T) {
 
 func Test_getShortEmailWithDomain(t *testing.T) {
 	config := config.New()
-	baseURLWithPort := config.Server.BaseURL + ":" + config.Server.ServerPort
 	emailRepository := repositories.GetEmailRepository()
 	shortURLService := GetShortURLService(emailRepository, config)
 
@@ -50,12 +49,12 @@ func Test_getShortEmailWithDomain(t *testing.T) {
 		{
 			name:  "Test by num",
 			value: "7",
-			want:  baseURLWithPort + "/7",
+			want:  config.GetBaseURL() + "/7",
 		},
 		{
 			name:  "Test by string",
 			value: "azazam",
-			want:  baseURLWithPort + "/azazam",
+			want:  config.GetBaseURL() + "/azazam",
 		},
 	}
 	for _, tt := range tests {
