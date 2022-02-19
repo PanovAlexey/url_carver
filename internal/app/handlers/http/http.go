@@ -32,7 +32,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router.Get("/{id}", h.HandleGetURL)
 	router.Post("/", h.HandleAddURL)
 
-	router.Post("/api/shorten", h.HandleAddJsonURL)
+	router.Post("/api/shorten", h.HandleAddURLByJSON)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
