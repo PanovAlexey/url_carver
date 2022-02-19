@@ -39,7 +39,6 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []
 func Test_handleAddAndGetRequests(t *testing.T) {
 	router := getRouterForRouteTest()
 	config := config.New()
-	baseURLWithPort := config.Server.BaseURL + ":" + config.Server.ServerPort
 	server := httptest.NewServer(router)
 
 	defer server.Close()
@@ -101,7 +100,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://ya.ru`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          baseURLWithPort + `/13`,
+				response:          config.GetBaseURL() + `/13`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
@@ -113,7 +112,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://pikabu.com`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          baseURLWithPort + `/18`,
+				response:          config.GetBaseURL() + `/18`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
@@ -149,7 +148,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`{"url": "https://3dnews.com"}`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          `{"result":"` + baseURLWithPort + `/19"}`,
+				response:          `{"result":"` + config.GetBaseURL() + `/19"}`,
 				contentTypeHeader: "application/json",
 				locationHeader:    "",
 			},

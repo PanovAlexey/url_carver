@@ -14,7 +14,6 @@ type RepositoryInterface interface {
 
 type configInterface interface {
 	GetBaseURL() string
-	GetPort() string
 }
 
 type shortURLService struct {
@@ -54,7 +53,7 @@ func (service shortURLService) cutAndAddEmail(longURL string) string {
 }
 
 func (service shortURLService) getShortEmailWithDomain(shortURLCode string) string {
-	return service.config.GetBaseURL() + ":" + service.config.GetPort() + "/" + shortURLCode
+	return service.config.GetBaseURL() + "/" + shortURLCode
 }
 
 func getShortURLCode(longURL string) string {

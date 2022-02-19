@@ -6,7 +6,6 @@ import (
 
 type ServerConfig struct {
 	ServerAddress string
-	ServerPort    string
 	BaseURL       string
 }
 
@@ -17,19 +16,14 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		Server: ServerConfig{
-			ServerAddress: getEnv("SERVER_ADDRESS", "localhost"),
-			ServerPort:    getEnv("SERVER_PORT", "8080"),
-			BaseURL:       getEnv("BASE_URL", "http://localhost"),
+			ServerAddress: getEnv("SERVER_ADDRESS", "localhost:8080"),
+			BaseURL:       getEnv("BASE_URL", "http://localhost:8080"),
 		},
 	}
 }
 
 func (config Config) GetBaseURL() string {
 	return config.Server.BaseURL
-}
-
-func (config Config) GetPort() string {
-	return config.Server.ServerPort
 }
 
 func (config Config) GetServerAddress() string {
