@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-func (h *httpHandler) HandleAddJsonURL(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
-	bodyJson, err := io.ReadAll(r.Body)
+	bodyJSON, err := io.ReadAll(r.Body)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -17,7 +17,7 @@ func (h *httpHandler) HandleAddJsonURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	longURLDto := h.shortURLService.CreateLongURLDto()
-	err = json.Unmarshal(bodyJson, &longURLDto)
+	err = json.Unmarshal(bodyJSON, &longURLDto)
 
 	url := h.shortURLService.GetURLByLongURLDto(longURLDto)
 
