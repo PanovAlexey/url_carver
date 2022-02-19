@@ -1,7 +1,7 @@
 package dto
 
 type ShortURL struct {
-	Value string `json:"url"`
+	Value string `json:"result"`
 }
 
 func GetShortURLByValue(value string) ShortURL {
