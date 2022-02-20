@@ -9,15 +9,15 @@ import (
 )
 
 type shortURLServiceInterface interface {
-	GetEmailByKey(key string) string
-	IsExistEmailByKey(key string) bool
+	GetURLByKey(key string) string
+	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
 	GetURLByLongURLDto(dto.LongURL) url.URL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 }
 
 type httpHandler struct {
-	shortURLService shortURLServiceInterface
+	shortURLService    shortURLServiceInterface
 }
 
 func GetHTTPHandler(shortURLService shortURLServiceInterface) *httpHandler {
