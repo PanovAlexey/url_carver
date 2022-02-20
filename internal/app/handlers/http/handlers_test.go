@@ -35,7 +35,7 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []
 	return response, string(respBody)
 }
 
-func Test_handleGetRequest(t *testing.T) {
+func Test_handleAddAndGetRequests(t *testing.T) {
 	router := getRouterForRouteTest()
 
 	server := httptest.NewServer(router)
@@ -126,6 +126,42 @@ func Test_handleGetRequest(t *testing.T) {
 				response:          ``,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "http://pikabu.com",
+			},
+		},
+		{
+			name:    "API. Negative test. Empty body.",
+			urlPath: "/api/shorten",
+			method:  http.MethodPost,
+			body:    []byte(`{}`),
+			want: want{
+				code:              http.StatusBadRequest,
+				response:          ``,
+				contentTypeHeader: "application/json",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "API. Positive test. Add 3dnews site url.",
+			urlPath: "/api/shorten",
+			method:  http.MethodPost,
+			body:    []byte(`{"url": "https://3dnews.com"}`),
+			want: want{
+				code:              http.StatusCreated,
+				response:          `{"result":"http://localhost:8080/19"}`,
+				contentTypeHeader: "application/json",
+				locationHeader:    "",
+			},
+		},
+		{
+			name:    "Positive test. Get short url for 3dnews site after it was added.",
+			urlPath: "/19",
+			method:  http.MethodGet,
+			body:    nil,
+			want: want{
+				code:              http.StatusTemporaryRedirect,
+				response:          ``,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				locationHeader:    "https://3dnews.com",
 			},
 		},
 	}
