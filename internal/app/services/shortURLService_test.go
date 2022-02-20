@@ -36,10 +36,10 @@ func Test_getShortURLCode(t *testing.T) {
 	}
 }
 
-func Test_getShortEmailWithDomain(t *testing.T) {
+func Test_getShortURLWithDomain(t *testing.T) {
 	config := config.New()
-	emailRepository := repositories.GetEmailRepository()
-	shortURLService := GetShortURLService(emailRepository, config)
+	URLRepository := repositories.GetURLRepository()
+	shortURLService := GetShortURLService(URLRepository, config)
 
 	tests := []struct {
 		name  string
@@ -59,7 +59,7 @@ func Test_getShortEmailWithDomain(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, shortURLService.getShortEmailWithDomain(tt.value), tt.want)
+			assert.Equal(t, shortURLService.getShortURLWithDomain(tt.value), tt.want)
 		})
 	}
 }
