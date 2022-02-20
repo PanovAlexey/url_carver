@@ -14,8 +14,8 @@ func main() {
 	initialize()
 
 	config := config.New()
-	emailRepository := repositories.GetEmailRepository()
-	shortURLService := services.GetShortURLService(emailRepository, config)
+	URLRepository := repositories.GetURLRepository()
+	shortURLService := services.GetShortURLService(URLRepository, config)
 	httpHandler := http.GetHTTPHandler(shortURLService)
 	servers.RunServer(httpHandler, config)
 }

@@ -7,30 +7,30 @@ import (
 )
 
 type RepositoryInterface interface {
-	AddEmail(key string, email string) bool
-	GetEmailByKey(key string) string
-	IsExistEmailByKey(key string) bool
+	AddURL(key string, url string) bool
+	GetURLByKey(key string) string
+	IsExistURLByKey(key string) bool
 }
 
-type configInterface interface {
+type shortURLServiceConfigInterface interface {
 	GetBaseURL() string
 }
 
 type shortURLService struct {
 	repository RepositoryInterface
-	config     configInterface
+	config     shortURLServiceConfigInterface
 }
 
-func GetShortURLService(repository RepositoryInterface, config configInterface) *shortURLService {
+func GetShortURLService(repository RepositoryInterface, config shortURLServiceConfigInterface) *shortURLService {
 	return &shortURLService{repository: repository, config: config}
 }
 
-func (service shortURLService) GetEmailByKey(key string) string {
-	return service.repository.GetEmailByKey(key)
+func (service shortURLService) GetURLByKey(key string) string {
+	return service.repository.GetURLByKey(key)
 }
 
-func (service shortURLService) IsExistEmailByKey(key string) bool {
-	return service.repository.IsExistEmailByKey(key)
+func (service shortURLService) IsExistURLByKey(key string) bool {
+	return service.repository.IsExistURLByKey(key)
 }
 
 func (service shortURLService) CreateLongURLDto() dto.LongURL {
@@ -38,21 +38,21 @@ func (service shortURLService) CreateLongURLDto() dto.LongURL {
 }
 
 func (service shortURLService) GetURLByLongURLDto(longURLDto dto.LongURL) url.URL {
-	return url.New(longURLDto.Value, service.cutAndAddEmail(longURLDto.Value))
+	return url.New(longURLDto.Value, service.cutAndAddURL(longURLDto.Value))
 }
 
 func (service shortURLService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
 	return dto.GetShortURLByValue(url.ShortURL)
 }
 
-func (service shortURLService) cutAndAddEmail(longURL string) string {
+func (service shortURLService) cutAndAddURL(longURL string) string {
 	shortURLCode := getShortURLCode(longURL)
-	service.repository.AddEmail(shortURLCode, longURL)
+	service.repository.AddURL(shortURLCode, longURL)
 
-	return service.getShortEmailWithDomain(shortURLCode)
+	return service.getShortURLWithDomain(shortURLCode)
 }
 
-func (service shortURLService) getShortEmailWithDomain(shortURLCode string) string {
+func (service shortURLService) getShortURLWithDomain(shortURLCode string) string {
 	return service.config.GetBaseURL() + "/" + shortURLCode
 }
 

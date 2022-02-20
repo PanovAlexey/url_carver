@@ -182,9 +182,9 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 }
 
 func getRouterForRouteTest() chi.Router {
-	emailRepository := repositories.GetEmailRepository()
-	shortURLService := services.GetShortURLService(emailRepository, config.New())
-	httpHandler := GetHTTPHandler(shortURLService)
+	URLRepository := repositories.GetURLRepository()
+	config := config.New()
+	shortURLService := services.GetShortURLService(URLRepository, config)
 
 	return httpHandler.NewRouter()
 }
