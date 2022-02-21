@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/go-chi/chi/v5"
@@ -37,7 +38,8 @@ func testRequest(t *testing.T, ts *httptest.Server, method, path string, body []
 
 func Test_handleAddAndGetRequests(t *testing.T) {
 	router := getRouterForRouteTest()
-
+	config := config.New()
+	baseURLWithPort := config.Server.BaseURL + ":" + config.Server.ServerPort
 	server := httptest.NewServer(router)
 
 	defer server.Close()
@@ -99,7 +101,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://ya.ru`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          `http://localhost:8080/13`,
+				response:          baseURLWithPort + `/13`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
@@ -111,7 +113,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://pikabu.com`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          `http://localhost:8080/18`,
+				response:          baseURLWithPort + `/18`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
@@ -147,7 +149,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`{"url": "https://3dnews.com"}`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          `{"result":"http://localhost:8080/19"}`,
+				response:          `{"result":"` + baseURLWithPort + `/19"}`,
 				contentTypeHeader: "application/json",
 				locationHeader:    "",
 			},
@@ -182,7 +184,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 
 func getRouterForRouteTest() chi.Router {
 	emailRepository := repositories.GetEmailRepository()
-	shortURLService := services.GetShortURLService(emailRepository)
+	shortURLService := services.GetShortURLService(emailRepository, config.New())
 	httpHandler := GetHTTPHandler(shortURLService)
 
 	return httpHandler.NewRouter()
