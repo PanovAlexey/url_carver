@@ -21,9 +21,10 @@ func main() {
 		log.Fatalln("error creating file repository by config:" + error.Error())
 	}
 
-	shortURLService := services.GetShortURLService(URLMemoryRepository, config)
+	URLShorteningService := services.GetURLShorteningService(config)
+	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
 	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
-	httpHandler := http.GetHTTPHandler(shortURLService, URLStorageService)
+	httpHandler := http.GetHTTPHandler(URLMemoryService, URLStorageService)
 	servers.RunServer(httpHandler, config)
 }
 

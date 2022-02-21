@@ -185,7 +185,8 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 func getRouterForRouteTest() chi.Router {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	config := config.New()
-	shortURLService := services.GetShortURLService(URLMemoryRepository, config)
+	URLShorteningService := services.GetURLShorteningService(config)
+	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
 	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
 
 	if error != nil {
@@ -193,7 +194,7 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
-	httpHandler := GetHTTPHandler(shortURLService, URLStorageService)
+	httpHandler := GetHTTPHandler(URLMemoryService, URLStorageService)
 
 	return httpHandler.NewRouter()
 }
