@@ -20,9 +20,9 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	longURLDto := h.shortURLService.CreateLongURLDto()
+	longURLDto := h.URLMemoryService.CreateLongURLDto()
 	longURLDto.SetValue(string(body))
-	url := h.shortURLService.GetURLByLongURLDto(longURLDto)
+	url := h.URLMemoryService.GetURLByLongURLDto(longURLDto)
 	h.URLStorageService.SaveURL(url)
 
 	w.WriteHeader(http.StatusCreated)
