@@ -1,5 +1,6 @@
 package repositories
 
+// @ToDo: репозиторий, инкапсулирующий работу с ссылками в памяти
 type shortURLs struct {
 	urlMap map[string]string
 }
@@ -8,7 +9,7 @@ var globalURLs = shortURLs{
 	urlMap: make(map[string]string),
 }
 
-func GetURLRepository() *shortURLs {
+func GetURLMemoryRepository() *shortURLs {
 	return &globalURLs
 }
 

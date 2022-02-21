@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -182,10 +183,16 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 }
 
 func getRouterForRouteTest() chi.Router {
-	URLRepository := repositories.GetURLRepository()
+	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	config := config.New()
-	shortURLService := services.GetShortURLService(URLRepository, config)
-	URLStorageService := services.GetURLStorageService(config)
+	shortURLService := services.GetShortURLService(URLMemoryRepository, config)
+	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+
+	if error != nil {
+		log.Fatalln("error creating file repository by config:" + error.Error())
+	}
+
+	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
 	httpHandler := GetHTTPHandler(shortURLService, URLStorageService)
 
 	return httpHandler.NewRouter()
