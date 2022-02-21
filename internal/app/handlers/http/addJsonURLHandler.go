@@ -20,6 +20,7 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	err = json.Unmarshal(bodyJSON, &longURLDto)
 
 	url := h.shortURLService.GetURLByLongURLDto(longURLDto)
+	h.URLStorageService.SaveURL(url)
 
 	if err != nil || len(url.LongURL) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
