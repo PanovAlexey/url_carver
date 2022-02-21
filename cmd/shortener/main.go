@@ -15,8 +15,14 @@ func main() {
 
 	config := config.New()
 	URLRepository := repositories.GetURLRepository()
+	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+
+	if error != nil {
+		log.Fatalln("error creating file repository by config:" + error.Error())
+	}
+
 	shortURLService := services.GetShortURLService(URLRepository, config)
-	URLStorageService := services.GetURLStorageService(config)
+	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
 	httpHandler := http.GetHTTPHandler(shortURLService, URLStorageService)
 	servers.RunServer(httpHandler, config)
 }
