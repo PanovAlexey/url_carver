@@ -25,6 +25,8 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	url := h.URLMemoryService.GetURLByLongURLDto(longURLDto)
 	h.URLStorageService.SaveURL(url)
 
+	shortURLJson := h.URLMemoryService.GetShortURLDtoByURL(url)
+
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(url.ShortURL))
+	w.Write([]byte(shortURLJson.Value))
 }
