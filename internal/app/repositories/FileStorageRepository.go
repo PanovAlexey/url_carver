@@ -8,7 +8,7 @@ import (
 const filePermissions = 0777
 
 type fileStorageRepository struct {
-	config  FileStorageConfigInterface
+	file    *os.File
 	writer  *bufio.Writer
 	scanner *bufio.Scanner
 }
@@ -27,6 +27,7 @@ func GetFileStorageRepository(config FileStorageConfigInterface) (*fileStorageRe
 	return &fileStorageRepository{
 		writer:  bufio.NewWriter(file),
 		scanner: bufio.NewScanner(file),
+		file:    file,
 	}, nil
 }
 
@@ -48,4 +49,8 @@ func (repository *fileStorageRepository) ReadLine() ([]byte, error) {
 	}
 
 	return repository.scanner.Bytes(), nil
+}
+
+func (repository *fileStorageRepository) Close() {
+	repository.file.Close()
 }
