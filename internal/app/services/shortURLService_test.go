@@ -1,6 +1,8 @@
 package services
 
 import (
+	"github.com/PanovAlexey/url_carver/config"
+	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -35,6 +37,11 @@ func Test_getShortURLCode(t *testing.T) {
 }
 
 func Test_getShortEmailWithDomain(t *testing.T) {
+	config := config.New()
+	baseURLWithPort := config.Server.BaseURL + ":" + config.Server.ServerPort
+	emailRepository := repositories.GetEmailRepository()
+	shortURLService := GetShortURLService(emailRepository, config)
+
 	tests := []struct {
 		name  string
 		value string
@@ -43,17 +50,17 @@ func Test_getShortEmailWithDomain(t *testing.T) {
 		{
 			name:  "Test by num",
 			value: "7",
-			want:  "http://localhost:8080/7",
+			want:  baseURLWithPort + "/7",
 		},
 		{
 			name:  "Test by string",
 			value: "azazam",
-			want:  "http://localhost:8080/azazam",
+			want:  baseURLWithPort + "/azazam",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, getShortEmailWithDomain(tt.value), tt.want)
+			assert.Equal(t, shortURLService.getShortEmailWithDomain(tt.value), tt.want)
 		})
 	}
 }

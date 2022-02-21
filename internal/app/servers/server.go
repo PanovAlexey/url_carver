@@ -1,26 +1,25 @@
 package servers
 
 import (
-	"fmt"
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 )
 
-const serverPort uint16 = 8080
-
 type handlerInterface interface {
 	NewRouter() chi.Router
 }
 
-func RunServer(handler handlerInterface) {
+func RunServer(handler handlerInterface, config *config.Config) {
 	router := handler.NewRouter()
 
 	log.Println("Starting server...")
 	log.Fatal(http.ListenAndServe(getServerPort(), router))
+	log.Fatal(http.ListenAndServe(getServerPort(*config), router))
 	log.Println("Server stopped.")
 }
 
-func getServerPort() string {
-	return ":" + fmt.Sprint(serverPort)
+func getServerPort(config config.Config) string {
+	return ":" + config.Server.ServerPort
 }

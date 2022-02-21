@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/handlers/http"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/servers"
@@ -12,10 +13,11 @@ import (
 func main() {
 	initialize()
 
+	config := config.New()
 	emailRepository := repositories.GetEmailRepository()
-	shortURLService := services.GetShortURLService(emailRepository)
+	shortURLService := services.GetShortURLService(emailRepository, config)
 	httpHandler := http.GetHTTPHandler(shortURLService)
-	servers.RunServer(httpHandler)
+	servers.RunServer(httpHandler, config)
 }
 
 func initialize() {
