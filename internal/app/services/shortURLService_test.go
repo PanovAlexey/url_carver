@@ -38,8 +38,8 @@ func Test_getShortURLCode(t *testing.T) {
 
 func Test_getShortURLWithDomain(t *testing.T) {
 	config := config.New()
-	URLRepository := repositories.GetURLRepository()
-	shortURLService := GetShortURLService(URLRepository, config)
+	URLMemoryRepository := repositories.GetURLMemoryRepository()
+	shortURLService := GetShortURLService(URLMemoryRepository, config)
 
 	tests := []struct {
 		name  string

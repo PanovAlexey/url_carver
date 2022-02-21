@@ -14,14 +14,14 @@ func main() {
 	initialize()
 
 	config := config.New()
-	URLRepository := repositories.GetURLRepository()
+	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
 
 	if error != nil {
 		log.Fatalln("error creating file repository by config:" + error.Error())
 	}
 
-	shortURLService := services.GetShortURLService(URLRepository, config)
+	shortURLService := services.GetShortURLService(URLMemoryRepository, config)
 	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
 	httpHandler := http.GetHTTPHandler(shortURLService, URLStorageService)
 	servers.RunServer(httpHandler, config)
