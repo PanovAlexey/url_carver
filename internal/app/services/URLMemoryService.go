@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
@@ -52,6 +53,14 @@ func (service URLMemoryService) GetURLByLongURLDto(longURLDto dto.LongURL) url.U
 
 func (service URLMemoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
 	return dto.GetShortURLByValue(url.ShortURL)
+}
+
+func (service URLMemoryService) LoadURLs(collection dto.URLCollection) {
+	for _, url := range collection.GetCollection() {
+		service.repository.AddURL(url.ShortURL, url.LongURL)
+	}
+
+	fmt.Println(service.repository)
 }
 
 func (service URLMemoryService) cutAndAddURL(longURL string) string {
