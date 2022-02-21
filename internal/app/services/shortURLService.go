@@ -2,11 +2,10 @@ package services
 
 import (
 	"fmt"
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
-
-const currentHost = "http://localhost:8080/"
 
 type RepositoryInterface interface {
 	AddEmail(key string, email string) bool
@@ -16,10 +15,11 @@ type RepositoryInterface interface {
 
 type shortURLService struct {
 	repository RepositoryInterface
+	config     config.Config
 }
 
-func GetShortURLService(repository RepositoryInterface) *shortURLService {
-	return &shortURLService{repository: repository}
+func GetShortURLService(repository RepositoryInterface, config *config.Config) *shortURLService {
+	return &shortURLService{repository: repository, config: *config}
 }
 
 func (service shortURLService) GetEmailByKey(key string) string {
@@ -46,13 +46,13 @@ func (service shortURLService) cutAndAddEmail(longURL string) string {
 	shortURLCode := getShortURLCode(longURL)
 	service.repository.AddEmail(shortURLCode, longURL)
 
-	return getShortEmailWithDomain(shortURLCode)
+	return service.getShortEmailWithDomain(shortURLCode)
+}
+
+func (service shortURLService) getShortEmailWithDomain(shortURLCode string) string {
+	return service.config.Server.BaseURL + ":" + service.config.Server.ServerPort + "/" + shortURLCode
 }
 
 func getShortURLCode(longURL string) string {
 	return fmt.Sprint(len(longURL) + 1)
-}
-
-func getShortEmailWithDomain(shortURLCode string) string {
-	return currentHost + shortURLCode
 }
