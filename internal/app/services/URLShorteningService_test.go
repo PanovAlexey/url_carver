@@ -2,12 +2,14 @@ package services
 
 import (
 	"github.com/PanovAlexey/url_carver/config"
-	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_getShortURLCode(t *testing.T) {
+func Test_GetShortURLCode(t *testing.T) {
+	config := config.New()
+	URLShorteningService := GetURLShorteningService(config)
+
 	tests := []struct {
 		name  string
 		value string
@@ -31,15 +33,14 @@ func Test_getShortURLCode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, getShortURLCode(tt.value), tt.want)
+			assert.Equal(t, URLShorteningService.GetShortURLCode(tt.value), tt.want)
 		})
 	}
 }
 
-func Test_getShortURLWithDomain(t *testing.T) {
+func Test_GetShortURLWithDomain(t *testing.T) {
 	config := config.New()
-	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	shortURLService := GetShortURLService(URLMemoryRepository, config)
+	URLShorteningService := GetURLShorteningService(config)
 
 	tests := []struct {
 		name  string
@@ -59,7 +60,7 @@ func Test_getShortURLWithDomain(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, shortURLService.getShortURLWithDomain(tt.value), tt.want)
+			assert.Equal(t, URLShorteningService.GetShortURLWithDomain(tt.value), tt.want)
 		})
 	}
 }
