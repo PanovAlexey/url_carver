@@ -16,6 +16,7 @@ func main() {
 	config := config.New()
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+	defer fileStorageRepository.Close()
 
 	if error != nil {
 		log.Fatalln("error creating file repository by config:" + error.Error())
