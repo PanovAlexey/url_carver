@@ -185,8 +185,8 @@ func getRouterForRouteTest() chi.Router {
 	URLRepository := repositories.GetURLRepository()
 	config := config.New()
 	shortURLService := services.GetShortURLService(URLRepository, config)
-	fileStorageService := services.GetFileStorageService(config)
-	httpHandler := GetHTTPHandler(shortURLService, fileStorageService)
+	URLStorageService := services.GetURLStorageService(config)
+	httpHandler := GetHTTPHandler(shortURLService, URLStorageService)
 
 	return httpHandler.NewRouter()
 }
