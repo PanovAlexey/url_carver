@@ -22,9 +22,11 @@ func main() {
 	}
 
 	URLShorteningService := services.GetURLShorteningService(config)
-	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
 	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
+	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
+	URLMemoryService.LoadURLs(URLStorageService.GetURLCollectionFromStorage())
 	httpHandler := http.GetHTTPHandler(URLMemoryService, URLStorageService)
+
 	servers.RunServer(httpHandler, config)
 }
 

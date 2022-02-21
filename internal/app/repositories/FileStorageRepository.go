@@ -8,8 +8,9 @@ import (
 const filePermissions = 0777
 
 type fileStorageRepository struct {
-	config FileStorageConfigInterface
-	writer *bufio.Writer
+	config  FileStorageConfigInterface
+	writer  *bufio.Writer
+	scanner *bufio.Scanner
 }
 
 type FileStorageConfigInterface interface {
@@ -17,14 +18,15 @@ type FileStorageConfigInterface interface {
 }
 
 func GetFileStorageRepository(config FileStorageConfigInterface) (*fileStorageRepository, error) {
-	file, err := os.OpenFile(config.GetFileStoragePath(), os.O_WRONLY|os.O_CREATE|os.O_APPEND, filePermissions)
+	file, err := os.OpenFile(config.GetFileStoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND, filePermissions)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &fileStorageRepository{
-		writer: bufio.NewWriter(file),
+		writer:  bufio.NewWriter(file),
+		scanner: bufio.NewScanner(file),
 	}, nil
 }
 
@@ -38,4 +40,12 @@ func (repository *fileStorageRepository) WriteLine(data []byte) error {
 	}
 
 	return repository.writer.Flush()
+}
+
+func (repository *fileStorageRepository) ReadLine() ([]byte, error) {
+	if !repository.scanner.Scan() {
+		return nil, repository.scanner.Err()
+	}
+
+	return repository.scanner.Bytes(), nil
 }
