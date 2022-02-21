@@ -1,6 +1,5 @@
 package repositories
 
-// @ToDo: репозиторий, инкапсулирующий работу с ссылками в памяти
 type shortURLs struct {
 	urlMap map[string]string
 }
