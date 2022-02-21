@@ -16,20 +16,20 @@ type shortURLServiceInterface interface {
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 }
 
-type fileStorageServiceInterface interface {
+type URLStorageServiceInterface interface {
 	SaveURL(url url.URL)
 }
 
 type httpHandler struct {
-	shortURLService    shortURLServiceInterface
-	fileStorageService fileStorageServiceInterface
+	shortURLService   shortURLServiceInterface
+	URLStorageService URLStorageServiceInterface
 }
 
 func GetHTTPHandler(
 	shortURLService shortURLServiceInterface,
-	fileStorageService fileStorageServiceInterface,
+	URLStorageService URLStorageServiceInterface,
 ) *httpHandler {
-	return &httpHandler{shortURLService: shortURLService, fileStorageService: fileStorageService}
+	return &httpHandler{shortURLService: shortURLService, URLStorageService: URLStorageService}
 }
 
 func (h *httpHandler) NewRouter() chi.Router {
