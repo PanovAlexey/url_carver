@@ -16,7 +16,8 @@ func main() {
 	config := config.New()
 	URLRepository := repositories.GetURLRepository()
 	shortURLService := services.GetShortURLService(URLRepository, config)
-	httpHandler := http.GetHTTPHandler(shortURLService)
+	fileStorageService := services.GetFileStorageService(config)
+	httpHandler := http.GetHTTPHandler(shortURLService, fileStorageService)
 	servers.RunServer(httpHandler, config)
 }
 
