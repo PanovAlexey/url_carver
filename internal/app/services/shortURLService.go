@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
@@ -13,13 +12,18 @@ type RepositoryInterface interface {
 	IsExistEmailByKey(key string) bool
 }
 
-type shortURLService struct {
-	repository RepositoryInterface
-	config     config.Config
+type configInterface interface {
+	GetBaseURL() string
+	GetPort() string
 }
 
-func GetShortURLService(repository RepositoryInterface, config *config.Config) *shortURLService {
-	return &shortURLService{repository: repository, config: *config}
+type shortURLService struct {
+	repository RepositoryInterface
+	config     configInterface
+}
+
+func GetShortURLService(repository RepositoryInterface, config configInterface) *shortURLService {
+	return &shortURLService{repository: repository, config: config}
 }
 
 func (service shortURLService) GetEmailByKey(key string) string {
@@ -50,7 +54,7 @@ func (service shortURLService) cutAndAddEmail(longURL string) string {
 }
 
 func (service shortURLService) getShortEmailWithDomain(shortURLCode string) string {
-	return service.config.Server.BaseURL + ":" + service.config.Server.ServerPort + "/" + shortURLCode
+	return service.config.GetBaseURL() + ":" + service.config.GetPort() + "/" + shortURLCode
 }
 
 func getShortURLCode(longURL string) string {
