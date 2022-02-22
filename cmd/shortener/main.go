@@ -11,8 +11,6 @@ import (
 )
 
 func main() {
-	initialize()
-
 	config := config.New()
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
@@ -32,7 +30,7 @@ func main() {
 	servers.RunServer(httpHandler, config)
 }
 
-func initialize() {
+func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("error loading env variables: %s", err.Error())
 	}
