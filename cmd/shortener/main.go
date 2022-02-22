@@ -19,7 +19,7 @@ func main() {
 	defer fileStorageRepository.Close()
 
 	if error != nil {
-		log.Fatalln("error creating file repository by config:" + error.Error())
+		log.Printf("error creating file repository by config:" + error.Error())
 	}
 
 	URLShorteningService := services.GetURLShorteningService(config)
