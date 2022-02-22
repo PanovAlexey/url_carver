@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -33,6 +34,8 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(shortURLJson))

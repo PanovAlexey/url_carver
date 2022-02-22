@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -26,6 +27,8 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	h.URLStorageService.SaveURL(url)
 
 	shortURLJson := h.URLMemoryService.GetShortURLDtoByURL(url)
+
+	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(shortURLJson.Value))
