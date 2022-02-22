@@ -19,8 +19,6 @@ func RunServer(handler handlerInterface, config configInterface) {
 	router := handler.NewRouter()
 
 	log.Println("Starting server...")
-	log.Fatal(http.ListenAndServe(getServerPort(), router))
-	log.Fatal(http.ListenAndServe(getServerPort(*config), router))
 	log.Fatal(http.ListenAndServe(getServerPort(config), router))
 	log.Println("Server stopped.")
 }
