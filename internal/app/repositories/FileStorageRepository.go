@@ -20,15 +20,11 @@ type FileStorageConfigInterface interface {
 func GetFileStorageRepository(config FileStorageConfigInterface) (*fileStorageRepository, error) {
 	file, err := os.OpenFile(config.GetFileStoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND, filePermissions)
 
-	if err != nil {
-		return nil, err
-	}
-
 	return &fileStorageRepository{
 		writer:  bufio.NewWriter(file),
 		scanner: bufio.NewScanner(file),
 		file:    file,
-	}, nil
+	}, err
 }
 
 func (repository *fileStorageRepository) WriteLine(data []byte) error {
