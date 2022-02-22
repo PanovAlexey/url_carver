@@ -16,10 +16,11 @@ func main() {
 	config := config.New()
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
-	defer fileStorageRepository.Close()
 
 	if error != nil {
 		log.Printf("error creating file repository by config:" + error.Error())
+	} else {
+		defer fileStorageRepository.Close()
 	}
 
 	URLShorteningService := services.GetURLShorteningService(config)
