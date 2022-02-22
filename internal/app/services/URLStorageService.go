@@ -65,5 +65,9 @@ func (service URLStorageService) SaveURL(url url.URL) {
 		log.Fatalln("error occurred while marshalling URL to JSON format: " + err.Error())
 	}
 
-	service.storageRepository.WriteLine(data)
+	err = service.storageRepository.WriteLine(data)
+
+	if err != nil {
+		log.Println("error occurred while saving URL to storage: " + err.Error())
+	}
 }
