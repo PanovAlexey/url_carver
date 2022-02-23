@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"os"
 )
 
@@ -74,6 +75,11 @@ func initConfigByFlag(config *Config) *Config {
 }
 
 func getFlags() (string, string, string) {
+	if flag.Parsed() {
+		fmt.Println("Error occurred. Re-initializing the config")
+		return "", "", ""
+	}
+
 	serverAddress := flag.String("a", "", "SERVER_ADDRESS")
 	baseURL := flag.String("b", "", "BASE_URL")
 	fileStoragePath := flag.String("f", "", "FILE_STORAGE_PATH")
