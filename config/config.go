@@ -1,6 +1,8 @@
 package config
 
 import (
+	"flag"
+	"fmt"
 	"os"
 )
 
@@ -19,15 +21,11 @@ type Config struct {
 }
 
 func New() *Config {
-	return &Config{
-		Server: ServerConfig{
-			ServerAddress: getEnv("SERVER_ADDRESS", "localhost:8080"),
-			BaseURL:       getEnv("BASE_URL", "http://localhost:8080"),
-		},
-		FileStorage: FileStorageConfig{
-			FileStoragePath: getEnv("FILE_STORAGE_PATH", "urls.txt"),
-		},
-	}
+	config := &Config{}
+	config = initConfigByEnv(config)
+	config = initConfigByFlag(config)
+	fmt.Println(config)
+	return config
 }
 
 func (config Config) GetBaseURL() string {
@@ -48,4 +46,40 @@ func getEnv(key string, defaultValue string) string {
 	}
 
 	return defaultValue
+}
+
+func initConfigByEnv(config *Config) *Config {
+	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "localhost:8080")
+	config.Server.BaseURL = getEnv("BASE_URL", "http://localhost:8080")
+	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
+
+	return config
+}
+
+func initConfigByFlag(config *Config) *Config {
+	serverAddress, baseURL, fileStoragePath := getFlags()
+
+	if len(serverAddress) > 0 {
+		config.Server.ServerAddress = serverAddress
+	}
+
+	if len(baseURL) > 0 {
+		config.Server.BaseURL = baseURL
+	}
+
+	if len(fileStoragePath) > 0 {
+		config.FileStorage.FileStoragePath = fileStoragePath
+	}
+
+	return config
+}
+
+func getFlags() (string, string, string) {
+	serverAddress := flag.String("a", "", "SERVER_ADDRESS")
+	baseURL := flag.String("b", "", "BASE_URL")
+	fileStoragePath := flag.String("f", "", "FILE_STORAGE_PATH")
+
+	flag.Parse()
+
+	return *serverAddress, *baseURL, *fileStoragePath
 }
