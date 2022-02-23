@@ -2,7 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"os"
 )
 
@@ -24,7 +23,7 @@ func New() *Config {
 	config := &Config{}
 	config = initConfigByEnv(config)
 	config = initConfigByFlag(config)
-	fmt.Println(config)
+
 	return config
 }
 
