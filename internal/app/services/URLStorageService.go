@@ -19,7 +19,7 @@ type FileStorageConfigInterface interface {
 type storageRepositoryInterface interface {
 	WriteLine(data []byte) error
 	ReadLine() ([]byte, error)
-	IsStorageExist() bool
+	IsStorageExist() (bool, error)
 }
 
 func GetStorageService(
@@ -32,7 +32,9 @@ func GetStorageService(
 func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 	collection := dto.GetURLCollection()
 
-	if service.storageRepository.IsStorageExist() {
+	isStorageExist, err := service.storageRepository.IsStorageExist()
+
+	if isStorageExist && err == nil {
 		return *collection
 	}
 
@@ -64,7 +66,9 @@ func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 }
 
 func (service storageService) SaveURL(url url.URL) {
-	if !service.storageRepository.IsStorageExist() {
+	isStorageExist, err := service.storageRepository.IsStorageExist()
+
+	if !isStorageExist || err != nil {
 		return
 	}
 

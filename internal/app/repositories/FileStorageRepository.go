@@ -27,8 +27,10 @@ func GetFileStorageRepository(config FileStorageConfigInterface) (*fileStorageRe
 	}, err
 }
 
-func (repository *fileStorageRepository) IsStorageExist() bool {
-	return repository.file != nil
+func (repository *fileStorageRepository) IsStorageExist() (bool, error) {
+	isStorageExist := repository.file != nil
+
+	return isStorageExist, nil
 }
 
 func (repository *fileStorageRepository) WriteLine(data []byte) error {
