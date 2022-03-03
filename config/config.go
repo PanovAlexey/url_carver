@@ -62,26 +62,22 @@ func initConfigByFlag(config Config) Config {
 		return config
 	}
 
-	serverAddress := *flag.String("a", "", "SERVER_ADDRESS")
-	baseURL := *flag.String("b", "", "BASE_URL")
-	fileStoragePath := *flag.String("f", "", "FILE_STORAGE_PATH")
-
-	if len(serverAddress) > 0 {
-		config.Server.ServerAddress = serverAddress
-	}
+	serverAddress := flag.String("a", "", "SERVER_ADDRESS")
+	baseURL := flag.String("b", "", "BASE_URL")
+	fileStoragePath := flag.String("f", "", "FILE_STORAGE_PATH")
 
 	flag.Parse()
 
-	if len(serverAddress) > 0 {
-		config.Server.ServerAddress = serverAddress
+	if len(*serverAddress) > 0 {
+		config.Server.ServerAddress = *serverAddress
 	}
 
-	if len(baseURL) > 0 {
-		config.Server.BaseURL = baseURL
+	if len(*baseURL) > 0 {
+		config.Server.BaseURL = *baseURL
 	}
 
-	if len(fileStoragePath) > 0 {
-		config.FileStorage.FileStoragePath = fileStoragePath
+	if len(*fileStoragePath) > 0 {
+		config.FileStorage.FileStoragePath = *fileStoragePath
 	}
 
 	return config
