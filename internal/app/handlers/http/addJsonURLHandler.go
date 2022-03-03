@@ -30,11 +30,6 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 
 	shortURL := h.memoryService.GetShortURLDtoByURL(url)
 
-	if err := json.NewEncoder(w).Encode(shortURL); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	shortURLJSON, err := json.Marshal(shortURL)
 
 	if err != nil {
