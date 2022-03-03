@@ -47,7 +47,7 @@ func (service memoryService) CreateLongURLDto() dto.LongURL {
 }
 
 func (service memoryService) GetURLByLongURLDto(longURLDto dto.LongURL) url.URL {
-	return url.New(longURLDto.Value, service.cutAndAddURL(longURLDto.Value))
+	return url.New(longURLDto.GetValue(), service.cutAndAddURL(longURLDto.GetValue()))
 }
 
 func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
