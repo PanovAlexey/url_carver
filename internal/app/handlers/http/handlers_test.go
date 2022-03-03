@@ -187,10 +187,10 @@ func getRouterForRouteTest() chi.Router {
 	config := config.New()
 	URLShorteningService := services.GetURLShorteningService(config)
 	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
-	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
-	if error != nil {
-		log.Fatalln("error creating file repository by config:" + error.Error())
+	if err != nil {
+		log.Fatalln("error creating file repository by config:" + err.Error())
 	}
 
 	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
