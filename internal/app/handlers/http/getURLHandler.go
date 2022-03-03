@@ -10,12 +10,12 @@ func (h *httpHandler) HandleGetURL(w http.ResponseWriter, r *http.Request) {
 
 	urlID := chi.URLParam(r, "id")
 
-	if len(urlID) == 0 || !h.URLMemoryService.IsExistURLByKey(urlID) {
+	if len(urlID) == 0 || !h.memoryService.IsExistURLByKey(urlID) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	w.Header().Add("location", h.URLMemoryService.GetURLByKey(urlID))
+	w.Header().Add("location", h.memoryService.GetURLByKey(urlID))
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	w.Write([]byte(""))
 }

@@ -13,19 +13,19 @@ import (
 func main() {
 	config := config.New()
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
-	if error != nil {
-		log.Printf("error creating file repository by config:" + error.Error())
+	if err != nil {
+		log.Fatalf("error creating file repository by config:" + err.Error())
 	} else {
 		defer fileStorageRepository.Close()
 	}
 
-	URLShorteningService := services.GetURLShorteningService(config)
-	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
-	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
-	URLMemoryService.LoadURLs(URLStorageService.GetURLCollectionFromStorage())
-	httpHandler := http.GetHTTPHandler(URLMemoryService, URLStorageService)
+	shorteningService := services.GetShorteningService(config)
+	storageService := services.GetStorageService(config, fileStorageRepository)
+	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
+	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
+	httpHandler := http.GetHTTPHandler(memoryService, storageService)
 
 	servers.RunServer(httpHandler, config)
 }

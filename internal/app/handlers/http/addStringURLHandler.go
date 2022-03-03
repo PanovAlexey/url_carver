@@ -21,12 +21,12 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	longURLDto := h.URLMemoryService.CreateLongURLDto()
+	longURLDto := h.memoryService.CreateLongURLDto()
 	longURLDto.SetValue(string(body))
-	url := h.URLMemoryService.GetURLByLongURLDto(longURLDto)
-	h.URLStorageService.SaveURL(url)
+	url := h.memoryService.GetURLByLongURLDto(longURLDto)
+	h.storageService.SaveURL(url)
 
-	shortURLJson := h.URLMemoryService.GetShortURLDtoByURL(url)
+	shortURLJson := h.memoryService.GetShortURLDtoByURL(url)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
