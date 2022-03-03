@@ -16,7 +16,7 @@ func main() {
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
 	if err != nil {
-		log.Fatalf("error creating file repository by config:" + err.Error())
+		log.Fatalln("error creating file repository by config:" + err.Error())
 	} else {
 		defer fileStorageRepository.Close()
 	}
