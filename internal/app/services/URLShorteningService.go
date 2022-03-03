@@ -10,7 +10,7 @@ type shorteningService struct {
 	config shorteningServiceConfigInterface
 }
 
-func GetURLShorteningService(config shorteningServiceConfigInterface) *shorteningService {
+func GetShorteningService(config shorteningServiceConfigInterface) *shorteningService {
 	return &shorteningService{config: config}
 }
 
