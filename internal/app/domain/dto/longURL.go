@@ -1,13 +1,17 @@
 package dto
 
 type LongURL struct {
-	Value string `json:"url"`
+	value string `json:"url"`
 }
 
 func GetLongURLByValue(value string) LongURL {
-	return LongURL{Value: value}
+	return LongURL{value: value}
 }
 
 func (longUrl *LongURL) SetValue(value string) {
-	longUrl.Value = value
+	longUrl.value = value
+}
+
+func (longUrl *LongURL) GetValue() string {
+	return longUrl.value
 }
