@@ -28,7 +28,13 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	shortURLJson, err := json.Marshal(h.memoryService.GetShortURLDtoByURL(url))
+	shortURL := h.memoryService.GetShortURLDtoByURL(url)
+	shortURLJSON, err := json.Marshal(shortURL)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -38,5 +44,5 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(shortURLJson))
+	w.Write([]byte(shortURLJSON))
 }

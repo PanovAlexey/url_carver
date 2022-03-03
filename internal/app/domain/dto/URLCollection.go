@@ -2,6 +2,7 @@ package dto
 
 import "github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 
+// URLCollection - entity to pass a slice with URLs
 type URLCollection struct {
 	collection []url.URL
 }
