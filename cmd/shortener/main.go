@@ -21,11 +21,11 @@ func main() {
 		defer fileStorageRepository.Close()
 	}
 
-	URLShorteningService := services.GetURLShorteningService(config)
-	URLStorageService := services.GetURLStorageService(config, fileStorageRepository)
-	URLMemoryService := services.GetURLMemoryService(config, URLMemoryRepository, URLShorteningService)
-	URLMemoryService.LoadURLs(URLStorageService.GetURLCollectionFromStorage())
-	httpHandler := http.GetHTTPHandler(URLMemoryService, URLStorageService)
+	shorteningService := services.GetShorteningService(config)
+	storageService := services.GetStorageService(config, fileStorageRepository)
+	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
+	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
+	httpHandler := http.GetHTTPHandler(memoryService, storageService)
 
 	servers.RunServer(httpHandler, config)
 }

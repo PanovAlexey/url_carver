@@ -8,7 +8,7 @@ import (
 
 func Test_GetShortURLCode(t *testing.T) {
 	config := config.New()
-	URLShorteningService := GetURLShorteningService(config)
+	shorteningService := GetShorteningService(config)
 
 	tests := []struct {
 		name  string
@@ -33,14 +33,14 @@ func Test_GetShortURLCode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, URLShorteningService.GetShortURLCode(tt.value), tt.want)
+			assert.Equal(t, shorteningService.GetShortURLCode(tt.value), tt.want)
 		})
 	}
 }
 
 func Test_GetShortURLWithDomain(t *testing.T) {
 	config := config.New()
-	URLShorteningService := GetURLShorteningService(config)
+	shorteningService := GetShorteningService(config)
 
 	tests := []struct {
 		name  string
@@ -60,7 +60,7 @@ func Test_GetShortURLWithDomain(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, URLShorteningService.GetShortURLWithDomain(tt.value), tt.want)
+			assert.Equal(t, shorteningService.GetShortURLWithDomain(tt.value), tt.want)
 		})
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type URLMemoryServiceInterface interface {
+type memoryServiceInterface interface {
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
@@ -16,20 +16,20 @@ type URLMemoryServiceInterface interface {
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 }
 
-type URLStorageServiceInterface interface {
+type storageServiceInterface interface {
 	SaveURL(url url.URL)
 }
 
 type httpHandler struct {
-	URLMemoryService  URLMemoryServiceInterface
-	URLStorageService URLStorageServiceInterface
+	memoryService  memoryServiceInterface
+	storageService storageServiceInterface
 }
 
 func GetHTTPHandler(
-	URLMemoryService URLMemoryServiceInterface,
-	URLStorageService URLStorageServiceInterface,
+	memoryService memoryServiceInterface,
+	storageService storageServiceInterface,
 ) *httpHandler {
-	return &httpHandler{URLMemoryService: URLMemoryService, URLStorageService: URLStorageService}
+	return &httpHandler{memoryService: memoryService, storageService: storageService}
 }
 
 func (h *httpHandler) NewRouter() chi.Router {
