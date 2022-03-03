@@ -1,5 +1,6 @@
 package dto
 
+// LongURL - entity to pass the source URL
 type LongURL struct {
 	value string `json:"url"`
 }
