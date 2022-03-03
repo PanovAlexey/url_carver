@@ -26,10 +26,10 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	url := h.memoryService.GetURLByLongURLDto(longURLDto)
 	h.storageService.SaveURL(url)
 
-	shortURLJson := h.memoryService.GetShortURLDtoByURL(url)
+	shortURLJSON := h.memoryService.GetShortURLDtoByURL(url)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(shortURLJson.Value))
+	w.Write([]byte(shortURLJSON.Value))
 }

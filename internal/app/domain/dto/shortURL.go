@@ -1,5 +1,6 @@
 package dto
 
+// ShortURL - entity to pass the shortened URL
 type ShortURL struct {
 	Value string `json:"result"`
 }
