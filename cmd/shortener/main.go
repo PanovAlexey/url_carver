@@ -13,10 +13,10 @@ import (
 func main() {
 	config := config.New()
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	fileStorageRepository, error := repositories.GetFileStorageRepository(config)
+	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
-	if error != nil {
-		log.Printf("error creating file repository by config:" + error.Error())
+	if err != nil {
+		log.Fatalf("error creating file repository by config:" + err.Error())
 	} else {
 		defer fileStorageRepository.Close()
 	}
