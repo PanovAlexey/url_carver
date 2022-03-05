@@ -33,7 +33,9 @@ func Test_GetShortURLCode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, shorteningService.GetShortURLCode(tt.value), tt.want)
+			shortURLCode, err := shorteningService.GetShortURLCode(tt.value)
+			assert.Equal(t, err, nil)
+			assert.Equal(t, shortURLCode, tt.want)
 		})
 	}
 }
@@ -60,7 +62,9 @@ func Test_GetShortURLWithDomain(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, shorteningService.GetShortURLWithDomain(tt.value), tt.want)
+			shortURLWithDomain, err := shorteningService.GetShortURLWithDomain(tt.value)
+			assert.Equal(t, shortURLWithDomain, tt.want)
+			assert.Equal(t, err, nil)
 		})
 	}
 }
