@@ -13,10 +13,10 @@ func GetShorteningService(config config.Config) *shorteningService {
 	return &shorteningService{config: config}
 }
 
-func (service shorteningService) GetShortURLWithDomain(shortURLCode string) string {
-	return service.config.GetBaseURL() + "/" + shortURLCode
+func (service shorteningService) GetShortURLWithDomain(shortURLCode string) (string, error) {
+	return service.config.GetBaseURL() + "/" + shortURLCode, nil
 }
 
-func (service shorteningService) GetShortURLCode(longURL string) string {
-	return fmt.Sprint(len(longURL) + 1)
+func (service shorteningService) GetShortURLCode(longURL string) (string, error) {
+	return fmt.Sprint(len(longURL) + 1), nil
 }

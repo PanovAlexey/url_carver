@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
@@ -13,8 +14,8 @@ type repositoryInterface interface {
 }
 
 type shorteningServiceInterface interface {
-	GetShortURLWithDomain(shortURLCode string) string
-	GetShortURLCode(longURL string) string
+	GetShortURLWithDomain(shortURLCode string) (string, error)
+	GetShortURLCode(longURL string) (string, error)
 }
 
 type memoryService struct {
@@ -48,7 +49,14 @@ func (service memoryService) GetURLByLongURLDto(longURLDto dto.LongURL) url.URL 
 }
 
 func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
-	return dto.GetShortURLByValue(service.shorteningService.GetShortURLWithDomain(url.ShortURL))
+	shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(url.ShortURL)
+
+	if err != nil {
+		shortURLWithDomain = ""
+		fmt.Println("impossible to build a short url with domain.")
+	}
+
+	return dto.GetShortURLByValue(shortURLWithDomain)
 }
 
 func (service memoryService) LoadURLs(collection dto.URLCollection) {
@@ -58,7 +66,13 @@ func (service memoryService) LoadURLs(collection dto.URLCollection) {
 }
 
 func (service memoryService) cutAndAddURL(longURL string) string {
-	shortURLCode := service.shorteningService.GetShortURLCode(longURL)
+	shortURLCode, err := service.shorteningService.GetShortURLCode(longURL)
+
+	if err != nil {
+		shortURLCode = ""
+		fmt.Println("an error occurred while getting short URL code by long URL")
+	}
+
 	service.repository.AddURL(shortURLCode, longURL)
 
 	return shortURLCode
