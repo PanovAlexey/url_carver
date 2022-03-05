@@ -8,7 +8,3 @@ type LongURL struct {
 func GetLongURLByValue(value string) LongURL {
 	return LongURL{Value: value}
 }
-
-func (longUrl *LongURL) SetValue(value string) {
-	longUrl.Value = value
-}

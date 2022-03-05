@@ -1,16 +1,15 @@
 package services
 
-import "fmt"
-
-type shorteningServiceConfigInterface interface {
-	GetBaseURL() string
-}
+import (
+	"fmt"
+	"github.com/PanovAlexey/url_carver/config"
+)
 
 type shorteningService struct {
-	config shorteningServiceConfigInterface
+	config config.Config
 }
 
-func GetShorteningService(config shorteningServiceConfigInterface) *shorteningService {
+func GetShorteningService(config config.Config) *shorteningService {
 	return &shorteningService{config: config}
 }
 

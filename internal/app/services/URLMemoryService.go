@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
@@ -11,10 +12,6 @@ type repositoryInterface interface {
 	IsExistURLByKey(key string) bool
 }
 
-type memoryServiceConfigInterface interface {
-	GetBaseURL() string
-}
-
 type shorteningServiceInterface interface {
 	GetShortURLWithDomain(shortURLCode string) string
 	GetShortURLCode(longURL string) string
@@ -22,12 +19,12 @@ type shorteningServiceInterface interface {
 
 type memoryService struct {
 	repository        repositoryInterface
-	config            memoryServiceConfigInterface
+	config            config.Config
 	shorteningService shorteningServiceInterface
 }
 
 func GetMemoryService(
-	config memoryServiceConfigInterface,
+	config config.Config,
 	repository repositoryInterface,
 	shorteningService shorteningServiceInterface,
 ) *memoryService {

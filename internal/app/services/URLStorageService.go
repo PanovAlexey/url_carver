@@ -2,18 +2,15 @@ package services
 
 import (
 	"encoding/json"
+	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"log"
 )
 
 type storageService struct {
-	config            FileStorageConfigInterface
+	config            config.Config
 	storageRepository storageRepositoryInterface
-}
-
-type FileStorageConfigInterface interface {
-	GetFileStoragePath() string
 }
 
 type storageRepositoryInterface interface {
@@ -23,7 +20,7 @@ type storageRepositoryInterface interface {
 }
 
 func GetStorageService(
-	config FileStorageConfigInterface,
+	config config.Config,
 	storageRepository storageRepositoryInterface,
 ) *storageService {
 	return &storageService{config: config, storageRepository: storageRepository}
