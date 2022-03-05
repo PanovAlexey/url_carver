@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"bufio"
+	"github.com/PanovAlexey/url_carver/config"
 	"os"
 )
 
@@ -13,11 +14,7 @@ type fileStorageRepository struct {
 	scanner *bufio.Scanner
 }
 
-type FileStorageConfigInterface interface {
-	GetFileStoragePath() string
-}
-
-func GetFileStorageRepository(config FileStorageConfigInterface) (*fileStorageRepository, error) {
+func GetFileStorageRepository(config config.Config) (*fileStorageRepository, error) {
 	file, err := os.OpenFile(config.GetFileStoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND, filePermissions)
 
 	return &fileStorageRepository{
