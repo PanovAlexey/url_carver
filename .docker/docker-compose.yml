@@ -1,0 +1,18 @@
+version: '3'
+services:
+
+  go-template:
+    image: golang:1.17-alpine
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+    environment:
+      - app_name=go-template
+      - port=8080
+    volumes:
+      - ../:/app
+    working_dir: /app
+    command: go run cmd/shortener/main.go
+networks:
+  backend:
