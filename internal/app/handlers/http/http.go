@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
@@ -36,6 +37,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
+	router.Use(internalMiddleware.GZip)
 
 	router.Get("/{id}", h.HandleGetURL)
 	router.Post("/", h.HandleAddURL)
