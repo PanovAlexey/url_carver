@@ -28,12 +28,11 @@ func GZip(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(w, r)
-		return
 	})
 }
 
 func isNeedToDecompressRequest(r http.Request) bool {
-	return strings.Contains(r.Header.Get("Content-Encoding"), "application/gzip")
+	return strings.Contains(r.Header.Get("Content-Encoding"), "gzip")
 }
 
 func decompressRequest(w http.ResponseWriter, r *http.Request) {
@@ -53,12 +52,15 @@ func isNeedToCompressResponse(r http.Request) bool {
 
 func compressResponse(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
-	defer gz.Close()
 
 	if err != nil {
+		io.WriteString(w, err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Encoding", "application/gzip")
+	defer gz.Close()
+
+	w.Header().Set("Content-Encoding", "gzip")
 	next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
 }
