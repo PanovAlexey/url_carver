@@ -37,6 +37,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
+	router.Use(internalMiddleware.Authorization)
 	router.Use(internalMiddleware.GZip)
 
 	router.Get("/{id}", h.HandleGetURL)
