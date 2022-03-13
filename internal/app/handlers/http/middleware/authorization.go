@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/google/uuid"
+	"log"
 	"net/http"
 	"time"
 )
@@ -15,7 +17,15 @@ func Authorization(next http.Handler) http.Handler {
 
 		if !isUserTokenValid(userToken) {
 			userToken = userTokenGenerate()
-			setUserTokenToCookie(userToken, w)
+			encryptionService, err := services.NewEncryptionService()
+
+			if err == nil {
+				userTokenEncrypted := encryptionService.Encrypt(userToken)
+				setUserTokenToCookie(userTokenEncrypted, w)
+			} else {
+				setUserTokenToCookie(userToken, w)
+			}
+
 		}
 
 		next.ServeHTTP(w, r)
@@ -23,17 +33,26 @@ func Authorization(next http.Handler) http.Handler {
 }
 
 func getUserTokenFromCookie(r *http.Request) string {
+	userToken := ``
 	userTokenCookie, err := r.Cookie(userTokenName)
 
 	if err != nil {
 		if err != http.ErrNoCookie {
-			// @ToDo: log some error oO
+			log.Println("error with getting token from cookie: " + err.Error())
 		}
 
-		return ``
+		return userToken
 	}
 
-	return (*userTokenCookie).Value
+	userTokenDecrypted := (*userTokenCookie).Value
+	encryptionService, err := services.NewEncryptionService()
+	userToken, err = encryptionService.Decrypt(userTokenDecrypted)
+
+	if err != nil {
+		log.Println("error with decrypting token from cookie: " + err.Error())
+	}
+
+	return userToken
 }
 
 func isUserTokenValid(userToken string) bool {
