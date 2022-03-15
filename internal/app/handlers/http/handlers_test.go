@@ -276,7 +276,8 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	storageService := services.GetStorageService(config, fileStorageRepository)
-	httpHandler := GetHTTPHandler(memoryService, storageService)
+	encryptionService, _ := services.NewEncryptionService(config)
+	httpHandler := GetHTTPHandler(memoryService, storageService, encryptionService)
 
 	return httpHandler.NewRouter()
 }
