@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/google/uuid"
 	"log"
 	"net/http"
@@ -11,28 +10,28 @@ import (
 const userTokenName = `token`
 const userTokenCookieExpirationDate = 1 * time.Minute
 
-func Authorization(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userToken := getUserTokenFromCookie(r)
-
-		if !isUserTokenValid(userToken) {
-			userToken = userTokenGenerate()
-			encryptionService, err := services.NewEncryptionService()
-
-			if err == nil {
-				userTokenEncrypted := encryptionService.Encrypt(userToken)
-				setUserTokenToCookie(userTokenEncrypted, w)
-			} else {
-				setUserTokenToCookie(userToken, w)
-			}
-
-		}
-
-		next.ServeHTTP(w, r)
-	})
+type encryptorInterface interface {
+	Encrypt(data string) string
+	Decrypt(encryptedData string) (string, error)
 }
 
-func getUserTokenFromCookie(r *http.Request) string {
+func Authorization(encryptionService encryptorInterface) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userToken := getUserTokenFromCookie(r, encryptionService)
+
+			if !isUserTokenValid(userToken) {
+				userToken = userTokenGenerate()
+				userTokenEncrypted := encryptionService.Encrypt(userToken)
+				setUserTokenToCookie(userTokenEncrypted, w)
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func getUserTokenFromCookie(r *http.Request, encryptionService encryptorInterface) string {
 	userToken := ``
 	userTokenCookie, err := r.Cookie(userTokenName)
 
@@ -45,7 +44,6 @@ func getUserTokenFromCookie(r *http.Request) string {
 	}
 
 	userTokenDecrypted := (*userTokenCookie).Value
-	encryptionService, err := services.NewEncryptionService()
 	userToken, err = encryptionService.Decrypt(userTokenDecrypted)
 
 	if err != nil {

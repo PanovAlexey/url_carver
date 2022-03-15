@@ -21,23 +21,34 @@ type storageServiceInterface interface {
 	SaveURL(url url.URL)
 }
 
+type encryptorInterface interface {
+	Encrypt(data string) string
+	Decrypt(encryptedData string) (string, error)
+}
+
 type httpHandler struct {
-	memoryService  memoryServiceInterface
-	storageService storageServiceInterface
+	memoryService     memoryServiceInterface
+	storageService    storageServiceInterface
+	encryptionService encryptorInterface
 }
 
 func GetHTTPHandler(
 	memoryService memoryServiceInterface,
 	storageService storageServiceInterface,
+	encryptionService encryptorInterface,
 ) *httpHandler {
-	return &httpHandler{memoryService: memoryService, storageService: storageService}
+	return &httpHandler{
+		memoryService:     memoryService,
+		storageService:    storageService,
+		encryptionService: encryptionService,
+	}
 }
 
 func (h *httpHandler) NewRouter() chi.Router {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Logger)
-	router.Use(internalMiddleware.Authorization)
+	router.Use(internalMiddleware.Authorization(h.encryptionService))
 	router.Use(internalMiddleware.GZip)
 
 	router.Get("/{id}", h.HandleGetURL)
