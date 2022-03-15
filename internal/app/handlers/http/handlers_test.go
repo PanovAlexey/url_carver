@@ -7,6 +7,7 @@ import (
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -276,7 +277,7 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	storageService := services.GetStorageService(config, fileStorageRepository)
-	encryptionService, _ := services.NewEncryptionService(config)
+	encryptionService, _ := encryption.NewEncryptionService(config)
 	httpHandler := GetHTTPHandler(memoryService, storageService, encryptionService)
 
 	return httpHandler.NewRouter()
