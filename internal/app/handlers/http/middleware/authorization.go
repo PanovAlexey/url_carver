@@ -43,8 +43,8 @@ func getUserTokenFromCookie(r *http.Request, encryptionService encryptorInterfac
 		return userToken
 	}
 
-	userTokenDecrypted := (*userTokenCookie).Value
-	userToken, err = encryptionService.Decrypt(userTokenDecrypted)
+	userTokenEncrypted := (*userTokenCookie).Value
+	userToken, err = encryptionService.Decrypt(userTokenEncrypted)
 
 	if err != nil {
 		log.Println("error with decrypting token from cookie: " + err.Error())
