@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/PanovAlexey/url_carver/config"
 )
 
 type encryptor struct {
@@ -12,9 +13,8 @@ type encryptor struct {
 	nonce []byte
 }
 
-func NewEncryptionService() (*encryptor, error) {
-	userKey := "23232323" //@ToDo
-	key := sha256.Sum256([]byte(userKey))
+func NewEncryptionService(config config.Config) (*encryptor, error) {
+	key := sha256.Sum256([]byte(config.GetEncryptionKey()))
 
 	block, err := aes.NewCipher(key[:])
 
