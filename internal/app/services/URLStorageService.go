@@ -31,7 +31,7 @@ func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 
 	isStorageExist, err := service.storageRepository.IsStorageExist()
 
-	if isStorageExist && err == nil {
+	if !isStorageExist || err != nil {
 		return *collection
 	}
 
