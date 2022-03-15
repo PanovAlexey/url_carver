@@ -56,6 +56,8 @@ func (h *httpHandler) NewRouter() chi.Router {
 
 	router.Post("/api/shorten", h.HandleAddURLByJSON)
 
+	router.Get("/api/user/urls", h.HandleGetURLsByUserId)
+
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
