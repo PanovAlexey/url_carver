@@ -4,6 +4,7 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
+	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
@@ -21,21 +22,16 @@ type storageServiceInterface interface {
 	SaveURL(url url.URL)
 }
 
-type encryptorInterface interface {
-	Encrypt(data string) string
-	Decrypt(encryptedData string) (string, error)
-}
-
 type httpHandler struct {
 	memoryService     memoryServiceInterface
 	storageService    storageServiceInterface
-	encryptionService encryptorInterface
+	encryptionService encryption.EncryptorInterface
 }
 
 func GetHTTPHandler(
 	memoryService memoryServiceInterface,
 	storageService storageServiceInterface,
-	encryptionService encryptorInterface,
+	encryptionService encryption.EncryptorInterface,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:     memoryService,
