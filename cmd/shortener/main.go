@@ -6,6 +6,7 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/servers"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -25,7 +26,7 @@ func main() {
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
 	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
-	encryptionService, err := services.NewEncryptionService(config)
+	encryptionService, err := encryption.NewEncryptionService(config)
 
 	if err != nil {
 		log.Println("error with encryption service initialization: " + err.Error())
