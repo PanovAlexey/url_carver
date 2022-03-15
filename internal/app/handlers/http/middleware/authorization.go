@@ -2,17 +2,13 @@ package middleware
 
 import (
 	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"log"
 	"net/http"
 	"time"
 )
 
-type encryptorInterface interface {
-	Encrypt(data string) string
-	Decrypt(encryptedData string) (string, error)
-}
-
-func Authorization(encryptionService encryptorInterface) func(http.Handler) http.Handler {
+func Authorization(encryptionService encryption.EncryptorInterface) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userToken := getUserTokenFromCookie(r, encryptionService)
@@ -29,7 +25,7 @@ func Authorization(encryptionService encryptorInterface) func(http.Handler) http
 	}
 }
 
-func getUserTokenFromCookie(r *http.Request, encryptionService encryptorInterface) string {
+func getUserTokenFromCookie(r *http.Request, encryptionService encryption.EncryptorInterface) string {
 	userToken := ``
 	userTokenCookie, err := r.Cookie(services.UserTokenName)
 
