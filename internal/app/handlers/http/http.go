@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
@@ -26,11 +27,16 @@ type shorteningServiceInterface interface {
 	GetURLEntityByLongURL(longURL string) (url.URL, error)
 }
 
+type contextStorageServiceInterface interface {
+	GetUserTokenFromContext(ctx context.Context) string
+}
+
 type httpHandler struct {
-	memoryService     memoryServiceInterface
-	storageService    storageServiceInterface
-	encryptionService encryption.EncryptorInterface
-	shorteningService shorteningServiceInterface
+	memoryService         memoryServiceInterface
+	storageService        storageServiceInterface
+	encryptionService     encryption.EncryptorInterface
+	shorteningService     shorteningServiceInterface
+	contextStorageService contextStorageServiceInterface
 }
 
 func GetHTTPHandler(
@@ -38,12 +44,14 @@ func GetHTTPHandler(
 	storageService storageServiceInterface,
 	encryptionService encryption.EncryptorInterface,
 	shorteningService shorteningServiceInterface,
+	contextStorageService contextStorageServiceInterface,
 ) *httpHandler {
 	return &httpHandler{
-		memoryService:     memoryService,
-		storageService:    storageService,
-		encryptionService: encryptionService,
-		shorteningService: shorteningService,
+		memoryService:         memoryService,
+		storageService:        storageService,
+		encryptionService:     encryptionService,
+		shorteningService:     shorteningService,
+		contextStorageService: contextStorageService,
 	}
 }
 

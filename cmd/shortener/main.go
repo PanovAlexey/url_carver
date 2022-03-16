@@ -27,12 +27,19 @@ func main() {
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
 	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
 	encryptionService, err := encryption.NewEncryptionService(config)
+	contextStorageService := services.GetContextStorageService()
 
 	if err != nil {
 		log.Println("error with encryption service initialization: " + err.Error())
 	}
 
-	httpHandler := http.GetHTTPHandler(memoryService, storageService, encryptionService, shorteningService)
+	httpHandler := http.GetHTTPHandler(
+		memoryService,
+		storageService,
+		encryptionService,
+		shorteningService,
+		contextStorageService,
+	)
 
 	servers.RunServer(httpHandler, config)
 }
