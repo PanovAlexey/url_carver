@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test_GetShortURLCode(t *testing.T) {
+func Test_GetURLEntityByLongURL(t *testing.T) {
 	config := config.New()
 	shorteningService := GetShorteningService(config)
 
@@ -33,9 +33,9 @@ func Test_GetShortURLCode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shortURLCode, err := shorteningService.GetShortURLCode(tt.value)
+			URL, err := shorteningService.GetURLEntityByLongURL(tt.value)
 			assert.Equal(t, err, nil)
-			assert.Equal(t, shortURLCode, tt.want)
+			assert.Equal(t, URL.ShortURL, tt.want)
 		})
 	}
 }

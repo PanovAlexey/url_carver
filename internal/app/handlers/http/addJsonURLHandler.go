@@ -20,7 +20,8 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	longURLDto := h.memoryService.CreateLongURLDto()
 	err = json.Unmarshal(bodyJSON, &longURLDto)
 
-	url := h.memoryService.GetURLByLongURLDto(longURLDto)
+	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
+	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
 
 	if err != nil || len(url.LongURL) == 0 {

@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
 type shorteningService struct {
@@ -17,6 +18,8 @@ func (service shorteningService) GetShortURLWithDomain(shortURLCode string) (str
 	return service.config.GetBaseURL() + "/" + shortURLCode, nil
 }
 
-func (service shorteningService) GetShortURLCode(longURL string) (string, error) {
-	return fmt.Sprint(len(longURL) + 1), nil
+func (service shorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {
+	shortURL := fmt.Sprint(len(longURL) + 1)
+
+	return url.New(longURL, shortURL), nil
 }
