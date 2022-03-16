@@ -21,9 +21,7 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	longURLDto := h.memoryService.CreateLongURLDto()
-	longURLDto.Value = string(body)
-	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
+	url, err := h.shorteningService.GetURLEntityByLongURL(string(body))
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
