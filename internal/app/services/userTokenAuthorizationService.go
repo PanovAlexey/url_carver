@@ -55,6 +55,7 @@ func (service userTokenAuthorizationService) SetUserTokenToCookie(userToken stri
 		Name:    UserTokenName,
 		Value:   userToken,
 		Expires: time.Now().Add(UserTokenCookieExpirationDate),
+		Path:    `/`,
 	}
 
 	http.SetCookie(w, &cookie)
