@@ -3,7 +3,7 @@ package url
 type URL struct {
 	LongURL  string
 	ShortURL string
-	UserID   string `json:"-"`
+	UserID   string
 }
 
 func New(longURL, shortURL string) URL {

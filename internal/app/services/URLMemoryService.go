@@ -8,7 +8,7 @@ import (
 )
 
 type repositoryInterface interface {
-	AddURL(key string, url string) bool
+	AddURL(url url.URL) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
 }
@@ -62,5 +62,5 @@ func (service memoryService) LoadURLs(collection dto.URLCollection) {
 }
 
 func (service memoryService) SaveURL(url url.URL) bool {
-	return service.repository.AddURL(url.ShortURL, url.LongURL)
+	return service.repository.AddURL(url)
 }

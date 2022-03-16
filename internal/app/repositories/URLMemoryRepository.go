@@ -16,12 +16,12 @@ func GetURLMemoryRepository() *shortURLs {
 	return &globalURLs
 }
 
-func (u *shortURLs) AddURL(key string, url string) bool {
-	if u.IsExistURLByKey(key) {
+func (u *shortURLs) AddURL(url urlPackage.URL) bool {
+	if u.IsExistURLByKey(url.ShortURL) {
 		return false
 	}
 
-	u.urlMap[key] = urlPackage.New(url, key)
+	u.urlMap[url.ShortURL] = url
 
 
 	return true

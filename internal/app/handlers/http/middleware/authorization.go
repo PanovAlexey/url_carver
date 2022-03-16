@@ -18,6 +18,9 @@ func Authorization(encryptionService encryption.EncryptorInterface) func(http.Ha
 				userTokenAuthorizationService.SetUserTokenToCookie(userTokenEncrypted, w)
 			}
 
+			contextStorageService := services.GetContextStorageService()
+			*r = contextStorageService.SaveUserTokenToContext(*r, userToken)
+
 			next.ServeHTTP(w, r)
 		})
 	}
