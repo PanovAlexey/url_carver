@@ -26,8 +26,9 @@ func main() {
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
 	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
-	encryptionService, err := encryption.NewEncryptionService(config)
 	contextStorageService := services.GetContextStorageService()
+	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
+	encryptionService, err := encryption.NewEncryptionService(config)
 
 	if err != nil {
 		log.Println("error with encryption service initialization: " + err.Error())
@@ -39,6 +40,7 @@ func main() {
 		encryptionService,
 		shorteningService,
 		contextStorageService,
+		userTokenAuthorizationService,
 	)
 
 	servers.RunServer(httpHandler, config)

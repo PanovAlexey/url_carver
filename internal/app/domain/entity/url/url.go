@@ -13,6 +13,18 @@ func New(longURL, shortURL string) URL {
 	}
 }
 
+func (url URL) GetLongURL() string {
+	return url.LongURL
+}
+
+func (url URL) GetShortURL() string {
+	return url.ShortURL
+}
+
+func (url URL) GetUserId() string {
+	return url.UserID
+}
+
 func (url *URL) SetLongURL(value string) {
 	url.LongURL = value
 }
