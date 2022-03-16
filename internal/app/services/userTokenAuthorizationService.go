@@ -16,11 +16,7 @@ func GetUserTokenAuthorizationService() *userTokenAuthorizationService {
 }
 
 func (userTokenAuthorizationService userTokenAuthorizationService) IsUserTokenValid(userToken string) bool {
-	if len(userToken) < 1 {
-		return false
-	}
-
-	return true
+	return len(userToken) >= 1
 }
 
 func (userTokenAuthorizationService userTokenAuthorizationService) UserTokenGenerate() string {
