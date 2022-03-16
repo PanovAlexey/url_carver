@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
@@ -16,11 +17,12 @@ type memoryServiceInterface interface {
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
-	SaveURL(url url.URL) bool
+	SaveURL(url domain.URLInterface) bool
+	GetURLsByUserId(userId string) dto.URLCollection
 }
 
 type storageServiceInterface interface {
-	SaveURL(url url.URL)
+	SaveURL(url domain.URLInterface)
 }
 
 type shorteningServiceInterface interface {
@@ -28,15 +30,20 @@ type shorteningServiceInterface interface {
 }
 
 type contextStorageServiceInterface interface {
-	GetUserTokenFromContext(ctx context.Context) string
+	GetUserIdFromContext(ctx context.Context) string
+}
+
+type userTokenAuthorizationServiceInterface interface {
+	IsUserTokenValid(userToken string) bool
 }
 
 type httpHandler struct {
-	memoryService         memoryServiceInterface
-	storageService        storageServiceInterface
-	encryptionService     encryption.EncryptorInterface
-	shorteningService     shorteningServiceInterface
-	contextStorageService contextStorageServiceInterface
+	memoryService                 memoryServiceInterface
+	storageService                storageServiceInterface
+	encryptionService             encryption.EncryptorInterface
+	shorteningService             shorteningServiceInterface
+	contextStorageService         contextStorageServiceInterface
+	userTokenAuthorizationService userTokenAuthorizationServiceInterface
 }
 
 func GetHTTPHandler(
@@ -45,13 +52,15 @@ func GetHTTPHandler(
 	encryptionService encryption.EncryptorInterface,
 	shorteningService shorteningServiceInterface,
 	contextStorageService contextStorageServiceInterface,
+	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
 ) *httpHandler {
 	return &httpHandler{
-		memoryService:         memoryService,
-		storageService:        storageService,
-		encryptionService:     encryptionService,
-		shorteningService:     shorteningService,
-		contextStorageService: contextStorageService,
+		memoryService:                 memoryService,
+		storageService:                storageService,
+		encryptionService:             encryptionService,
+		shorteningService:             shorteningService,
+		contextStorageService:         contextStorageService,
+		userTokenAuthorizationService: userTokenAuthorizationService,
 	}
 }
 
@@ -66,6 +75,8 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router.Post("/", h.HandleAddURL)
 
 	router.Post("/api/shorten", h.HandleAddURLByJSON)
+
+	router.Get("/api/user/urls", h.HandleGetURLsByUserId)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")

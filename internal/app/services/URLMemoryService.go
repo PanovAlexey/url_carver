@@ -3,14 +3,16 @@ package services
 import (
 	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
+	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
 type repositoryInterface interface {
-	AddURL(url url.URL) bool
+	AddURL(url domain.URLInterface) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
+	GetURLsByUserId(userId string) dto.URLCollection
 }
 
 type shorteningServiceInterface interface {
@@ -61,6 +63,10 @@ func (service memoryService) LoadURLs(collection dto.URLCollection) {
 	}
 }
 
-func (service memoryService) SaveURL(url url.URL) bool {
+func (service memoryService) SaveURL(url domain.URLInterface) bool {
 	return service.repository.AddURL(url)
+}
+
+func (service memoryService) GetURLsByUserId(userId string) dto.URLCollection {
+	return service.repository.GetURLsByUserId(userId)
 }
