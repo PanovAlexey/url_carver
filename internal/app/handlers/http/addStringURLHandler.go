@@ -23,7 +23,14 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 
 	longURLDto := h.memoryService.CreateLongURLDto()
 	longURLDto.Value = string(body)
-	url := h.memoryService.GetURLByLongURLDto(longURLDto)
+	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
 
 	shortURLJSON := h.memoryService.GetShortURLDtoByURL(url)

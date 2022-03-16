@@ -15,7 +15,7 @@ type repositoryInterface interface {
 
 type shorteningServiceInterface interface {
 	GetShortURLWithDomain(shortURLCode string) (string, error)
-	GetShortURLCode(longURL string) (string, error)
+	GetURLEntityByLongURL(longURL string) (url.URL, error)
 }
 
 type memoryService struct {
@@ -44,10 +44,6 @@ func (service memoryService) CreateLongURLDto() dto.LongURL {
 	return dto.GetLongURLByValue("")
 }
 
-func (service memoryService) GetURLByLongURLDto(longURLDto dto.LongURL) url.URL {
-	return url.New(longURLDto.Value, service.cutAndAddURL(longURLDto.Value))
-}
-
 func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
 	shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(url.ShortURL)
 
@@ -61,19 +57,10 @@ func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
 
 func (service memoryService) LoadURLs(collection dto.URLCollection) {
 	for _, url := range collection.GetCollection() {
-		service.repository.AddURL(url.ShortURL, url.LongURL)
+		service.SaveURL(url)
 	}
 }
 
-func (service memoryService) cutAndAddURL(longURL string) string {
-	shortURLCode, err := service.shorteningService.GetShortURLCode(longURL)
-
-	if err != nil {
-		shortURLCode = ""
-		fmt.Println("an error occurred while getting short URL code by long URL")
-	}
-
-	service.repository.AddURL(shortURLCode, longURL)
-
-	return shortURLCode
+func (service memoryService) SaveURL(url url.URL) bool {
+	return service.repository.AddURL(url.ShortURL, url.LongURL)
 }

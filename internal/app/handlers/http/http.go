@@ -14,29 +14,36 @@ type memoryServiceInterface interface {
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
-	GetURLByLongURLDto(dto.LongURL) url.URL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
+	SaveURL(url url.URL) bool
 }
 
 type storageServiceInterface interface {
 	SaveURL(url url.URL)
 }
 
+type shorteningServiceInterface interface {
+	GetURLEntityByLongURL(longURL string) (url.URL, error)
+}
+
 type httpHandler struct {
 	memoryService     memoryServiceInterface
 	storageService    storageServiceInterface
 	encryptionService encryption.EncryptorInterface
+	shorteningService shorteningServiceInterface
 }
 
 func GetHTTPHandler(
 	memoryService memoryServiceInterface,
 	storageService storageServiceInterface,
 	encryptionService encryption.EncryptorInterface,
+	shorteningService shorteningServiceInterface,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:     memoryService,
 		storageService:    storageService,
 		encryptionService: encryptionService,
+		shorteningService: shorteningService,
 	}
 }
 

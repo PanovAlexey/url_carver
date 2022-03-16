@@ -32,7 +32,7 @@ func main() {
 		log.Println("error with encryption service initialization: " + err.Error())
 	}
 
-	httpHandler := http.GetHTTPHandler(memoryService, storageService, encryptionService)
+	httpHandler := http.GetHTTPHandler(memoryService, storageService, encryptionService, shorteningService)
 
 	servers.RunServer(httpHandler, config)
 }
