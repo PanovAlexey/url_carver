@@ -1,11 +1,15 @@
 package repositories
 
+import (
+	urlPackage "github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+)
+
 type shortURLs struct {
-	urlMap map[string]string
+	urlMap map[string]urlPackage.URL
 }
 
 var globalURLs = shortURLs{
-	urlMap: make(map[string]string),
+	urlMap: make(map[string]urlPackage.URL),
 }
 
 func GetURLMemoryRepository() *shortURLs {
@@ -17,13 +21,14 @@ func (u *shortURLs) AddURL(key string, url string) bool {
 		return false
 	}
 
-	u.urlMap[key] = url
+	u.urlMap[key] = urlPackage.New(url, key)
+
 
 	return true
 }
 
 func (u shortURLs) GetURLByKey(key string) string {
-	return u.urlMap[key]
+	return u.urlMap[key].LongURL
 }
 
 func (u *shortURLs) IsExistURLByKey(key string) bool {
