@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
@@ -17,12 +16,12 @@ type memoryServiceInterface interface {
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
-	SaveURL(url domain.URLInterface) bool
+	SaveURL(url url.URL) bool
 	GetURLsByUserID(userID string) dto.URLCollection
 }
 
 type storageServiceInterface interface {
-	SaveURL(url domain.URLInterface)
+	SaveURL(url url.URL)
 }
 
 type shorteningServiceInterface interface {
@@ -37,6 +36,10 @@ type userTokenAuthorizationServiceInterface interface {
 	IsUserTokenValid(userToken string) bool
 }
 
+type URLMappingServiceInterface interface {
+	MapURLEntityCollectionToDTO(collection dto.URLCollection) dto.URLCollection
+}
+
 type httpHandler struct {
 	memoryService                 memoryServiceInterface
 	storageService                storageServiceInterface
@@ -44,6 +47,7 @@ type httpHandler struct {
 	shorteningService             shorteningServiceInterface
 	contextStorageService         contextStorageServiceInterface
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface
+	URLMappingService             URLMappingServiceInterface
 }
 
 func GetHTTPHandler(
@@ -53,6 +57,7 @@ func GetHTTPHandler(
 	shorteningService shorteningServiceInterface,
 	contextStorageService contextStorageServiceInterface,
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
+	URLMappingService URLMappingServiceInterface,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:                 memoryService,
@@ -61,6 +66,7 @@ func GetHTTPHandler(
 		shorteningService:             shorteningService,
 		contextStorageService:         contextStorageService,
 		userTokenAuthorizationService: userTokenAuthorizationService,
+		URLMappingService:             URLMappingService,
 	}
 }
 

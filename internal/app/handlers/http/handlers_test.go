@@ -280,6 +280,7 @@ func getRouterForRouteTest() chi.Router {
 	encryptionService, _ := encryption.NewEncryptionService(config)
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
+	URLMappingService := services.GetURLMappingService()
 	httpHandler := GetHTTPHandler(
 		memoryService,
 		storageService,
@@ -287,6 +288,7 @@ func getRouterForRouteTest() chi.Router {
 		shorteningService,
 		contextStorageService,
 		userTokenAuthorizationService,
+		URLMappingService,
 	)
 
 	return httpHandler.NewRouter()

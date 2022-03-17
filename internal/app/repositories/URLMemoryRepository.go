@@ -1,23 +1,23 @@
 package repositories
 
 import (
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
 type shortURLs struct {
-	urlMap map[string]domain.URLInterface
+	urlMap map[string]url.URL
 }
 
 var globalURLs = shortURLs{
-	urlMap: make(map[string]domain.URLInterface),
+	urlMap: make(map[string]url.URL),
 }
 
 func GetURLMemoryRepository() *shortURLs {
 	return &globalURLs
 }
 
-func (u *shortURLs) AddURL(url domain.URLInterface) bool {
+func (u *shortURLs) AddURL(url url.URL) bool {
 	if u.IsExistURLByKey(url.GetShortURL()) {
 		return false
 	}

@@ -6,7 +6,7 @@ type URLForShowingUserCollection struct {
 	UserID   string `json:"-"`
 }
 
-func New(longURL, shortURL string) URLForShowingUserCollection {
+func New(longURL, shortURL, UserID string) URLForShowingUserCollection {
 	return URLForShowingUserCollection{
 		LongURL:  longURL,
 		ShortURL: shortURL,
@@ -23,4 +23,8 @@ func (u URLForShowingUserCollection) GetShortURL() string {
 
 func (u URLForShowingUserCollection) GetUserID() string {
 	return u.ShortURL
+}
+
+func (u *URLForShowingUserCollection) SetShortURL(value string) {
+	u.ShortURL = value
 }

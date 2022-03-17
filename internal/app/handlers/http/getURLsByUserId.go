@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"net/http"
 )
 
@@ -23,7 +22,7 @@ func (h *httpHandler) HandleGetURLsByUserID(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	collection = mapURLEntityCollectionToDTO(collection)
+	collection = h.URLMappingService.MapURLEntityCollectionToDTO(collection)
 
 	URLCollectionJSON, err := json.Marshal(collection.GetCollection())
 
@@ -36,14 +35,4 @@ func (h *httpHandler) HandleGetURLsByUserID(w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(URLCollectionJSON)
-}
-
-func mapURLEntityCollectionToDTO(collection dto.URLCollection) dto.URLCollection {
-	collectionDto := dto.GetURLCollection()
-
-	for _, url := range collection.GetCollection() {
-		collectionDto.AppendURL(dto.New(url.GetLongURL(), url.GetShortURL()))
-	}
-
-	return *collectionDto
 }

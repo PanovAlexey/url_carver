@@ -9,7 +9,7 @@ import (
 )
 
 const UserTokenName = `token`
-const UserTokenCookieExpirationDate = 1 * time.Minute
+const UserTokenCookieExpirationDate = 5 * time.Minute
 
 type userTokenAuthorizationService struct {
 }
