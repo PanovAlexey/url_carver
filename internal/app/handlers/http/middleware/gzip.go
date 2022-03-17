@@ -36,6 +36,10 @@ func isNeedToDecompressRequest(r http.Request) bool {
 }
 
 func decompressRequest(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		return
+	}
+
 	result, err := gzip.NewReader(r.Body)
 
 	if err != nil {
