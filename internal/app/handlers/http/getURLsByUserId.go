@@ -7,16 +7,16 @@ import (
 	"net/http"
 )
 
-func (h *httpHandler) HandleGetURLsByUserId(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleGetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
-	userToken := h.contextStorageService.GetUserIdFromContext(r.Context())
+	userToken := h.contextStorageService.GetUserIDFromContext(r.Context())
 
 	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	collection := h.memoryService.GetURLsByUserId(userToken)
+	collection := h.memoryService.GetURLsByUserID(userToken)
 
 	if len(collection.GetCollection()) < 1 {
 		w.WriteHeader(http.StatusNoContent)

@@ -12,7 +12,7 @@ type repositoryInterface interface {
 	AddURL(url domain.URLInterface) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
-	GetURLsByUserId(userId string) dto.URLCollection
+	GetURLsByUserID(userID string) dto.URLCollection
 }
 
 type shorteningServiceInterface interface {
@@ -67,6 +67,6 @@ func (service memoryService) SaveURL(url domain.URLInterface) bool {
 	return service.repository.AddURL(url)
 }
 
-func (service memoryService) GetURLsByUserId(userId string) dto.URLCollection {
-	return service.repository.GetURLsByUserId(userId)
+func (service memoryService) GetURLsByUserID(userID string) dto.URLCollection {
+	return service.repository.GetURLsByUserID(userID)
 }

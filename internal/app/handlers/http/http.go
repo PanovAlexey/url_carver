@@ -18,7 +18,7 @@ type memoryServiceInterface interface {
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 	SaveURL(url domain.URLInterface) bool
-	GetURLsByUserId(userId string) dto.URLCollection
+	GetURLsByUserID(userID string) dto.URLCollection
 }
 
 type storageServiceInterface interface {
@@ -30,7 +30,7 @@ type shorteningServiceInterface interface {
 }
 
 type contextStorageServiceInterface interface {
-	GetUserIdFromContext(ctx context.Context) string
+	GetUserIDFromContext(ctx context.Context) string
 }
 
 type userTokenAuthorizationServiceInterface interface {
@@ -76,7 +76,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 
 	router.Post("/api/shorten", h.HandleAddURLByJSON)
 
-	router.Get("/api/user/urls", h.HandleGetURLsByUserId)
+	router.Get("/api/user/urls", h.HandleGetURLsByUserID)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")

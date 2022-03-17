@@ -21,6 +21,6 @@ func (u URLForShowingUserCollection) GetShortURL() string {
 	return u.ShortURL
 }
 
-func (u URLForShowingUserCollection) GetUserId() string {
+func (u URLForShowingUserCollection) GetUserID() string {
 	return u.ShortURL
 }

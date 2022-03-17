@@ -20,8 +20,13 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	longURLDto := h.memoryService.CreateLongURLDto()
 	err = json.Unmarshal(bodyJSON, &longURLDto)
 
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
-	url.SetUserId(h.contextStorageService.GetUserIdFromContext(r.Context()))
+	url.SetUserID(h.contextStorageService.GetUserIDFromContext(r.Context()))
 	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
 

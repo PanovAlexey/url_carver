@@ -21,7 +21,7 @@ func (url URL) GetShortURL() string {
 	return url.ShortURL
 }
 
-func (url URL) GetUserId() string {
+func (url URL) GetUserID() string {
 	return url.UserID
 }
 
@@ -33,6 +33,6 @@ func (url *URL) SetShortURL(value string) {
 	url.ShortURL = value
 }
 
-func (url *URL) SetUserId(value string) {
+func (url *URL) SetUserID(value string) {
 	url.UserID = value
 }
