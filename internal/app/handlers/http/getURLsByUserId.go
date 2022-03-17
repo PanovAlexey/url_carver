@@ -8,7 +8,7 @@ import (
 )
 
 func (h *httpHandler) HandleGetURLsByUserID(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain;charset=utf-8")
+	w.Header().Set("Content-Type", "application/json")
 	userToken := h.contextStorageService.GetUserIDFromContext(r.Context())
 
 	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
