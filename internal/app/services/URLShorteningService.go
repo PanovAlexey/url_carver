@@ -21,5 +21,5 @@ func (service shorteningService) GetShortURLWithDomain(shortURLCode string) (str
 func (service shorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {
 	shortURL := fmt.Sprint(len(longURL) + 1)
 
-	return url.New(longURL, shortURL), nil
+	return url.New(longURL, shortURL, ``), nil
 }

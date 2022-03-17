@@ -6,10 +6,11 @@ type URL struct {
 	UserID   string
 }
 
-func New(longURL, shortURL string) URL {
+func New(longURL, shortURL, userID string) URL {
 	return URL{
 		LongURL:  longURL,
 		ShortURL: shortURL,
+		UserID:   userID,
 	}
 }
 

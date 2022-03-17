@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"github.com/PanovAlexey/url_carver/config"
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"log"
@@ -63,7 +62,7 @@ func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 	return *collection
 }
 
-func (service storageService) SaveURL(url domain.URLInterface) {
+func (service storageService) SaveURL(url url.URL) {
 	isStorageExist, err := service.storageRepository.IsStorageExist()
 
 	if !isStorageExist || err != nil {

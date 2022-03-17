@@ -28,6 +28,7 @@ func main() {
 	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
+	URLMappingService := services.GetURLMappingService()
 	encryptionService, err := encryption.NewEncryptionService(config)
 
 	if err != nil {
@@ -41,6 +42,7 @@ func main() {
 		shorteningService,
 		contextStorageService,
 		userTokenAuthorizationService,
+		URLMappingService,
 	)
 
 	servers.RunServer(httpHandler, config)

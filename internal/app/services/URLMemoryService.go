@@ -3,13 +3,12 @@ package services
 import (
 	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+	urlEntity "github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
 type repositoryInterface interface {
-	AddURL(url domain.URLInterface) bool
+	AddURL(url urlEntity.URL) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
 	GetURLsByUserID(userID string) dto.URLCollection
@@ -17,7 +16,7 @@ type repositoryInterface interface {
 
 type shorteningServiceInterface interface {
 	GetShortURLWithDomain(shortURLCode string) (string, error)
-	GetURLEntityByLongURL(longURL string) (url.URL, error)
+	GetURLEntityByLongURL(longURL string) (urlEntity.URL, error)
 }
 
 type memoryService struct {
@@ -46,7 +45,7 @@ func (service memoryService) CreateLongURLDto() dto.LongURL {
 	return dto.GetLongURLByValue("")
 }
 
-func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
+func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL {
 	shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(url.ShortURL)
 
 	if err != nil {
@@ -59,14 +58,33 @@ func (service memoryService) GetShortURLDtoByURL(url url.URL) dto.ShortURL {
 
 func (service memoryService) LoadURLs(collection dto.URLCollection) {
 	for _, url := range collection.GetCollection() {
-		service.SaveURL(url)
+		service.SaveURL(urlEntity.New(url.GetLongURL(), url.GetShortURL(), url.GetUserID()))
 	}
 }
 
-func (service memoryService) SaveURL(url domain.URLInterface) bool {
+func (service memoryService) SaveURL(url urlEntity.URL) bool {
 	return service.repository.AddURL(url)
 }
 
 func (service memoryService) GetURLsByUserID(userID string) dto.URLCollection {
-	return service.repository.GetURLsByUserID(userID)
+	inputCollection := service.repository.GetURLsByUserID(userID)
+	resultCollection := dto.URLCollection{}
+
+	for _, URL := range inputCollection.GetCollection() {
+		shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(URL.GetShortURL())
+
+		if err != nil {
+			shortURLWithDomain = ""
+			fmt.Println("impossible to build a short url with domain.")
+		}
+
+		resultCollection.AppendURL(
+			dto.New(
+				URL.GetLongURL(),
+				shortURLWithDomain,
+				URL.GetUserID(),
+			))
+	}
+
+	return resultCollection
 }
