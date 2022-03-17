@@ -36,11 +36,11 @@ func (u *shortURLs) IsExistURLByKey(key string) bool {
 	return ok
 }
 
-func (u *shortURLs) GetURLsByUserId(userId string) dto.URLCollection {
+func (u *shortURLs) GetURLsByUserID(userID string) dto.URLCollection {
 	collection := dto.GetURLCollection()
 
 	for _, url := range u.urlMap {
-		if url.GetUserId() == userId {
+		if url.GetUserID() == userID {
 			collection.AppendURL(url)
 		}
 	}
