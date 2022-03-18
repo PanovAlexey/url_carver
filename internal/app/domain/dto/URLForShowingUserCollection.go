@@ -1,8 +1,8 @@
 package dto
 
 type URLForShowingUserCollection struct {
-	LongURL  string `json:"short_url"`
-	ShortURL string `json:"original_url"`
+	LongURL  string `json:"original_url"`
+	ShortURL string `json:"short_url"`
 	UserID   string `json:"-"`
 }
 
