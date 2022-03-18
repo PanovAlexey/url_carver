@@ -13,6 +13,12 @@ import (
 
 func main() {
 	config := config.New()
+	httpHandler := getHttpHandler(config)
+
+	servers.RunServer(httpHandler, config)
+}
+
+func getHttpHandler(config config.Config) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
@@ -45,7 +51,7 @@ func main() {
 		URLMappingService,
 	)
 
-	servers.RunServer(httpHandler, config)
+	return httpHandler
 }
 
 func init() {

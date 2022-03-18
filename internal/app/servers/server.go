@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-type handlerInterface interface {
+type HandlerInterface interface {
 	NewRouter() chi.Router
 }
 
-func RunServer(handler handlerInterface, config config.Config) {
+func RunServer(handler HandlerInterface, config config.Config) {
 	router := handler.NewRouter()
 
 	log.Println("Starting server...")
