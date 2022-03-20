@@ -9,12 +9,12 @@ import (
 )
 
 type databaseService struct {
-	db sql.DB
+	db *sql.DB
 }
 
 func GetDatabaseService(config config.Config) *databaseService {
 	databaseService := databaseService{}
-	databaseService.db = *databaseService.initDatabaseConnection(config)
+	databaseService.db = databaseService.initDatabaseConnection(config)
 
 	return &databaseService
 }
@@ -24,7 +24,7 @@ func (service databaseService) CheckDatabaseAvailability() error {
 }
 
 func (service databaseService) GetDatabaseConnection() *sql.DB {
-	return &service.db
+	return service.db
 }
 
 func (service databaseService) initDatabaseConnection(config config.Config) *sql.DB {

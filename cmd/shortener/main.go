@@ -14,12 +14,15 @@ import (
 
 func main() {
 	config := config.New()
-	httpHandler := getHTTPHandler(config)
+	databaseService := getDatabaseService(config)
+	defer databaseService.GetDatabaseConnection().Close()
+
+	httpHandler := getHTTPHandler(config, databaseService)
 
 	servers.RunServer(httpHandler, config)
 }
 
-func getHTTPHandler(config config.Config) servers.HandlerInterface {
+func getHTTPHandler(config config.Config, databaseService database.DatabaseInterface) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
@@ -29,7 +32,6 @@ func getHTTPHandler(config config.Config) servers.HandlerInterface {
 		defer fileStorageRepository.Close()
 	}
 
-	databaseService := getDatabaseService(config)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
@@ -59,9 +61,6 @@ func getHTTPHandler(config config.Config) servers.HandlerInterface {
 
 func getDatabaseService(config config.Config) database.DatabaseInterface {
 	databaseService := database.GetDatabaseService(config)
-	db := databaseService.GetDatabaseConnection()
-	defer db.Close()
-
 	err := databaseService.CheckDatabaseAvailability()
 
 	if err != nil {
