@@ -20,7 +20,7 @@ func main() {
 	db := getDatabaseConnection(config)
 	defer db.Close()
 	checkDatabaseAvailability(db)
-	httpHandler := getHttpHandler(config, db)
+	httpHandler := getHTTPHandler(config, db)
 
 	servers.RunServer(httpHandler, config)
 }
@@ -46,7 +46,7 @@ func getDatabaseConnection(config config.Config) *sql.DB {
 	return db
 }
 
-func getHttpHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
+func getHTTPHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
