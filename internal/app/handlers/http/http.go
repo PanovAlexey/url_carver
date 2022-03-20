@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"database/sql"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
@@ -48,6 +49,7 @@ type httpHandler struct {
 	contextStorageService         contextStorageServiceInterface
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface
 	URLMappingService             URLMappingServiceInterface
+	db                            *sql.DB
 }
 
 func GetHTTPHandler(
@@ -58,6 +60,7 @@ func GetHTTPHandler(
 	contextStorageService contextStorageServiceInterface,
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
 	URLMappingService URLMappingServiceInterface,
+	db *sql.DB,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:                 memoryService,
@@ -67,6 +70,7 @@ func GetHTTPHandler(
 		contextStorageService:         contextStorageService,
 		userTokenAuthorizationService: userTokenAuthorizationService,
 		URLMappingService:             URLMappingService,
+		db:                            db,
 	}
 }
 
@@ -77,6 +81,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router.Use(internalMiddleware.Authorization(h.encryptionService))
 	router.Use(internalMiddleware.GZip)
 
+	router.Get("/ping", h.HandlePingDatabase)
 	router.Get("/{id}", h.HandleGetURL)
 	router.Post("/", h.HandleAddURL)
 

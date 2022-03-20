@@ -17,11 +17,10 @@ import (
 
 func main() {
 	config := config.New()
-	httpHandler := getHttpHandler(config)
-
 	db := getDatabaseConnection(config)
 	defer db.Close()
 	checkDatabaseAvailability(db)
+	httpHandler := getHttpHandler(config, db)
 
 	servers.RunServer(httpHandler, config)
 }
@@ -47,7 +46,7 @@ func getDatabaseConnection(config config.Config) *sql.DB {
 	return db
 }
 
-func getHttpHandler(config config.Config) servers.HandlerInterface {
+func getHttpHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
@@ -78,6 +77,7 @@ func getHttpHandler(config config.Config) servers.HandlerInterface {
 		contextStorageService,
 		userTokenAuthorizationService,
 		URLMappingService,
+		db,
 	)
 
 	return httpHandler
