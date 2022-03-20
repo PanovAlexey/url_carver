@@ -1,52 +1,25 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/handlers/http"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/servers"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
-	_ "github.com/jackc/pgx/stdlib"
 	"github.com/joho/godotenv"
 	"log"
-	"os"
 )
 
 func main() {
 	config := config.New()
-	db := getDatabaseConnection(config)
-	defer db.Close()
-	checkDatabaseAvailability(db)
-	httpHandler := getHTTPHandler(config, db)
+	httpHandler := getHTTPHandler(config)
 
 	servers.RunServer(httpHandler, config)
 }
 
-func checkDatabaseAvailability(db *sql.DB) {
-	err := db.Ping()
-
-	if err != nil {
-		log.Println("Database connection error", err.Error())
-	} else {
-		log.Println("Database connection successfully")
-	}
-}
-
-func getDatabaseConnection(config config.Config) *sql.DB {
-	db, err := sql.Open("pgx", config.GetDatabaseDsn())
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-
-	return db
-}
-
-func getHTTPHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
+func getHTTPHandler(config config.Config) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
@@ -56,6 +29,7 @@ func getHTTPHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
 		defer fileStorageRepository.Close()
 	}
 
+	databaseService := getDatabaseService(config)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
@@ -77,10 +51,26 @@ func getHTTPHandler(config config.Config, db *sql.DB) servers.HandlerInterface {
 		contextStorageService,
 		userTokenAuthorizationService,
 		URLMappingService,
-		db,
+		databaseService,
 	)
 
 	return httpHandler
+}
+
+func getDatabaseService(config config.Config) database.DatabaseInterface {
+	databaseService := database.GetDatabaseService(config)
+	db := databaseService.GetDatabaseConnection()
+	defer db.Close()
+
+	err := databaseService.CheckDatabaseAvailability()
+
+	if err != nil {
+		log.Println("Database connection error", err.Error())
+	} else {
+		log.Println("Database connection successfully")
+	}
+
+	return databaseService
 }
 
 func init() {

@@ -2,10 +2,10 @@ package http
 
 import (
 	"context"
-	"database/sql"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
+	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -49,7 +49,7 @@ type httpHandler struct {
 	contextStorageService         contextStorageServiceInterface
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface
 	URLMappingService             URLMappingServiceInterface
-	db                            *sql.DB
+	databaseService               database.DatabaseInterface
 }
 
 func GetHTTPHandler(
@@ -60,7 +60,7 @@ func GetHTTPHandler(
 	contextStorageService contextStorageServiceInterface,
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
 	URLMappingService URLMappingServiceInterface,
-	db *sql.DB,
+	databaseService database.DatabaseInterface,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:                 memoryService,
@@ -70,7 +70,7 @@ func GetHTTPHandler(
 		contextStorageService:         contextStorageService,
 		userTokenAuthorizationService: userTokenAuthorizationService,
 		URLMappingService:             URLMappingService,
-		db:                            db,
+		databaseService:               databaseService,
 	}
 }
 
