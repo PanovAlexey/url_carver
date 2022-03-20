@@ -7,6 +7,7 @@ import (
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
+	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -276,6 +277,7 @@ func getRouterForRouteTest() chi.Router {
 		log.Fatalln("error creating file repository by config:" + err.Error())
 	}
 
+	databaseService := database.GetDatabaseService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
 	contextStorageService := services.GetContextStorageService()
@@ -289,6 +291,7 @@ func getRouterForRouteTest() chi.Router {
 		contextStorageService,
 		userTokenAuthorizationService,
 		URLMappingService,
+		databaseService,
 	)
 
 	return httpHandler.NewRouter()
