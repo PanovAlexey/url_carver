@@ -19,10 +19,15 @@ type EncryptionConfig struct {
 	key string
 }
 
+type DatabaseConfig struct {
+	dsn string
+}
+
 type Config struct {
 	Server      ServerConfig
 	FileStorage FileStorageConfig
 	Encryption  EncryptionConfig
+	Database    DatabaseConfig
 }
 
 func New() Config {
@@ -49,6 +54,10 @@ func (config Config) GetEncryptionKey() string {
 	return config.Encryption.key
 }
 
+func (config Config) GetDatabaseDsn() string {
+	return config.Database.dsn
+}
+
 func getEnv(key string, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -62,6 +71,7 @@ func initConfigByEnv(config Config) Config {
 	config.Server.BaseURL = getEnv("BASE_URL", "http://localhost:8080")
 	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
 	config.Encryption.key = getEnv("ENCRYPTION_KEY", "1234567890")
+	config.Database.dsn = getEnv("DATABASE_DSN", "postgresql://user_name:user_password@database_host:5432/database_name")
 
 	return config
 }
@@ -76,6 +86,7 @@ func initConfigByFlag(config Config) Config {
 	baseURL := flag.String("b", "", "BASE_URL")
 	fileStoragePath := flag.String("f", "", "FILE_STORAGE_PATH")
 	encryptionKey := flag.String("e", "", "ENCRYPTION_KEY")
+	databaseDsn := flag.String("d", "", "DATABASE_DSN")
 
 	flag.Parse()
 
@@ -93,6 +104,10 @@ func initConfigByFlag(config Config) Config {
 
 	if len(*encryptionKey) > 0 {
 		config.Encryption.key = *encryptionKey
+	}
+
+	if len(*databaseDsn) > 0 {
+		config.Database.dsn = *databaseDsn
 	}
 
 	return config
