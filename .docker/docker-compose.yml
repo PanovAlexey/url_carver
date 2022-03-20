@@ -1,10 +1,10 @@
-version: '3'
+version: '3.3'
 services:
 
   go-template:
     image: golang:1.17-alpine
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - backend
     environment:
@@ -14,5 +14,33 @@ services:
       - ../:/app
     working_dir: /app
     command: go run cmd/shortener/main.go
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:14.2
+    restart: always
+    environment:
+      POSTGRES_DB: "postgresql"
+      POSTGRES_USER: "postgresql_user"
+      POSTGRES_PASSWORD: "user_password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    ports:
+      - "54320:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgresql_user -d postgresql" ]
+      timeout: 45s
+      interval: 2s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      - backend
 networks:
   backend:
+    driver: bridge
