@@ -15,6 +15,7 @@ import (
 func main() {
 	config := config.New()
 	databaseService := getDatabaseService(config)
+	databaseService.MigrateUp()
 	defer databaseService.GetDatabaseConnection().Close()
 
 	httpHandler := getHTTPHandler(config, databaseService)
