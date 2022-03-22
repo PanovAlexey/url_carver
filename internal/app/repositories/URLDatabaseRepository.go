@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
+	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"log"
 	"strconv"
@@ -23,7 +24,8 @@ func (repository databaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error
 		QueryRow(query, url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
 
 	if err != nil {
-		return 0, err // ToDo: 0 - is a crutch
+		errorService := services.GetErrorService()
+		err = errorService.GetActualizedError(err, url)
 	}
 
 	return insertedID, err
