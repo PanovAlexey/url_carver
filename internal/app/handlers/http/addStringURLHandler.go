@@ -2,8 +2,8 @@ package http
 
 import (
 	"fmt"
+	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -30,25 +30,25 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
+	h.memoryService.SaveURL(url)
+	h.storageService.SaveURL(url)
+	_, err = h.databaseURLService.SaveURL(url)
 
-	if h.memoryService.IsExistURLByKey(url.GetShortURL()) {
-		w.WriteHeader(http.StatusConflict)
-	} else {
-		h.memoryService.SaveURL(url)
-		h.storageService.SaveURL(url)
-		_, err = h.databaseURLService.SaveURL(url)
+	if err != nil || len(url.LongURL) == 0 {
+		errorService := services.GetErrorService()
 
-		if err != nil {
-			log.Println("failed to save url to database")
-			w.WriteHeader(http.StatusInternalServerError)
+		if errorService.IsKeyDuplicated(err) {
+			w.WriteHeader(http.StatusConflict)
 		} else {
-			w.WriteHeader(http.StatusCreated)
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
+	} else {
+		w.WriteHeader(http.StatusCreated)
 	}
 
 	shortURLJSON := h.memoryService.GetShortURLDtoByURL(url)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
-
 	w.Write([]byte(shortURLJSON.Value))
 }

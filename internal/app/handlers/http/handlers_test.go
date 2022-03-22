@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
@@ -312,10 +313,9 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	databaseService := database.GetDatabaseService(config)
-	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
-
 	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
+	databaseURLRepository := getDatabaseURLRepositoryMock()
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
@@ -336,4 +336,24 @@ func getRouterForRouteTest() chi.Router {
 	)
 
 	return httpHandler.NewRouter()
+}
+
+// Mock dependencies
+type databaseURLRepositoryMock struct {
+}
+
+func (repository databaseURLRepositoryMock) SaveURL(url dto.DatabaseURL) (int, error) {
+	return 777, nil
+}
+
+func (repository databaseURLRepositoryMock) GetList() ([]dto.DatabaseURL, error) {
+	return []dto.DatabaseURL{}, nil
+}
+
+func (repository databaseURLRepositoryMock) SaveBatchURLs(collection []dto.DatabaseURL) error {
+	return nil
+}
+
+func getDatabaseURLRepositoryMock() databaseURLRepositoryMock {
+	return databaseURLRepositoryMock{}
 }
