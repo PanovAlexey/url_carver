@@ -11,7 +11,7 @@ type repositoryInterface interface {
 	AddURL(url urlEntity.URL) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
-	GetURLsByUserID(userID string) dto.URLCollection
+	GetURLsByUserToken(userToken string) dto.URLCollection
 }
 
 type shorteningServiceInterface interface {
@@ -58,7 +58,7 @@ func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL
 
 func (service memoryService) LoadURLs(collection dto.URLCollection) {
 	for _, url := range collection.GetCollection() {
-		service.SaveURL(urlEntity.New(url.GetLongURL(), url.GetShortURL(), url.GetUserID()))
+		service.SaveURL(urlEntity.New(url.GetLongURL(), url.GetShortURL(), url.GetUserToken()))
 	}
 }
 
@@ -66,8 +66,8 @@ func (service memoryService) SaveURL(url urlEntity.URL) bool {
 	return service.repository.AddURL(url)
 }
 
-func (service memoryService) GetURLsByUserID(userID string) dto.URLCollection {
-	inputCollection := service.repository.GetURLsByUserID(userID)
+func (service memoryService) GetURLsByUserToken(userToken string) dto.URLCollection {
+	inputCollection := service.repository.GetURLsByUserToken(userToken)
 	resultCollection := dto.URLCollection{}
 
 	for _, URL := range inputCollection.GetCollection() {
@@ -82,7 +82,7 @@ func (service memoryService) GetURLsByUserID(userID string) dto.URLCollection {
 			dto.New(
 				URL.GetLongURL(),
 				shortURLWithDomain,
-				URL.GetUserID(),
+				URL.GetUserToken(),
 			))
 	}
 

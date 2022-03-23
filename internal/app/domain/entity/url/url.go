@@ -6,11 +6,11 @@ type URL struct {
 	UserID   string
 }
 
-func New(longURL, shortURL, userID string) URL {
+func New(longURL, shortURL, userToken string) URL {
 	return URL{
 		LongURL:  longURL,
 		ShortURL: shortURL,
-		UserID:   userID,
+		UserID:   userToken,
 	}
 }
 
@@ -22,7 +22,7 @@ func (url URL) GetShortURL() string {
 	return url.ShortURL
 }
 
-func (url URL) GetUserID() string {
+func (url URL) GetUserToken() string {
 	return url.UserID
 }
 
@@ -34,6 +34,6 @@ func (url *URL) SetShortURL(value string) {
 	url.ShortURL = value
 }
 
-func (url *URL) SetUserID(value string) {
+func (url *URL) SetUserToken(value string) {
 	url.UserID = value
 }

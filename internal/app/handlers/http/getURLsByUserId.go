@@ -6,16 +6,16 @@ import (
 	"net/http"
 )
 
-func (h *httpHandler) HandleGetURLsByUserID(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) HandleGetURLsByUserToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	userToken := h.contextStorageService.GetUserIDFromContext(r.Context())
+	userToken := h.contextStorageService.GetUserTokenFromContext(r.Context())
 
 	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	collection := h.memoryService.GetURLsByUserID(userToken)
+	collection := h.memoryService.GetURLsByUserToken(userToken)
 
 	if len(collection.GetCollection()) < 1 {
 		w.WriteHeader(http.StatusNoContent)
