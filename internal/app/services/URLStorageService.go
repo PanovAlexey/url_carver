@@ -39,7 +39,7 @@ func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 		data, err := service.storageRepository.ReadLine()
 
 		if err != nil {
-			log.Println("an error was found while parsing records from the storage: " + err.Error())
+			log.Println("error was found while parsing records from the storage: " + err.Error())
 			break
 		}
 

@@ -25,6 +25,6 @@ func (service contextStorageService) SaveUserTokenToContext(r http.Request, user
 	return *r.WithContext(ctx)
 }
 
-func (service contextStorageService) GetUserIDFromContext(ctx context.Context) string {
+func (service contextStorageService) GetUserTokenFromContext(ctx context.Context) string {
 	return fmt.Sprintf("%v", ctx.Value(userTokenKey))
 }
