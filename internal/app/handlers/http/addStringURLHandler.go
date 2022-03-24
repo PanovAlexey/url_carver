@@ -31,6 +31,7 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
 	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
+	h.databaseURLService.SaveURL(url)
 	shortURLJSON := h.memoryService.GetShortURLDtoByURL(url)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)

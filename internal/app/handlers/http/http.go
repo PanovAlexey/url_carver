@@ -2,8 +2,10 @@ package http
 
 import (
 	"context"
+	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
@@ -18,7 +20,7 @@ type memoryServiceInterface interface {
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 	SaveURL(url url.URL) bool
-	GetURLsByUserID(userID string) dto.URLCollection
+	GetURLsByUserToken(userToken string) dto.URLCollection
 }
 
 type storageServiceInterface interface {
@@ -30,7 +32,7 @@ type shorteningServiceInterface interface {
 }
 
 type contextStorageServiceInterface interface {
-	GetUserIDFromContext(ctx context.Context) string
+	GetUserTokenFromContext(ctx context.Context) string
 }
 
 type userTokenAuthorizationServiceInterface interface {
@@ -39,6 +41,15 @@ type userTokenAuthorizationServiceInterface interface {
 
 type URLMappingServiceInterface interface {
 	MapURLEntityCollectionToDTO(collection dto.URLCollection) dto.URLCollection
+}
+
+type DatabaseURLServiceInterface interface {
+	SaveURL(url domain.URLInterface) (int, error)
+	GetURLByKey(key string) url.URL
+	IsExistURLByKey(key string) bool
+}
+type DatabaseUserServiceInterface interface {
+	SaveUser(user user.UserInterface) (int, error)
 }
 
 type httpHandler struct {
@@ -50,6 +61,8 @@ type httpHandler struct {
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface
 	URLMappingService             URLMappingServiceInterface
 	databaseService               database.DatabaseInterface
+	databaseURLService            DatabaseURLServiceInterface
+	databaseUserService           DatabaseUserServiceInterface
 }
 
 func GetHTTPHandler(
@@ -61,6 +74,8 @@ func GetHTTPHandler(
 	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
 	URLMappingService URLMappingServiceInterface,
 	databaseService database.DatabaseInterface,
+	databaseURLService DatabaseURLServiceInterface,
+	databaseUserService DatabaseUserServiceInterface,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:                 memoryService,
@@ -71,6 +86,8 @@ func GetHTTPHandler(
 		userTokenAuthorizationService: userTokenAuthorizationService,
 		URLMappingService:             URLMappingService,
 		databaseService:               databaseService,
+		databaseURLService:            databaseURLService,
+		databaseUserService:           databaseUserService,
 	}
 }
 
@@ -87,7 +104,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 
 	router.Post("/api/shorten", h.HandleAddURLByJSON)
 
-	router.Get("/api/user/urls", h.HandleGetURLsByUserID)
+	router.Get("/api/user/urls", h.HandleGetURLsByUserToken)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")

@@ -25,6 +25,8 @@ func main() {
 
 func getHTTPHandler(config config.Config, databaseService database.DatabaseInterface) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
+	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
+	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
 	if err != nil {
@@ -33,6 +35,8 @@ func getHTTPHandler(config config.Config, databaseService database.DatabaseInter
 		defer fileStorageRepository.Close()
 	}
 
+	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
+	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
@@ -55,6 +59,8 @@ func getHTTPHandler(config config.Config, databaseService database.DatabaseInter
 		userTokenAuthorizationService,
 		URLMappingService,
 		databaseService,
+		databaseURLService,
+		databaseUserService,
 	)
 
 	return httpHandler
