@@ -22,13 +22,13 @@ func GetDatabaseUserService(
 }
 
 func (service databaseUserService) SaveUser(user user.UserInterface) (int, error) {
-	insertedId, err := service.databaseRepository.SaveUser(user)
+	insertedID, err := service.databaseRepository.SaveUser(user)
 
 	if err != nil {
 		log.Println("user dit not save to database: " + err.Error())
 	}
 
-	return insertedId, err
+	return insertedID, err
 }
 
 func (service databaseUserService) GetUserByToken(token string) (user.UserInterface, error) {
