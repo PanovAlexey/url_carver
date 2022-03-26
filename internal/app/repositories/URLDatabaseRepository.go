@@ -15,17 +15,17 @@ func GetDatabaseURLRepository(databaseService database.DatabaseInterface) *datab
 }
 
 func (repository databaseURLRepository) SaveURL(url dto.DatabaseURLInterface) (int, error) {
-	var insertedId int
+	var insertedID int
 
 	query := "INSERT INTO urls (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
 	err := repository.databaseService.GetDatabaseConnection().
-		QueryRow(query, url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedId)
+		QueryRow(query, url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
 
 	if err != nil {
 		return 0, err // ToDo: 0 - is a crutch
 	}
 
-	return insertedId, err
+	return insertedID, err
 }
 
 func (repository databaseURLRepository) GetURLByKey(key string) url.URL {

@@ -14,17 +14,17 @@ func GetDatabaseUserRepository(databaseService database.DatabaseInterface) *data
 }
 
 func (repository databaseUserRepository) SaveUser(user user.UserInterface) (int, error) {
-	var insertedId int
+	var insertedID int
 
 	query := "INSERT INTO users (guid) VALUES ($1) RETURNING id"
 	err := repository.databaseService.GetDatabaseConnection().
-		QueryRow(query, user.GetGuid()).Scan(&insertedId)
+		QueryRow(query, user.GetGUID()).Scan(&insertedID)
 
 	if err != nil {
 		return 0, err // ToDo: 0 - is a crutch
 	}
 
-	return insertedId, err
+	return insertedID, err
 }
 
 func (repository databaseUserRepository) GetUserByGuid(guid string) (user.UserInterface, error) {

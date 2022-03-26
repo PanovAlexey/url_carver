@@ -16,7 +16,7 @@ func (user user) GetID() int {
 	return user.id
 }
 
-func (user user) GetGuid() string {
+func (user user) GetGUID() string {
 	return user.guid
 }
 
