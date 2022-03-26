@@ -278,6 +278,11 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	databaseService := database.GetDatabaseService(config)
+	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
+	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
+
+	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
+	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
 	contextStorageService := services.GetContextStorageService()
@@ -292,6 +297,8 @@ func getRouterForRouteTest() chi.Router {
 		userTokenAuthorizationService,
 		URLMappingService,
 		databaseService,
+		databaseURLService,
+		databaseUserService,
 	)
 
 	return httpHandler.NewRouter()
