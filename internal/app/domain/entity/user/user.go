@@ -20,6 +20,6 @@ func (user user) GetGUID() string {
 	return user.guid
 }
 
-func (user *user) SetGuid(value string) {
+func (user *user) SetGUID(value string) {
 	user.guid = value
 }
