@@ -35,3 +35,29 @@ func (repository databaseURLRepository) GetURLByKey(key string) url.URL {
 func (repository databaseURLRepository) IsExistURLByKey(key string) bool {
 	return true // todo
 }
+
+func (repository databaseURLRepository) GetList() (dto.URLDatabaseCollection, error) {
+	collection := dto.GetURLDatabaseCollection()
+
+	var resultID, resultUserID int
+	var resultURL, resultShortURL string
+
+	query := "SELECT id, user_id, url, short_url FROM urls"
+	rows, err := repository.databaseService.GetDatabaseConnection().Query(query)
+
+	if err != nil {
+		return collection, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL)
+
+		if err != nil {
+			return collection, err
+		}
+
+		collection.AppendURL(dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID))
+	}
+
+	return collection, nil
+}
