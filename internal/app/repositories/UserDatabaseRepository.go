@@ -16,7 +16,7 @@ func GetDatabaseUserRepository(databaseService database.DatabaseInterface) *data
 func (repository databaseUserRepository) SaveUser(user user.UserInterface) (int, error) {
 	var insertedID int
 
-	query := "INSERT INTO users (guid) VALUES ($1) RETURNING id"
+	query := "INSERT INTO " + database.TableUsersName + " (guid) VALUES ($1) RETURNING id"
 	err := repository.databaseService.GetDatabaseConnection().
 		QueryRow(query, user.GetGUID()).Scan(&insertedID)
 
@@ -28,7 +28,7 @@ func (repository databaseUserRepository) SaveUser(user user.UserInterface) (int,
 }
 
 func (repository databaseUserRepository) GetUserByGUID(guid string) (user.UserInterface, error) {
-	query := "SELECT id FROM users WHERE guid=($1)"
+	query := "SELECT id FROM " + database.TableUsersName + " WHERE guid=($1)"
 	row := repository.databaseService.GetDatabaseConnection().QueryRow(query, guid)
 
 	var userID int
@@ -42,7 +42,7 @@ func (repository databaseUserRepository) GetUserByGUID(guid string) (user.UserIn
 }
 
 func (repository databaseUserRepository) GetUserByID(userID int) (user.UserInterface, error) {
-	query := "SELECT id FROM users WHERE id=($1)"
+	query := "SELECT id FROM " + database.TableUsersName + " WHERE id=($1)"
 	row := repository.databaseService.GetDatabaseConnection().QueryRow(query, userID)
 
 	var userGUID string
