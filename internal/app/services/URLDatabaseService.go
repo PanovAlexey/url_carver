@@ -16,6 +16,7 @@ type databaseURLService struct {
 type databaseURLRepositoryInterface interface {
 	SaveURL(url dto.DatabaseURLInterface) (int, error)
 	GetURLByKey(key string) url.URL
+	GetList() (dto.URLDatabaseCollection, error)
 }
 
 func GetDatabaseURLService(
@@ -74,5 +75,30 @@ func (service databaseURLService) GetURLByKey(key string) url.URL {
 }
 
 func (service databaseURLService) IsExistURLByKey(key string) bool {
-	return true
+	return true //@ToDo
+}
+
+func (service databaseURLService) GetURLCollectionFromStorage() dto.URLCollection {
+	dtoURLCollection := dto.GetURLCollection()
+	collection, err := service.databaseRepository.GetList()
+
+	if err != nil {
+		log.Println(`error while getting all users.`, err.Error())
+
+		return *dtoURLCollection
+	}
+
+	for _, databaseURL := range collection.GetCollection() {
+		user, err := service.databaseUserService.GetUserByID(databaseURL.GetUserID())
+
+		if err != nil {
+			log.Println(`error while getting user by ID `, databaseURL.GetUserID(), `. `, err.Error())
+
+			continue
+		}
+
+		dtoURLCollection.AppendURL(url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID()))
+	}
+
+	return *dtoURLCollection
 }
