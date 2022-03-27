@@ -16,17 +16,6 @@ func main() {
 	config := config.New()
 	databaseService := getDatabaseService(config)
 	databaseService.MigrateUp()
-	defer databaseService.GetDatabaseConnection().Close()
-
-	httpHandler := getHTTPHandler(config, databaseService)
-
-	servers.RunServer(httpHandler, config)
-}
-
-func getHTTPHandler(config config.Config, databaseService database.DatabaseInterface) servers.HandlerInterface {
-	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
-	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
 	if err != nil {
@@ -35,12 +24,27 @@ func getHTTPHandler(config config.Config, databaseService database.DatabaseInter
 		defer fileStorageRepository.Close()
 	}
 
+	defer databaseService.GetDatabaseConnection().Close()
+
+	httpHandler := getHTTPHandler(config, databaseService, fileStorageRepository)
+
+	servers.RunServer(httpHandler, config)
+}
+
+func getHTTPHandler(
+	config config.Config,
+	databaseService database.DatabaseInterface,
+	fileStorageRepository repositories.FileStorageRepositoryInterface,
+) servers.HandlerInterface {
+	URLMemoryRepository := repositories.GetURLMemoryRepository()
+	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
+	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
+
 	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
-	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
 	URLMappingService := services.GetURLMappingService()
@@ -49,6 +53,10 @@ func getHTTPHandler(config config.Config, databaseService database.DatabaseInter
 	if err != nil {
 		log.Println("error with encryption service initialization: " + err.Error())
 	}
+
+	// Load URLs to memory from other storages
+	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
+	memoryService.LoadURLs(databaseURLService.GetURLCollectionFromStorage())
 
 	httpHandler := http.GetHTTPHandler(
 		memoryService,
