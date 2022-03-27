@@ -13,6 +13,8 @@ type databaseService struct {
 	db *sql.DB
 }
 
+const TableURLsName = `urls`
+const TableUsersName = `users`
 const migrationUpFilesPath = `internal/app/services/database/migrations/up`
 const migrationDownFilesPath = `internal/app/services/database/migrations/down`
 const migrationFilePermissions = 0777

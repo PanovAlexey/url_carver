@@ -17,7 +17,7 @@ func GetDatabaseURLRepository(databaseService database.DatabaseInterface) *datab
 func (repository databaseURLRepository) SaveURL(url dto.DatabaseURLInterface) (int, error) {
 	var insertedID int
 
-	query := "INSERT INTO urls (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
+	query := "INSERT INTO " + database.TableURLsName + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
 	err := repository.databaseService.GetDatabaseConnection().
 		QueryRow(query, url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
 
@@ -42,7 +42,7 @@ func (repository databaseURLRepository) GetList() (dto.URLDatabaseCollection, er
 	var resultID, resultUserID int
 	var resultURL, resultShortURL string
 
-	query := "SELECT id, user_id, url, short_url FROM urls"
+	query := "SELECT id, user_id, url, short_url FROM " + database.TableURLsName
 	rows, err := repository.databaseService.GetDatabaseConnection().Query(query)
 
 	if err != nil {
