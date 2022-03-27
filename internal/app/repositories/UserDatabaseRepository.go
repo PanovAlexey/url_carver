@@ -41,6 +41,20 @@ func (repository databaseUserRepository) GetUserByGuid(guid string) (user.UserIn
 	return user.New(userID, guid), nil
 }
 
+func (repository databaseUserRepository) GetUserByID(userID int) (user.UserInterface, error) {
+	query := "SELECT id FROM users WHERE id=($1)"
+	row := repository.databaseService.GetDatabaseConnection().QueryRow(query, userID)
+
+	var userGUID string
+	err := row.Scan(&userGUID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user.New(userID, userGUID), nil
+}
+
 func (repository databaseUserRepository) IsExistUserByGuid(guid string) bool {
 	user, err := repository.GetUserByGuid(guid)
 
