@@ -12,8 +12,8 @@ type databaseUserService struct {
 type databaseUserRepositoryInterface interface {
 	SaveUser(user user.UserInterface) (int, error)
 	GetUserByID(userID int) (user.UserInterface, error)
-	GetUserByGuid(guid string) (user.UserInterface, error)
-	IsExistUserByGuid(guid string) bool
+	GetUserByGUID(guid string) (user.UserInterface, error)
+	IsExistUserByGUID(guid string) bool
 }
 
 func GetDatabaseUserService(
@@ -33,7 +33,7 @@ func (service databaseUserService) SaveUser(user user.UserInterface) (int, error
 }
 
 func (service databaseUserService) GetUserByToken(token string) (user.UserInterface, error) {
-	return service.databaseRepository.GetUserByGuid(token)
+	return service.databaseRepository.GetUserByGUID(token)
 }
 
 func (service databaseUserService) GetUserByID(userID int) (user.UserInterface, error) {
@@ -41,5 +41,5 @@ func (service databaseUserService) GetUserByID(userID int) (user.UserInterface, 
 }
 
 func (service databaseUserService) IsExistUserByToken(token string) bool {
-	return service.databaseRepository.IsExistUserByGuid(token)
+	return service.databaseRepository.IsExistUserByGUID(token)
 }
