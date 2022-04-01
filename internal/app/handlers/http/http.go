@@ -29,6 +29,7 @@ type storageServiceInterface interface {
 
 type shorteningServiceInterface interface {
 	GetURLEntityByLongURL(longURL string) (url.URL, error)
+	GetShortURLWithDomain(shortURLCode string) (string, error)
 }
 
 type contextStorageServiceInterface interface {
