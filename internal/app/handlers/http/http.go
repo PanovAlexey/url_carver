@@ -48,7 +48,7 @@ type DatabaseURLServiceInterface interface {
 	SaveBatchURLs(collection []url.URL)
 }
 type DatabaseUserServiceInterface interface {
-	SaveUser(user user.UserInterface) (int, error)
+	SaveUser(user user.User) (int, error)
 }
 
 type httpHandler struct {

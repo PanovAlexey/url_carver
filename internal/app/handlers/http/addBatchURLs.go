@@ -32,10 +32,10 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 	}
 
 	for _, databaseURL := range batchInputURLDTOCollection {
-		url, err := h.shorteningService.GetURLEntityByLongURL(databaseURL.Original_url)
+		url, err := h.shorteningService.GetURLEntityByLongURL(databaseURL.OriginalURL)
 
 		if err != nil || len(url.LongURL) == 0 {
-			log.Println(`error while getting URL entity by long URL: ` + databaseURL.Original_url)
+			log.Println(`error while getting URL entity by long URL: ` + databaseURL.OriginalURL)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
