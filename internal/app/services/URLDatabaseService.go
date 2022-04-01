@@ -30,26 +30,10 @@ func GetDatabaseURLService(
 }
 
 func (service databaseURLService) SaveURL(url domain.URLInterface) (int, error) {
-	var userID int
+	userID, err := service.verifyUser(url.GetUserToken())
 
-	if service.databaseUserService.IsExistUserByToken(url.GetUserToken()) {
-		userEntity, err := service.databaseUserService.GetUserByToken(url.GetUserToken())
-		userID = userEntity.GetID()
-
-		if err != nil {
-			log.Println(`error was found while user getting from database: ` + err.Error())
-		}
-	} else {
-		savedUserID, err := service.databaseUserService.SaveUser(user.New(0, url.GetUserToken()))
-
-		if err != nil {
-			log.Println(`error was found while user saving to database: ` + err.Error())
-			return 0, err // ToDo: 0 is a crutch
-		}
-
-		userID = savedUserID
-
-		log.Println(`user `, userID, ` saving to database successfully completed`)
+	if err != nil {
+		log.Println("error while URL user verification: " + err.Error())
 	}
 
 	databaseURL := dto.NewDatabaseURL(
@@ -68,6 +52,33 @@ func (service databaseURLService) SaveURL(url domain.URLInterface) (int, error) 
 	}
 
 	return URLID, err
+}
+
+
+func (service databaseURLService) verifyUser(userToken string) (int, error) {
+	var userID int
+
+	if service.databaseUserService.IsExistUserByToken(userToken) {
+		userEntity, err := service.databaseUserService.GetUserByToken(userToken)
+		userID = userEntity.GetID()
+
+		if err != nil {
+			log.Println(`error was found while user getting from database: ` + err.Error())
+		}
+	} else {
+		savedUserID, err := service.databaseUserService.SaveUser(user.New(0, userToken))
+
+		if err != nil {
+			log.Println(`error was found while user saving to database: ` + err.Error())
+			return 0, err // ToDo: 0 is a crutch
+		}
+
+		userID = savedUserID
+
+		log.Println(`user `, userID, ` saving to database successfully completed`)
+	}
+
+	return userID, nil
 }
 
 func (service databaseURLService) GetURLByKey(key string) url.URL {
