@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -29,13 +30,25 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
-	h.memoryService.SaveURL(url)
-	h.storageService.SaveURL(url)
-	h.databaseURLService.SaveURL(url)
+
+	if h.memoryService.IsExistURLByKey(url.GetShortURL()) {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		h.memoryService.SaveURL(url)
+		h.storageService.SaveURL(url)
+		_, err = h.databaseURLService.SaveURL(url)
+
+		if err != nil {
+			log.Println("failed to save url to database")
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusCreated)
+		}
+	}
+
 	shortURLJSON := h.memoryService.GetShortURLDtoByURL(url)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(shortURLJSON.Value))
 }
