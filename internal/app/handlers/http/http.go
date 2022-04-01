@@ -48,6 +48,7 @@ type DatabaseURLServiceInterface interface {
 	SaveURL(url domain.URLInterface) (int, error)
 	GetURLByKey(key string) url.URL
 	IsExistURLByKey(key string) bool
+	SaveBatchURLs(collection dto.URLCollection)
 }
 type DatabaseUserServiceInterface interface {
 	SaveUser(user user.UserInterface) (int, error)

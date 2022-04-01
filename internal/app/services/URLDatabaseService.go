@@ -17,6 +17,7 @@ type databaseURLRepositoryInterface interface {
 	SaveURL(url dto.DatabaseURLInterface) (int, error)
 	GetURLByKey(key string) url.URL
 	GetList() (dto.URLDatabaseCollection, error)
+	SaveBatchURLs(collection dto.URLDatabaseCollection) error
 }
 
 func GetDatabaseURLService(
@@ -54,6 +55,27 @@ func (service databaseURLService) SaveURL(url domain.URLInterface) (int, error) 
 	return URLID, err
 }
 
+func (service databaseURLService) SaveBatchURLs(collection dto.URLCollection) {
+	URLDatabaseCollection := dto.GetURLDatabaseCollection()
+
+	for _, url := range collection.GetCollection() {
+		userID, err := service.verifyUser(url.GetUserToken())
+
+		if err != nil {
+			log.Println("error while URL user verification: " + err.Error())
+		}
+
+		URLDatabaseCollection.AppendURL(dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID))
+	}
+
+	log.Println(`try to save to database batch URLs. Items count: `, len(URLDatabaseCollection.GetCollection()))
+
+	err := service.databaseRepository.SaveBatchURLs(URLDatabaseCollection)
+
+	if err != nil {
+		log.Println(`error while URLs batch saving: `, err)
+	}
+}
 
 func (service databaseURLService) verifyUser(userToken string) (int, error) {
 	var userID int

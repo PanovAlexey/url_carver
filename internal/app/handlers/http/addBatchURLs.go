@@ -3,7 +3,8 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto/database"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto/batch"
 	"io"
 	"log"
 	"net/http"
@@ -19,9 +20,10 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	databaseBatchInputURLDTOCollection := []database.DatabaseBatchInputURL{}
-	databaseBatchOutputURLDTOCollection := []database.DatabaseBatchOutputURL{}
-	err = json.Unmarshal(bodyJSON, &databaseBatchInputURLDTOCollection)
+	URLCollection := dto.GetURLCollection()
+	batchInputURLDTOCollection := []batch.BatchInputURL{}
+	batchOutputURLDTOCollection := []batch.BatchOutputURL{}
+	err = json.Unmarshal(bodyJSON, &batchInputURLDTOCollection)
 
 	if err != nil {
 		log.Println(`error while unmarshalling batch with URLs.`)
@@ -29,7 +31,7 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	for _, databaseURL := range databaseBatchInputURLDTOCollection {
+	for _, databaseURL := range batchInputURLDTOCollection {
 		url, err := h.shorteningService.GetURLEntityByLongURL(databaseURL.Original_url)
 
 		if err != nil || len(url.LongURL) == 0 {
@@ -40,27 +42,29 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 
 		url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
 
-		// Todo to transaction
 		h.memoryService.SaveURL(url)
 		h.storageService.SaveURL(url)
-		h.databaseURLService.SaveURL(url)
-
+	
 		shortURLWithDomain, err := h.shorteningService.GetShortURLWithDomain(url.GetShortURL())
 
-		databaseBatchOutputURLDTOCollection = append(
-			databaseBatchOutputURLDTOCollection, database.NewDatabaseBatchOutputURL(databaseURL.CorrelationID, shortURLWithDomain),
+		batchOutputURLDTOCollection = append(
+			batchOutputURLDTOCollection, batch.NewBatchOutputURL(databaseURL.CorrelationID, shortURLWithDomain),
 		)
+
+		URLCollection.AppendURL(url)
 	}
 
-	databaseBatchOutputURLDTOCollectionJSON, err := json.Marshal(databaseBatchOutputURLDTOCollection)
+	h.databaseURLService.SaveBatchURLs(*URLCollection)
+
+	databaseBatchOutputURLDTOCollectionJSON, err := json.Marshal(batchOutputURLDTOCollection)
 
 	if err != nil {
-		log.Println(`error while marshalling output URL collection with length `, len(databaseBatchOutputURLDTOCollection))
+		log.Println(`error while marshalling output URL collection with length `, len(batchOutputURLDTOCollection))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println("output URL collection with ", len(databaseBatchOutputURLDTOCollection), " URLs added.")
+	fmt.Println("output URL collection with ", len(batchOutputURLDTOCollection), " URLs added.")
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write(databaseBatchOutputURLDTOCollectionJSON)
