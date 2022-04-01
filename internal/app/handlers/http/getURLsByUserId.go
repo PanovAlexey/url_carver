@@ -15,16 +15,15 @@ func (h *httpHandler) HandleGetURLsByUserToken(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	collection := h.memoryService.GetURLsByUserToken(userToken)
+	URLCollection := h.memoryService.GetURLsByUserToken(userToken)
 
-	if len(collection.GetCollection()) < 1 {
+	if len(URLCollection) < 1 {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	collection = h.URLMappingService.MapURLEntityCollectionToDTO(collection)
-
-	URLCollectionJSON, err := json.Marshal(collection.GetCollection())
+	URLCollectionForShowingUser := h.URLMappingService.MapURLEntityCollectionToDTO(URLCollection)
+	URLCollectionJSON, err := json.Marshal(URLCollectionForShowingUser)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
@@ -14,10 +13,9 @@ type databaseURLService struct {
 }
 
 type databaseURLRepositoryInterface interface {
-	SaveURL(url dto.DatabaseURLInterface) (int, error)
-	GetURLByKey(key string) url.URL
-	GetList() (dto.URLDatabaseCollection, error)
-	SaveBatchURLs(collection dto.URLDatabaseCollection) error
+	SaveURL(url dto.DatabaseURL) (int, error)
+	GetList() ([]dto.DatabaseURL, error)
+	SaveBatchURLs(collection []dto.DatabaseURL) error
 }
 
 func GetDatabaseURLService(
@@ -30,7 +28,7 @@ func GetDatabaseURLService(
 	}
 }
 
-func (service databaseURLService) SaveURL(url domain.URLInterface) (int, error) {
+func (service databaseURLService) SaveURL(url url.URL) (int, error) {
 	userID, err := service.verifyUser(url.GetUserToken())
 
 	if err != nil {
@@ -55,20 +53,23 @@ func (service databaseURLService) SaveURL(url domain.URLInterface) (int, error) 
 	return URLID, err
 }
 
-func (service databaseURLService) SaveBatchURLs(collection dto.URLCollection) {
-	URLDatabaseCollection := dto.GetURLDatabaseCollection()
+func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
+	var URLDatabaseCollection []dto.DatabaseURL
 
-	for _, url := range collection.GetCollection() {
+	for _, url := range collection {
 		userID, err := service.verifyUser(url.GetUserToken())
 
 		if err != nil {
 			log.Println("error while URL user verification: " + err.Error())
 		}
 
-		URLDatabaseCollection.AppendURL(dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID))
+		URLDatabaseCollection = append(
+			URLDatabaseCollection,
+			dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID),
+		)
 	}
 
-	log.Println(`try to save to database batch URLs. Items count: `, len(URLDatabaseCollection.GetCollection()))
+	log.Println(`try to save to database batch URLs. Items count: `, len(URLDatabaseCollection))
 
 	err := service.databaseRepository.SaveBatchURLs(URLDatabaseCollection)
 
@@ -103,25 +104,18 @@ func (service databaseURLService) verifyUser(userToken string) (int, error) {
 	return userID, nil
 }
 
-func (service databaseURLService) GetURLByKey(key string) url.URL {
-	return service.databaseRepository.GetURLByKey(key)
-}
+func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
+	dtoURLCollection := []url.URL{}
 
-func (service databaseURLService) IsExistURLByKey(key string) bool {
-	return true //@ToDo
-}
-
-func (service databaseURLService) GetURLCollectionFromStorage() dto.URLCollection {
-	dtoURLCollection := dto.GetURLCollection()
 	collection, err := service.databaseRepository.GetList()
 
 	if err != nil {
 		log.Println(`error while getting all users.`, err.Error())
 
-		return *dtoURLCollection
+		return dtoURLCollection
 	}
 
-	for _, databaseURL := range collection.GetCollection() {
+	for _, databaseURL := range collection {
 		user, err := service.databaseUserService.GetUserByID(databaseURL.GetUserID())
 
 		if err != nil {
@@ -130,8 +124,11 @@ func (service databaseURLService) GetURLCollectionFromStorage() dto.URLCollectio
 			continue
 		}
 
-		dtoURLCollection.AppendURL(url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID()))
+		dtoURLCollection = append(
+			dtoURLCollection,
+			url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID()),
+		)
 	}
 
-	return *dtoURLCollection
+	return dtoURLCollection
 }

@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"github.com/PanovAlexey/url_carver/config"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"log"
 )
@@ -26,13 +25,13 @@ func GetStorageService(
 	return &storageService{config: config, storageRepository: storageRepository}
 }
 
-func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
-	collection := dto.GetURLCollection()
+func (service storageService) GetURLCollectionFromStorage() []url.URL {
+	collection := []url.URL{}
 
 	isStorageExist, err := service.storageRepository.IsStorageExist()
 
 	if !isStorageExist || err != nil {
-		return *collection
+		return collection
 	}
 
 	for {
@@ -56,10 +55,10 @@ func (service storageService) GetURLCollectionFromStorage() dto.URLCollection {
 			break
 		}
 
-		collection.AppendURL(url)
+		collection = append(collection, url)
 	}
 
-	return *collection
+	return collection
 }
 
 func (service storageService) SaveURL(url url.URL) {

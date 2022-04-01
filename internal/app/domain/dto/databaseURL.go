@@ -1,31 +1,31 @@
 package dto
 
-type databaseURL struct {
+type DatabaseURL struct {
 	longURL  string
 	shortURL string
 	userID   int
 }
 
-func NewDatabaseURL(longURL, shortURL string, userID int) databaseURL {
-	return databaseURL{
+func NewDatabaseURL(longURL, shortURL string, userID int) DatabaseURL {
+	return DatabaseURL{
 		longURL:  longURL,
 		shortURL: shortURL,
 		userID:   userID,
 	}
 }
 
-func (databaseURL databaseURL) GetLongURL() string {
+func (databaseURL DatabaseURL) GetLongURL() string {
 	return databaseURL.longURL
 }
 
-func (databaseURL databaseURL) GetShortURL() string {
+func (databaseURL DatabaseURL) GetShortURL() string {
 	return databaseURL.shortURL
 }
 
-func (databaseURL databaseURL) GetUserID() int {
+func (databaseURL DatabaseURL) GetUserID() int {
 	return databaseURL.userID
 }
 
-func (databaseURL databaseURL) GetUserToken() string {
+func (databaseURL DatabaseURL) GetUserToken() string {
 	return ``
 }
