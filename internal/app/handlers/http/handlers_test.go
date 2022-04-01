@@ -226,6 +226,40 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				contentEncoding:   "gzip",
 			},
 		},
+		{
+			name:    "API. Positive test. Add batch URLs.",
+			urlPath: "/api/shorten/batch",
+			method:  http.MethodPost,
+			body: []byte(`[
+							   {
+								  "correlation_id": "39324b8f-cc0b-439c-8ae3",
+								  "original_url": "http://twokw5qvxcc8.net/rlnnq"
+							   },
+							   {
+								  "correlation_id": "1d272046-3115-47ba-be1b",
+								  "original_url": "http://id204rs9w3crhe.net"
+							   }
+						  ]`,
+			),
+			headers: map[string]string{},
+			want: want{
+				code:              http.StatusCreated,
+				contentTypeHeader: "application/json",
+				response:          "[{\"correlation_id\":\"39324b8f-cc0b-439c-8ae3\",\"short_url\":\"" + config.GetBaseURL() + "/30\"},{\"correlation_id\":\"1d272046-3115-47ba-be1b\",\"short_url\":\"" + config.GetBaseURL() + "/26\"}]",
+			},
+		},
+		{
+			name:    "API. Negative test. Add batch URLs by empty body.",
+			urlPath: "/api/shorten/batch",
+			method:  http.MethodPost,
+			body:    []byte(``),
+			headers: map[string]string{},
+			want: want{
+				code:              http.StatusBadRequest,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
 	}
 
 	for _, testData := range tests {
