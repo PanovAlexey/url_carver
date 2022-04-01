@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -27,9 +28,21 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 
 	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
 	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
-	h.memoryService.SaveURL(url)
-	h.storageService.SaveURL(url)
-	h.databaseURLService.SaveURL(url)
+
+	if h.memoryService.IsExistURLByKey(url.GetShortURL()) {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		h.memoryService.SaveURL(url)
+		h.storageService.SaveURL(url)
+		_, err = h.databaseURLService.SaveURL(url)
+
+		if err != nil {
+			log.Println("failed to save url to database")
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusCreated)
+		}
+	}
 
 	if err != nil || len(url.LongURL) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -46,6 +59,5 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 
 	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(shortURLJSON))
+	w.Write(shortURLJSON)
 }
