@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
@@ -36,14 +35,14 @@ func (u *shortURLs) IsExistURLByKey(key string) bool {
 	return ok
 }
 
-func (u *shortURLs) GetURLsByUserToken(userToken string) dto.URLCollection {
-	collection := dto.GetURLCollection()
+func (u *shortURLs) GetURLsByUserToken(userToken string) []url.URL {
+	var collection []url.URL
 
 	for _, url := range u.urlMap {
 		if url.GetUserToken() == userToken {
-			collection.AppendURL(url)
+			collection = append(collection, url)
 		}
 	}
 
-	return *collection
+	return collection
 }

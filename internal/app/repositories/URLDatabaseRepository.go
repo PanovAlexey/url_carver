@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"log"
 	"strconv"
@@ -16,7 +15,7 @@ func GetDatabaseURLRepository(databaseService database.DatabaseInterface) *datab
 	return &databaseURLRepository{databaseService: databaseService}
 }
 
-func (repository databaseURLRepository) SaveURL(url dto.DatabaseURLInterface) (int, error) {
+func (repository databaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error) {
 	var insertedID int
 
 	query := "INSERT INTO " + database.TableURLsName + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
@@ -30,16 +29,8 @@ func (repository databaseURLRepository) SaveURL(url dto.DatabaseURLInterface) (i
 	return insertedID, err
 }
 
-func (repository databaseURLRepository) GetURLByKey(key string) url.URL {
-	return url.URL{} // todo
-}
-
-func (repository databaseURLRepository) IsExistURLByKey(key string) bool {
-	return true // todo
-}
-
-func (repository databaseURLRepository) GetList() (dto.URLDatabaseCollection, error) {
-	collection := dto.GetURLDatabaseCollection()
+func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
+	var collection []dto.DatabaseURL
 
 	var resultID, resultUserID int
 	var resultURL, resultShortURL string
@@ -58,13 +49,13 @@ func (repository databaseURLRepository) GetList() (dto.URLDatabaseCollection, er
 			return collection, err
 		}
 
-		collection.AppendURL(dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID))
+		collection = append(collection, dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID))
 	}
 
 	return collection, nil
 }
 
-func (repository databaseURLRepository) SaveBatchURLs(collection dto.URLDatabaseCollection) error {
+func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseURL) error {
 	dbConnection := repository.databaseService.GetDatabaseConnection()
 	tx, err := dbConnection.Begin()
 
@@ -86,7 +77,7 @@ func (repository databaseURLRepository) SaveBatchURLs(collection dto.URLDatabase
 	var insertedID int
 	var resultString string
 
-	for _, url := range collection.GetCollection() {
+	for _, url := range collection {
 		err = statement.QueryRow(url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
 
 		if len(resultString) > 0 {

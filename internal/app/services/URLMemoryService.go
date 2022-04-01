@@ -11,7 +11,7 @@ type repositoryInterface interface {
 	AddURL(url urlEntity.URL) bool
 	GetURLByKey(key string) string
 	IsExistURLByKey(key string) bool
-	GetURLsByUserToken(userToken string) dto.URLCollection
+	GetURLsByUserToken(userToken string) []urlEntity.URL
 }
 
 type shorteningServiceInterface interface {
@@ -56,8 +56,8 @@ func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL
 	return dto.GetShortURLByValue(shortURLWithDomain)
 }
 
-func (service memoryService) LoadURLs(collection dto.URLCollection) {
-	for _, url := range collection.GetCollection() {
+func (service memoryService) LoadURLs(collection []urlEntity.URL) {
+	for _, url := range collection {
 		service.SaveURL(urlEntity.New(url.GetLongURL(), url.GetShortURL(), url.GetUserToken()))
 	}
 }
@@ -66,11 +66,11 @@ func (service memoryService) SaveURL(url urlEntity.URL) bool {
 	return service.repository.AddURL(url)
 }
 
-func (service memoryService) GetURLsByUserToken(userToken string) dto.URLCollection {
+func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.URL {
 	inputCollection := service.repository.GetURLsByUserToken(userToken)
-	resultCollection := dto.URLCollection{}
+	resultCollection := []urlEntity.URL{}
 
-	for _, URL := range inputCollection.GetCollection() {
+	for _, URL := range inputCollection {
 		shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(URL.GetShortURL())
 
 		if err != nil {
@@ -78,12 +78,14 @@ func (service memoryService) GetURLsByUserToken(userToken string) dto.URLCollect
 			fmt.Println("impossible to build a short url with domain.")
 		}
 
-		resultCollection.AppendURL(
-			dto.New(
+		resultCollection = append(
+			resultCollection,
+			urlEntity.New(
 				URL.GetLongURL(),
 				shortURLWithDomain,
 				URL.GetUserToken(),
-			))
+			),
+		)
 	}
 
 	return resultCollection

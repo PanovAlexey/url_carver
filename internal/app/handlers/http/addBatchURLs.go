@@ -3,8 +3,8 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto/batch"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"io"
 	"log"
 	"net/http"
@@ -20,7 +20,7 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	URLCollection := dto.GetURLCollection()
+	var URLCollection []url.URL
 	batchInputURLDTOCollection := []batch.BatchInputURL{}
 	batchOutputURLDTOCollection := []batch.BatchOutputURL{}
 	err = json.Unmarshal(bodyJSON, &batchInputURLDTOCollection)
@@ -44,17 +44,17 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 
 		h.memoryService.SaveURL(url)
 		h.storageService.SaveURL(url)
-	
+
 		shortURLWithDomain, err := h.shorteningService.GetShortURLWithDomain(url.GetShortURL())
 
 		batchOutputURLDTOCollection = append(
 			batchOutputURLDTOCollection, batch.NewBatchOutputURL(databaseURL.CorrelationID, shortURLWithDomain),
 		)
 
-		URLCollection.AppendURL(url)
+		URLCollection = append(URLCollection, url)
 	}
 
-	h.databaseURLService.SaveBatchURLs(*URLCollection)
+	h.databaseURLService.SaveBatchURLs(URLCollection)
 
 	databaseBatchOutputURLDTOCollectionJSON, err := json.Marshal(batchOutputURLDTOCollection)
 

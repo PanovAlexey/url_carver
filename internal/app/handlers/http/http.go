@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"github.com/PanovAlexey/url_carver/internal/app/domain"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
@@ -20,7 +19,7 @@ type memoryServiceInterface interface {
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 	SaveURL(url url.URL) bool
-	GetURLsByUserToken(userToken string) dto.URLCollection
+	GetURLsByUserToken(userToken string) []url.URL
 }
 
 type storageServiceInterface interface {
@@ -41,14 +40,12 @@ type userTokenAuthorizationServiceInterface interface {
 }
 
 type URLMappingServiceInterface interface {
-	MapURLEntityCollectionToDTO(collection dto.URLCollection) dto.URLCollection
+	MapURLEntityCollectionToDTO(collection []url.URL) []dto.URLForShowingUser
 }
 
 type DatabaseURLServiceInterface interface {
-	SaveURL(url domain.URLInterface) (int, error)
-	GetURLByKey(key string) url.URL
-	IsExistURLByKey(key string) bool
-	SaveBatchURLs(collection dto.URLCollection)
+	SaveURL(url url.URL) (int, error)
+	SaveBatchURLs(collection []url.URL)
 }
 type DatabaseUserServiceInterface interface {
 	SaveUser(user user.UserInterface) (int, error)
