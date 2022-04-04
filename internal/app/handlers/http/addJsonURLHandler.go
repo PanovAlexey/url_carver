@@ -27,12 +27,18 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	}
 
 	url, err := h.shorteningService.GetURLEntityByLongURL(longURLDto.Value)
+
+	if err != nil || len(url.LongURL) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
 	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
 	_, err = h.databaseURLService.SaveURL(url)
 
-	if err != nil || len(url.LongURL) == 0 {
+	if err != nil {
 		errorService := services.GetErrorService()
 
 		if errorService.IsKeyDuplicated(err) {
