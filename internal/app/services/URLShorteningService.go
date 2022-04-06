@@ -1,7 +1,8 @@
 package services
 
 import (
-	"fmt"
+	"crypto/md5"
+	"encoding/hex"
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
@@ -19,7 +20,8 @@ func (service shorteningService) GetShortURLWithDomain(shortURLCode string) (str
 }
 
 func (service shorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {
-	shortURL := fmt.Sprint(len(longURL) + 1)
+	shortURLHash := md5.Sum([]byte(longURL))
+	shortURLHashString := hex.EncodeToString(shortURLHash[:])
 
-	return url.New(longURL, shortURL, ``), nil
+	return url.New(longURL, shortURLHashString, ``), nil
 }
