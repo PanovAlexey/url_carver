@@ -114,7 +114,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://ya.ru`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          config.GetBaseURL() + `/13`,
+				response:          config.GetBaseURL() + `/1b556b44a4ee73524fb009e11918fb4f`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
@@ -126,14 +126,14 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`http://pikabu.com`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          config.GetBaseURL() + `/18`,
+				response:          config.GetBaseURL() + `/6e8040b1b452170cc569a17ad1c23e13`,
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 			},
 		},
 		{
 			name:    "Positive test. Get short url for Pikabu site after it was added.",
-			urlPath: "/18",
+			urlPath: "/6e8040b1b452170cc569a17ad1c23e13",
 			method:  http.MethodGet,
 			body:    nil,
 			want: want{
@@ -162,14 +162,14 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			body:    []byte(`{"url": "https://3dnews.com"}`),
 			want: want{
 				code:              http.StatusCreated,
-				response:          `{"result":"` + config.GetBaseURL() + `/19"}`,
+				response:          `{"result":"` + config.GetBaseURL() + `/f325fe609335839151c83c065975e95e"}`,
 				contentTypeHeader: "application/json",
 				locationHeader:    "",
 			},
 		},
 		{
 			name:    "Positive test. Get short url for 3dnews site after it was added.",
-			urlPath: "/19",
+			urlPath: "/f325fe609335839151c83c065975e95e",
 			method:  http.MethodGet,
 			body:    nil,
 			want: want{
@@ -181,7 +181,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 		},
 		{
 			name:    "Positive test. Get short url for 3dnews site after it was added with GZIP compression.",
-			urlPath: "/19",
+			urlPath: "/f325fe609335839151c83c065975e95e",
 			method:  http.MethodGet,
 			body:    nil,
 			headers: map[string]string{
@@ -205,7 +205,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 			want: want{
 				code:              http.StatusCreated,
-				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\xca())\xb0\xd2\xd7\xcf\xc9ON\xcc\xc9\xc8/.\xb1\xb20\xb00\xd07\xb4\x00\x04\x00\x00\xff\xff\xc6@\x82\xbe\x18\x00\x00\x00",
+				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\x04\xc0\xdd\t\x04!\f\x04\xe0\x922\xe3o\xcenbN\xf0Apa\xd3?\xfb\xed\x88g\x88\x9c\xebv\xf6}c(\x14Җ\xa2`r\x96\x9a\xd8\xe1^\xdb\xcf\xd8\xedOOy1\u007f\x01\x00\x00\xff\xff2\xb1Q\xab6\x00\x00\x00",
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 				contentEncoding:   "gzip",
@@ -221,7 +221,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 			want: want{
 				code:              http.StatusCreated,
-				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\xaaV*J-.\xcd)Q\xb2R\xca())\xb0\xd2\xd7\xcf\xc9ON\xcc\xc9\xc8/.\xb1\xb20\xb00\xd07\xb4T\xaa\x05\x04\x00\x00\xff\xff\x00V\x8b\xae%\x00\x00\x00",
+				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\x04\xc0\xc1\t\xc5 \f\x06\xe0]\xb2\x80\xf1\x85ߗ\xb8M\x91\x88\a\xc1R\xd3S\xe9\xee\xfd\x1e\xba|\xdf3\xa8҈8kJs\xb5c\x8e\xb5\xa3*+\xa7.?t/l\"P\xb1\x8c\xdcT\x1a\x17\xd8\x1fnpz\xbf\x00\x00\x00\xff\xff\xe0\xe3\x05=C\x00\x00\x00",
 				contentTypeHeader: "application/json",
 				locationHeader:    "",
 				contentEncoding:   "gzip",
@@ -246,7 +246,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			want: want{
 				code:              http.StatusCreated,
 				contentTypeHeader: "application/json",
-				response:          "[{\"correlation_id\":\"39324b8f-cc0b-439c-8ae3\",\"short_url\":\"" + config.GetBaseURL() + "/30\"},{\"correlation_id\":\"1d272046-3115-47ba-be1b\",\"short_url\":\"" + config.GetBaseURL() + "/26\"}]",
+				response:          "[{\"correlation_id\":\"39324b8f-cc0b-439c-8ae3\",\"short_url\":\"" + config.GetBaseURL() + "/8848d687af0fa66c0f43cc1568df1630\"},{\"correlation_id\":\"1d272046-3115-47ba-be1b\",\"short_url\":\"" + config.GetBaseURL() + "/4810e91a0c836cb8ad4121310b2d42ce\"}]",
 			},
 		},
 		{
