@@ -18,17 +18,17 @@ func Test_GetURLEntityByLongURL(t *testing.T) {
 		{
 			name:  "Test by vk.com service with http scheme",
 			value: "vk.com",
-			want:  "7",
+			want:  "d2b6043e84b2aebc95a2faf382bde230",
 		},
 		{
 			name:  "Test by mamba service with http scheme",
 			value: "http://mamba.ru",
-			want:  "16",
+			want:  "1bcfcaf3e204762c138590c951995d49",
 		},
 		{
 			name:  "Test by facebook service with https scheme",
 			value: "https://facebook.com",
-			want:  "21",
+			want:  "a023cfbf5f1c39bdf8407f28b60cd134",
 		},
 	}
 	for _, tt := range tests {
