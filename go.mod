@@ -17,6 +17,7 @@ require (
 	github.com/jackc/pgx/v4 v4.15.0 // indirect
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
+	github.com/lib/pq v1.10.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
