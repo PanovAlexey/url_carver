@@ -105,6 +105,7 @@ func (h *httpHandler) NewRouter() chi.Router {
 
 	router.Get("/api/user/urls", h.HandleGetURLsByUserToken)
 	router.Post("/api/shorten/batch", h.HandleAddBatchURLs)
+	router.Delete("/api/user/urls", h.HandleDeleteBatchURLs)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
