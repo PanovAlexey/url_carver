@@ -46,6 +46,7 @@ type URLMappingServiceInterface interface {
 type DatabaseURLServiceInterface interface {
 	SaveURL(url url.URL) (int, error)
 	SaveBatchURLs(collection []url.URL)
+	RemoveByShortURLSlice(URLSlice []string) error
 }
 type DatabaseUserServiceInterface interface {
 	SaveUser(user user.User) (int, error)
