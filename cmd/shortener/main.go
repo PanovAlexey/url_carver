@@ -14,8 +14,13 @@ import (
 
 func main() {
 	config := config.New()
-	databaseService := getDatabaseService(config)
-	databaseService.MigrateUp()
+	databaseService, err := getDatabaseService(config)
+
+	if err == nil {
+		databaseService.MigrateUp()
+		defer databaseService.GetDatabaseConnection().Close()
+	}
+
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
 	if err != nil {
@@ -24,11 +29,17 @@ func main() {
 		defer fileStorageRepository.Close()
 	}
 
-	defer databaseService.GetDatabaseConnection().Close()
+	globalURLDeletingChannel := getGlobalURLDeletingChannel()
+	defer close(globalURLDeletingChannel)
 
 	httpHandler := getHTTPHandler(config, databaseService, fileStorageRepository)
 
 	servers.RunServer(httpHandler, config)
+}
+
+func getGlobalURLDeletingChannel() chan string {
+	queueMap := services.GetChannelsMapService()
+	return queueMap.GetChannelByName(services.ChannelWithRemovingURLsName)
 }
 
 func getHTTPHandler(
@@ -74,7 +85,7 @@ func getHTTPHandler(
 	return httpHandler
 }
 
-func getDatabaseService(config config.Config) database.DatabaseInterface {
+func getDatabaseService(config config.Config) (database.DatabaseInterface, error) {
 	databaseService := database.GetDatabaseService(config)
 	err := databaseService.CheckDatabaseAvailability()
 
@@ -84,7 +95,7 @@ func getDatabaseService(config config.Config) database.DatabaseInterface {
 		log.Println("Database connection successfully")
 	}
 
-	return databaseService
+	return databaseService, err
 }
 
 func init() {
