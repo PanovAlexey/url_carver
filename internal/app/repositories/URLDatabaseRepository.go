@@ -1,9 +1,11 @@
 package repositories
 
 import (
+	"errors"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
+	"github.com/lib/pq"
 	"log"
 	"strconv"
 )
@@ -96,4 +98,39 @@ func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseU
 	log.Println("created URLs with id: ", resultString)
 
 	return tx.Commit()
+}
+
+func (repository databaseURLRepository) DeleteURLsByShortValueSlice(shortURLValuesSlice []string) ([]dto.DatabaseURL, error) {
+	query := "UPDATE " + database.TableURLsName +
+		" SET is_deleted = true WHERE short_url = any($1) RETURNING id, user_id, url, short_url, is_deleted"
+	rows, err := repository.databaseService.GetDatabaseConnection().Query(query, pq.Array(shortURLValuesSlice))
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resultID int64
+	var resultUserID int64
+	var resultURL string
+	var resultShortURL string
+	var resultIsDeleted bool
+	var result []dto.DatabaseURL = make([]dto.DatabaseURL, 0)
+
+	var errorsText string
+
+	for rows.Next() {
+		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL, &resultIsDeleted)
+
+		if err != nil {
+			errorsText = errorsText + " " + err.Error()
+		}
+
+		result = append(result, dto.NewDatabaseURL(resultURL, resultShortURL, 33)) // @ToDo: change 33 to real value
+	}
+
+	if len(errorsText) == 0 {
+		return result, nil
+	}
+
+	return result, errors.New(errorsText)
 }
