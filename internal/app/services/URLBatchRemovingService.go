@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/PanovAlexey/url_carver/internal/app/services/tools"
 	"log"
 	"sync"
@@ -42,8 +41,8 @@ func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string)
 
 	// this goroutine is to avoid to wait an answer
 	go func() {
-		for v := range fanInChannels(workerChannels...) {
-			fmt.Println(v)
+		for _ = range fanInChannels(workerChannels...) {
+			//fmt.Println("Read from fanIn: " + v)
 		}
 	}()
 
@@ -80,7 +79,7 @@ func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan
 				if isDeleted == true {
 					log.Println("Short URL \"" + shortURLValue + "\" deleted successfully")
 				} else {
-					log.Println("Warning. Short URL \"" + shortURLValue + "\" has not benn deleted")
+					log.Println("Warning. Short URL \"" + shortURLValue + "\" has not been deleted")
 				}
 			}
 
