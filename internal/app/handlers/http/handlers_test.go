@@ -315,7 +315,7 @@ func getRouterForRouteTest() chi.Router {
 	databaseService := database.GetDatabaseService(config)
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
 	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
-	databaseURLRepository := getDatabaseURLRepositoryMock()
+	databaseURLRepository := getDatabaseURLRepositoryMock(databaseService)
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
@@ -340,6 +340,7 @@ func getRouterForRouteTest() chi.Router {
 
 // Mock dependencies
 type databaseURLRepositoryMock struct {
+	databaseService database.DatabaseInterface
 }
 
 func (repository databaseURLRepositoryMock) SaveURL(url dto.DatabaseURL) (int, error) {
@@ -354,6 +355,10 @@ func (repository databaseURLRepositoryMock) SaveBatchURLs(collection []dto.Datab
 	return nil
 }
 
-func getDatabaseURLRepositoryMock() databaseURLRepositoryMock {
-	return databaseURLRepositoryMock{}
+func (repository databaseURLRepositoryMock) DeleteURLsByShortValueSlice([]string) ([]dto.DatabaseURL, error) {
+	return []dto.DatabaseURL{}, nil
+}
+
+func getDatabaseURLRepositoryMock(databaseService database.DatabaseInterface) databaseURLRepositoryMock {
+	return databaseURLRepositoryMock{databaseService: databaseService}
 }
