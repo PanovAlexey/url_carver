@@ -22,7 +22,7 @@ func GetBatchURLsRemovingService(databaseRepository databaseURLRepositoryInterfa
 
 func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string) error {
 	queueMap := GetChannelsMapService()
-	globalInputChannel := queueMap.GetChannelByName(channelWithRemovingURLsName) // channel will close in Main
+	globalInputChannel := queueMap.GetChannelByName(ChannelWithRemovingURLsName) // channel will close in Main
 
 	go func() {
 		for _, shortURL := range URLSlice {
