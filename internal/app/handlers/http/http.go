@@ -14,7 +14,7 @@ import (
 )
 
 type memoryServiceInterface interface {
-	GetURLByKey(key string) string
+	GetURLByKey(key string) (string, error)
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL

@@ -7,12 +7,12 @@ type URL struct {
 	IsDeleted bool
 }
 
-func New(longURL, shortURL, userToken string) URL {
+func New(longURL, shortURL, userToken string, isDeleted bool) URL {
 	return URL{
 		LongURL:   longURL,
 		ShortURL:  shortURL,
 		UserID:    userToken,
-		IsDeleted: false,
+		IsDeleted: isDeleted,
 	}
 }
 

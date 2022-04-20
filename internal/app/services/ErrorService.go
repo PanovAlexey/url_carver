@@ -27,3 +27,7 @@ func (service ErrorService) GetActualizedError(err error, additionalInfo interfa
 func (service ErrorService) IsKeyDuplicated(err error) bool {
 	return errors.Is(err, databaseErrors.ErrorDuplicateKey)
 }
+
+func (service ErrorService) IsDeleted(err error) bool {
+	return errors.Is(err, databaseErrors.ErrorIsDeleted)
+}
