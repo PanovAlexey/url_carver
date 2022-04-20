@@ -38,8 +38,9 @@ func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 
 	var resultID, resultUserID int
 	var resultURL, resultShortURL string
+	var isDeleted bool
 
-	query := "SELECT id, user_id, url, short_url FROM " + database.TableURLsName
+	query := "SELECT id, user_id, url, short_url, is_deleted FROM " + database.TableURLsName
 	rows, err := repository.databaseService.GetDatabaseConnection().Query(query)
 
 	if err != nil {
@@ -47,13 +48,13 @@ func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL)
+		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL, &isDeleted)
 
 		if err != nil {
 			return collection, err
 		}
 
-		collection = append(collection, dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID))
+		collection = append(collection, dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID, isDeleted))
 	}
 
 	return collection, nil
@@ -125,8 +126,9 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(shortURLValu
 			errorsText = errorsText + " " + err.Error()
 		}
 
-		result = append(result, dto.NewDatabaseURL(resultURL, resultShortURL, 33)) // @ToDo: change 33 to real value
-	}
+		result = append(result, dto.NewDatabaseURL(
+			resultURL, resultShortURL, 33, true)) // @ToDo: change 33 to real value
+	} // @ToDo: true change to resultIsDeleted variable
 
 	if len(errorsText) == 0 {
 		return result, nil

@@ -40,6 +40,7 @@ func (service databaseURLService) SaveURL(url url.URL) (int, error) {
 		url.GetLongURL(),
 		url.GetShortURL(),
 		userID,
+		false,
 	)
 
 	log.Println(`try to save to database URL: `, databaseURL)
@@ -66,7 +67,7 @@ func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
 
 		URLDatabaseCollection = append(
 			URLDatabaseCollection,
-			dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID),
+			dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID, false),
 		)
 	}
 

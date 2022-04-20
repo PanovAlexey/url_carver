@@ -1,16 +1,18 @@
 package dto
 
 type DatabaseURL struct {
-	longURL  string
-	shortURL string
-	userID   int
+	longURL   string
+	shortURL  string
+	userID    int
+	IsDeleted bool
 }
 
-func NewDatabaseURL(longURL, shortURL string, userID int) DatabaseURL {
+func NewDatabaseURL(longURL, shortURL string, userID int, isDeleted bool) DatabaseURL {
 	return DatabaseURL{
-		longURL:  longURL,
-		shortURL: shortURL,
-		userID:   userID,
+		longURL:   longURL,
+		shortURL:  shortURL,
+		userID:    userID,
+		IsDeleted: isDeleted,
 	}
 }
 
@@ -28,4 +30,8 @@ func (databaseURL DatabaseURL) GetUserID() int {
 
 func (databaseURL DatabaseURL) GetUserToken() string {
 	return ``
+}
+
+func (databaseURL DatabaseURL) GetIsDeleted() bool {
+	return databaseURL.IsDeleted
 }
