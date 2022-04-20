@@ -58,7 +58,7 @@ func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL
 
 func (service memoryService) LoadURLs(collection []urlEntity.URL) {
 	for _, url := range collection {
-		service.SaveURL(urlEntity.New(url.GetLongURL(), url.GetShortURL(), url.GetUserToken()))
+		service.SaveURL(url)
 	}
 }
 
