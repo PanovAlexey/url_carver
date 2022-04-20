@@ -133,7 +133,7 @@ func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
 
 		dtoURLCollection = append(
 			dtoURLCollection,
-			url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID()),
+			url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID(), databaseURL.GetIsDeleted()),
 		)
 	}
 

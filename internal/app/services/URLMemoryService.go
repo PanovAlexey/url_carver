@@ -5,11 +5,12 @@ import (
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	urlEntity "github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+	databaseErrors "github.com/PanovAlexey/url_carver/internal/app/services/database/errors"
 )
 
 type repositoryInterface interface {
 	AddURL(url urlEntity.URL) bool
-	GetURLByKey(key string) string
+	GetURLByKey(key string) urlEntity.URL
 	IsExistURLByKey(key string) bool
 	GetURLsByUserToken(userToken string) []urlEntity.URL
 }
@@ -33,8 +34,14 @@ func GetMemoryService(
 	return &memoryService{config: config, repository: repository, shorteningService: shorteningService}
 }
 
-func (service memoryService) GetURLByKey(key string) string {
-	return service.repository.GetURLByKey(key)
+func (service memoryService) GetURLByKey(key string) (string, error) {
+	url := service.repository.GetURLByKey(key)
+
+	if url.GetIsDeleted() {
+		return "", fmt.Errorf("%v: %w", url, databaseErrors.ErrorIsDeleted)
+	}
+
+	return url.GetLongURL(), nil
 }
 
 func (service memoryService) IsExistURLByKey(key string) bool {
@@ -84,6 +91,7 @@ func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.UR
 				URL.GetLongURL(),
 				shortURLWithDomain,
 				URL.GetUserToken(),
+				URL.GetIsDeleted(),
 			),
 		)
 	}
