@@ -19,7 +19,7 @@ func GetBatchURLsRemovingService(databaseRepository databaseURLRepositoryInterfa
 	}
 }
 
-func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string) error {
+func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string, userID int) error {
 	queueMap := GetChannelsMapService()
 	globalInputChannel := queueMap.GetChannelByName(ChannelWithRemovingURLsName) // channel will close in Main
 
@@ -35,7 +35,7 @@ func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string)
 
 	workerChannels := make([]chan string, 0, workersURLsRemovingCount)
 	for _, channel := range fanOutChannels {
-		worker := service.newURMRemovingWorker(channel)
+		worker := service.newURMRemovingWorker(channel, userID)
 		workerChannels = append(workerChannels, worker)
 	}
 
@@ -49,7 +49,7 @@ func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string)
 	return nil
 }
 
-func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan string) chan string {
+func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan string, userID int) chan string {
 	outChannel := make(chan string)
 	toolService := tools.GetToolService()
 
@@ -60,7 +60,7 @@ func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan
 
 			// @ToDo: add to SQL query batch 3-5 items at a time
 			deletedDatabaseURLs, err := service.databaseRepository.
-				DeleteURLsByShortValueSlice(toolService.GetKeysSliceByStringToBoolMap(resultDeletingMap))
+				DeleteURLsByShortValueSlice(toolService.GetKeysSliceByStringToBoolMap(resultDeletingMap), userID)
 
 			if err != nil {
 				log.Println("error while URL (" + shortURLvalue + ") deleting: " + err.Error())

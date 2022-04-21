@@ -16,7 +16,7 @@ type databaseURLRepositoryInterface interface {
 	SaveURL(url dto.DatabaseURL) (int, error)
 	GetList() ([]dto.DatabaseURL, error)
 	SaveBatchURLs(collection []dto.DatabaseURL) error
-	DeleteURLsByShortValueSlice([]string) ([]dto.DatabaseURL, error)
+	DeleteURLsByShortValueSlice([]string, int) ([]dto.DatabaseURL, error)
 }
 
 func GetDatabaseURLService(
@@ -80,9 +80,16 @@ func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
 	}
 }
 
-func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string) error {
+func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string, userToken string) error {
 	batchURLsRemovingService := GetBatchURLsRemovingService(service.databaseRepository)
-	return batchURLsRemovingService.RemoveByShortURLSlice(URLSlice)
+	userEntity, err := service.databaseUserService.GetUserByToken(userToken)
+	userID := userEntity.GetID()
+
+	if err != nil {
+		return err
+	}
+
+	return batchURLsRemovingService.RemoveByShortURLSlice(URLSlice, userID)
 }
 
 func (service databaseURLService) verifyUser(userToken string) (int, error) {
