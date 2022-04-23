@@ -355,7 +355,7 @@ func (repository databaseURLRepositoryMock) SaveBatchURLs(collection []dto.Datab
 	return nil
 }
 
-func (repository databaseURLRepositoryMock) DeleteURLsByShortValueSlice([]string) ([]dto.DatabaseURL, error) {
+func (repository databaseURLRepositoryMock) DeleteURLsByShortValueSlice([]string, int) ([]dto.DatabaseURL, error) {
 	return []dto.DatabaseURL{}, nil
 }
 
