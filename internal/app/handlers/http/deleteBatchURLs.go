@@ -39,6 +39,7 @@ func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = h.databaseURLService.RemoveByShortURLSlice(URLsCollection, userToken)
+	h.memoryService.DeleteURLsByShortValueSlice(URLsCollection)
 
 	var message string
 
