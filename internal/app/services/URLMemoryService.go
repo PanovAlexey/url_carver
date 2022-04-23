@@ -13,6 +13,7 @@ type repositoryInterface interface {
 	GetURLByKey(key string) urlEntity.URL
 	IsExistURLByKey(key string) bool
 	GetURLsByUserToken(userToken string) []urlEntity.URL
+	GetURLsByShortValueSlice(urlShortValuesSlice []string) []urlEntity.URL
 }
 
 type shorteningServiceInterface interface {
@@ -71,6 +72,15 @@ func (service memoryService) LoadURLs(collection []urlEntity.URL) {
 
 func (service memoryService) SaveURL(url urlEntity.URL) bool {
 	return service.repository.AddURL(url)
+}
+
+func (service memoryService) DeleteURLsByShortValueSlice(urlShortValuesSlice []string) {
+	urlCollection := service.repository.GetURLsByShortValueSlice(urlShortValuesSlice)
+
+	for _, url := range urlCollection {
+		url.SetIsDeleted()
+		service.SaveURL(url)
+	}
 }
 
 func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.URL {

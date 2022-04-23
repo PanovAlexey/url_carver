@@ -20,6 +20,7 @@ type memoryServiceInterface interface {
 	GetShortURLDtoByURL(url url.URL) dto.ShortURL
 	SaveURL(url url.URL) bool
 	GetURLsByUserToken(userToken string) []url.URL
+	DeleteURLsByShortValueSlice([]string)
 }
 
 type storageServiceInterface interface {

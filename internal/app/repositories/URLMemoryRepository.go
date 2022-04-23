@@ -17,17 +17,25 @@ func GetURLMemoryRepository() *shortURLs {
 }
 
 func (u *shortURLs) AddURL(url url.URL) bool {
-	if u.IsExistURLByKey(url.GetShortURL()) {
-		return false
-	}
-
 	u.urlMap[url.GetShortURL()] = url
 
 	return true
 }
 
-func (u shortURLs) GetURLByKey(key string) string {
-	return u.urlMap[key].GetLongURL()
+func (u shortURLs) GetURLByKey(key string) url.URL {
+	return u.urlMap[key]
+}
+
+func (u shortURLs) GetURLsByShortValueSlice(urlShortValuesSlice []string) []url.URL {
+	urlCollection := make([]url.URL, 0)
+
+	for _, urlShortValue := range urlShortValuesSlice {
+		if u.IsExistURLByKey(urlShortValue) {
+			urlCollection = append(urlCollection, u.GetURLByKey(urlShortValue))
+		}
+	}
+
+	return urlCollection
 }
 
 func (u *shortURLs) IsExistURLByKey(key string) bool {
