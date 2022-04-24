@@ -113,8 +113,8 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 		return nil, err
 	}
 
-	var resultID int64
-	var resultUserID int64
+	var resultID int
+	var resultUserID int
 	var resultURL string
 	var resultShortURL string
 	var resultIsDeleted bool
@@ -130,8 +130,8 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 		}
 
 		result = append(result, dto.NewDatabaseURL(
-			resultURL, resultShortURL, 33, true)) // @ToDo: change 33 to real value
-	} // @ToDo: true change to resultIsDeleted variable
+			resultURL, resultShortURL, resultUserID, true))
+	}
 
 	if len(errorsText) == 0 {
 		return result, nil
