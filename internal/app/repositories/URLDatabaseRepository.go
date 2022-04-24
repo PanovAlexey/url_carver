@@ -118,7 +118,7 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 	var resultURL string
 	var resultShortURL string
 	var resultIsDeleted bool
-	var result []dto.DatabaseURL = make([]dto.DatabaseURL, 0)
+	var result = make([]dto.DatabaseURL, 0)
 
 	var errorsText string
 
