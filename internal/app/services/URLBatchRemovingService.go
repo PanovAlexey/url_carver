@@ -76,7 +76,7 @@ func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan
 			}
 
 			for shortURLValue, isDeleted := range resultDeletingMap {
-				if isDeleted == true {
+				if isDeleted {
 					log.Println("Short URL \"" + shortURLValue + "\" deleted successfully")
 				} else {
 					log.Println("Warning. Short URL \"" + shortURLValue + "\" has not been deleted")
