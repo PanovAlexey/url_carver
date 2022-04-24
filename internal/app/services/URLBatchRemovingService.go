@@ -41,7 +41,7 @@ func (service batchURLsRemovingService) RemoveByShortURLSlice(URLSlice []string,
 
 	// this goroutine is to avoid to wait an answer
 	go func() {
-		for _ = range fanInChannels(workerChannels...) {
+		for range fanInChannels(workerChannels...) {
 			//fmt.Println("Read from fanIn: " + v)
 		}
 	}()
