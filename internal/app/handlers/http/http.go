@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-type memoryServiceInterface interface {
+type memoryService interface {
 	GetURLByKey(key string) (string, error)
 	IsExistURLByKey(key string) bool
 	CreateLongURLDto() dto.LongURL
@@ -54,7 +54,7 @@ type DatabaseUserServiceInterface interface {
 }
 
 type httpHandler struct {
-	memoryService                 memoryServiceInterface
+	memoryService                 memoryService
 	storageService                storageServiceInterface
 	encryptionService             encryption.EncryptorInterface
 	shorteningService             shorteningServiceInterface
@@ -67,7 +67,7 @@ type httpHandler struct {
 }
 
 func GetHTTPHandler(
-	memoryService memoryServiceInterface,
+	memoryService memoryService,
 	storageService storageServiceInterface,
 	encryptionService encryption.EncryptorInterface,
 	shorteningService shorteningServiceInterface,
