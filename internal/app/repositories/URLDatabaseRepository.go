@@ -23,7 +23,7 @@ func (repository databaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error
 
 	query := "INSERT INTO " + database.TableURLsName + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
 	err := repository.databaseService.GetDatabaseConnection().
-		QueryRow(query, url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
+		QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
 
 	if err != nil {
 		errorService := services.GetErrorService()
@@ -54,7 +54,14 @@ func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 			return collection, err
 		}
 
-		collection = append(collection, dto.NewDatabaseURL(resultURL, resultShortURL, resultUserID, isDeleted))
+		databaseURL := dto.DatabaseURL{
+			LongURL:   resultURL,
+			ShortURL:  resultShortURL,
+			UserID:    resultUserID,
+			IsDeleted: isDeleted,
+		}
+
+		collection = append(collection, databaseURL)
 	}
 
 	return collection, nil
@@ -83,7 +90,7 @@ func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseU
 	var resultString string
 
 	for _, url := range collection {
-		err = statement.QueryRow(url.GetUserID(), url.GetLongURL(), url.GetShortURL()).Scan(&insertedID)
+		err = statement.QueryRow(url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
 
 		if len(resultString) > 0 {
 			resultString = resultString + ", "
@@ -129,8 +136,14 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 			errorsText = errorsText + " " + err.Error()
 		}
 
-		result = append(result, dto.NewDatabaseURL(
-			resultURL, resultShortURL, resultUserID, true))
+		databaseURL := dto.DatabaseURL{
+			LongURL:   resultURL,
+			ShortURL:  resultShortURL,
+			UserID:    resultUserID,
+			IsDeleted: true,
+		}
+
+		result = append(result, databaseURL)
 	}
 
 	if len(errorsText) == 0 {
