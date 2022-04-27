@@ -35,8 +35,8 @@ func GetMemoryService(
 	return &memoryService{config: config, repository: repository, shorteningService: shorteningService}
 }
 
-func (service memoryService) GetURLByKey(key string) (string, error) {
-	url := service.repository.GetURLByKey(key)
+func (service memoryService) GetURLEntityByShortURL(shortURL string) (string, error) {
+	url := service.repository.GetURLByKey(shortURL)
 
 	if url.IsDeleted {
 		return "", fmt.Errorf("%v: %w", url, databaseErrors.ErrorIsDeleted)
@@ -45,8 +45,8 @@ func (service memoryService) GetURLByKey(key string) (string, error) {
 	return url.LongURL, nil
 }
 
-func (service memoryService) IsExistURLByKey(key string) bool {
-	return service.repository.IsExistURLByKey(key)
+func (service memoryService) IsExistURLEntityByShortURL(shortURL string) bool {
+	return service.repository.IsExistURLByKey(shortURL)
 }
 
 func (service memoryService) CreateLongURLDto() dto.LongURL {
