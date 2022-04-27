@@ -17,7 +17,7 @@ func GetURLMemoryRepository() *shortURLs {
 }
 
 func (u *shortURLs) AddURL(url url.URL) bool {
-	u.urlMap[url.GetShortURL()] = url
+	u.urlMap[url.ShortURL] = url
 
 	return true
 }
@@ -47,7 +47,7 @@ func (u *shortURLs) GetURLsByUserToken(userToken string) []url.URL {
 	var collection []url.URL
 
 	for _, url := range u.urlMap {
-		if url.GetUserToken() == userToken {
+		if url.UserID == userToken {
 			collection = append(collection, url)
 		}
 	}

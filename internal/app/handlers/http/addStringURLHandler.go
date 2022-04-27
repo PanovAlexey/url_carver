@@ -29,7 +29,7 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
+	url.UserID = h.contextStorageService.GetUserTokenFromContext(r.Context())
 	h.memoryService.SaveURL(url)
 	h.storageService.SaveURL(url)
 	_, err = h.databaseURLService.SaveURL(url)
