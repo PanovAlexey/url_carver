@@ -11,12 +11,12 @@ func (h *httpHandler) HandleGetURL(w http.ResponseWriter, r *http.Request) {
 
 	urlID := chi.URLParam(r, "id")
 
-	if len(urlID) == 0 || !h.memoryService.IsExistURLByKey(urlID) {
+	if len(urlID) == 0 || !h.memoryService.IsExistURLEntityByShortURL(urlID) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	urlFull, err := h.memoryService.GetURLByKey(urlID)
+	urlFull, err := h.memoryService.GetURLEntityByShortURL(urlID)
 
 	if err != nil {
 		errorService := services.GetErrorService()
