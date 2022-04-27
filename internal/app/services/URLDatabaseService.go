@@ -36,12 +36,12 @@ func (service databaseURLService) SaveURL(url url.URL) (int, error) {
 		log.Println("error while URL user verification: " + err.Error())
 	}
 
-	databaseURL := dto.NewDatabaseURL(
-		url.GetLongURL(),
-		url.GetShortURL(),
-		userID,
-		false,
-	)
+	databaseURL := dto.DatabaseURL{
+		LongURL:   url.GetLongURL(),
+		ShortURL:  url.GetShortURL(),
+		UserID:    userID,
+		IsDeleted: false,
+	}
 
 	log.Println(`try to save to database URL: `, databaseURL)
 	log.Println(databaseURL)
@@ -65,10 +65,14 @@ func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
 			log.Println("error while URL user verification: " + err.Error())
 		}
 
-		URLDatabaseCollection = append(
-			URLDatabaseCollection,
-			dto.NewDatabaseURL(url.GetLongURL(), url.GetShortURL(), userID, false),
-		)
+		databaseURL := dto.DatabaseURL{
+			LongURL:   url.GetLongURL(),
+			ShortURL:  url.GetShortURL(),
+			UserID:    userID,
+			IsDeleted: false,
+		}
+
+		URLDatabaseCollection = append(URLDatabaseCollection, databaseURL)
 	}
 
 	log.Println(`try to save to database batch URLs. Items count: `, len(URLDatabaseCollection))
@@ -130,17 +134,17 @@ func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
 	}
 
 	for _, databaseURL := range collection {
-		user, err := service.databaseUserService.GetUserByID(databaseURL.GetUserID())
+		user, err := service.databaseUserService.GetUserByID(databaseURL.UserID)
 
 		if err != nil {
-			log.Println(`error while getting user by ID `, databaseURL.GetUserID(), `. `, err.Error())
+			log.Println(`error while getting user by ID `, databaseURL.UserID, `. `, err.Error())
 
 			continue
 		}
 
 		dtoURLCollection = append(
 			dtoURLCollection,
-			url.New(databaseURL.GetLongURL(), databaseURL.GetShortURL(), user.GetGUID(), databaseURL.GetIsDeleted()),
+			url.New(databaseURL.LongURL, databaseURL.ShortURL, user.GetGUID(), databaseURL.IsDeleted),
 		)
 	}
 

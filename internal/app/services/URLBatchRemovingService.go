@@ -68,10 +68,10 @@ func (service batchURLsRemovingService) newURMRemovingWorker(inputChannel <-chan
 			}
 
 			for _, databaseURL := range deletedDatabaseURLs {
-				_, ok := resultDeletingMap[databaseURL.GetShortURL()]
+				_, ok := resultDeletingMap[databaseURL.ShortURL]
 
 				if ok {
-					resultDeletingMap[databaseURL.GetShortURL()] = true
+					resultDeletingMap[databaseURL.ShortURL] = true
 				}
 			}
 
