@@ -18,7 +18,7 @@ func (service mappingService) MapURLEntityCollectionToDTO(collection []url.URL) 
 	for _, url := range collection {
 		collectionDto = append(
 			collectionDto,
-			dto.NewURLForShowingUser(url.GetLongURL(), url.GetShortURL(), ``),
+			dto.NewURLForShowingUser(url.LongURL, url.ShortURL, ``),
 		)
 	}
 

@@ -30,15 +30,15 @@ func GetDatabaseURLService(
 }
 
 func (service databaseURLService) SaveURL(url url.URL) (int, error) {
-	userID, err := service.verifyUser(url.GetUserToken())
+	userID, err := service.verifyUser(url.UserID)
 
 	if err != nil {
 		log.Println("error while URL user verification: " + err.Error())
 	}
 
 	databaseURL := dto.DatabaseURL{
-		LongURL:   url.GetLongURL(),
-		ShortURL:  url.GetShortURL(),
+		LongURL:   url.LongURL,
+		ShortURL:  url.ShortURL,
 		UserID:    userID,
 		IsDeleted: false,
 	}
@@ -59,15 +59,15 @@ func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
 	var URLDatabaseCollection []dto.DatabaseURL
 
 	for _, url := range collection {
-		userID, err := service.verifyUser(url.GetUserToken())
+		userID, err := service.verifyUser(url.UserID)
 
 		if err != nil {
 			log.Println("error while URL user verification: " + err.Error())
 		}
 
 		databaseURL := dto.DatabaseURL{
-			LongURL:   url.GetLongURL(),
-			ShortURL:  url.GetShortURL(),
+			LongURL:   url.LongURL,
+			ShortURL:  url.ShortURL,
 			UserID:    userID,
 			IsDeleted: false,
 		}
@@ -144,7 +144,12 @@ func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
 
 		dtoURLCollection = append(
 			dtoURLCollection,
-			url.New(databaseURL.LongURL, databaseURL.ShortURL, user.GetGUID(), databaseURL.IsDeleted),
+			url.URL{
+				LongURL:   databaseURL.LongURL,
+				ShortURL:  databaseURL.ShortURL,
+				UserID:    user.GetGUID(),
+				IsDeleted: databaseURL.IsDeleted,
+			},
 		)
 	}
 

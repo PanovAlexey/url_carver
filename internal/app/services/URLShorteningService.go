@@ -23,5 +23,10 @@ func (service shorteningService) GetURLEntityByLongURL(longURL string) (url.URL,
 	shortURLHash := md5.Sum([]byte(longURL))
 	shortURLHashString := hex.EncodeToString(shortURLHash[:])
 
-	return url.New(longURL, shortURLHashString, ``, false), nil
+	return url.URL{
+		LongURL:   longURL,
+		ShortURL:  shortURLHashString,
+		UserID:    ``,
+		IsDeleted: false,
+	}, nil
 }

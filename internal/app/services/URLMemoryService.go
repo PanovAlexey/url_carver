@@ -38,11 +38,11 @@ func GetMemoryService(
 func (service memoryService) GetURLByKey(key string) (string, error) {
 	url := service.repository.GetURLByKey(key)
 
-	if url.GetIsDeleted() {
+	if url.IsDeleted {
 		return "", fmt.Errorf("%v: %w", url, databaseErrors.ErrorIsDeleted)
 	}
 
-	return url.GetLongURL(), nil
+	return url.LongURL, nil
 }
 
 func (service memoryService) IsExistURLByKey(key string) bool {
@@ -78,7 +78,7 @@ func (service memoryService) DeleteURLsByShortValueSlice(urlShortValuesSlice []s
 	urlCollection := service.repository.GetURLsByShortValueSlice(urlShortValuesSlice)
 
 	for _, url := range urlCollection {
-		url.SetIsDeleted()
+		url.IsDeleted = true
 		service.SaveURL(url)
 	}
 }
@@ -88,7 +88,7 @@ func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.UR
 	resultCollection := []urlEntity.URL{}
 
 	for _, URL := range inputCollection {
-		shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(URL.GetShortURL())
+		shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(URL.ShortURL)
 
 		if err != nil {
 			shortURLWithDomain = ""
@@ -97,12 +97,12 @@ func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.UR
 
 		resultCollection = append(
 			resultCollection,
-			urlEntity.New(
-				URL.GetLongURL(),
-				shortURLWithDomain,
-				URL.GetUserToken(),
-				URL.GetIsDeleted(),
-			),
+			urlEntity.URL{
+				LongURL:   URL.LongURL,
+				ShortURL:  shortURLWithDomain,
+				UserID:    URL.UserID,
+				IsDeleted: URL.IsDeleted,
+			},
 		)
 	}
 

@@ -40,15 +40,15 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		url.SetUserToken(h.contextStorageService.GetUserTokenFromContext(r.Context()))
+		url.UserID = h.contextStorageService.GetUserTokenFromContext(r.Context())
 
 		h.memoryService.SaveURL(url)
 		h.storageService.SaveURL(url)
 
-		shortURLWithDomain, err := h.shorteningService.GetShortURLWithDomain(url.GetShortURL())
+		shortURLWithDomain, err := h.shorteningService.GetShortURLWithDomain(url.ShortURL)
 
 		if err != nil {
-			log.Println("error while getting short URL with domain for URL: ", url.GetShortURL())
+			log.Println("error while getting short URL with domain for URL: ", url.ShortURL)
 		}
 
 		batchOutputURLDTOCollection = append(
