@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"errors"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
@@ -127,13 +126,11 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 	var resultIsDeleted bool
 	var result = make([]dto.DatabaseURL, 0)
 
-	var errorsText string
-
 	for rows.Next() {
 		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL, &resultIsDeleted)
 
 		if err != nil {
-			errorsText = errorsText + " " + err.Error()
+			return nil, err
 		}
 
 		databaseURL := dto.DatabaseURL{
@@ -146,9 +143,5 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 		result = append(result, databaseURL)
 	}
 
-	if len(errorsText) == 0 {
-		return result, nil
-	}
-
-	return result, errors.New(errorsText)
+	return result, nil
 }
