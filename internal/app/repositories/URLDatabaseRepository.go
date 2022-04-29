@@ -109,13 +109,16 @@ func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseU
 }
 
 func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
-	shortURLValuesSlice []string, userID int) ([]dto.DatabaseURL, error) {
-	query := "UPDATE " + database.TableURLsName +
-		" SET is_deleted = true " +
-		"WHERE short_url = any($1) AND user_id=" + strconv.Itoa(userID) +
-		" RETURNING id, user_id, url, short_url, is_deleted"
+	shortURLValuesSlice []string, userID int) ([]dto.DatabaseURL, error,
+) {
+	query := "UPDATE " + database.TableURLsName + " SET is_deleted = true " +
+		"WHERE short_url = any($1) AND user_id=($2) RETURNING id, user_id, url, short_url, is_deleted"
 
-	rows, err := repository.databaseService.GetDatabaseConnection().Query(query, pq.Array(shortURLValuesSlice))
+	rows, err := repository.databaseService.GetDatabaseConnection().Query(
+		query,
+		pq.Array(shortURLValuesSlice),
+		strconv.Itoa(userID),
+	)
 
 	if err != nil {
 		return nil, err
