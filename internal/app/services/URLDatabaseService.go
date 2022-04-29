@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
@@ -90,7 +91,7 @@ func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string, userT
 	userID := userEntity.GetID()
 
 	if err != nil {
-		return err
+		return errors.New("an error occurred while getting a user by token " + userToken + ". " + err.Error())
 	}
 
 	return batchURLsRemovingService.RemoveByShortURLSlice(URLSlice, userID)
