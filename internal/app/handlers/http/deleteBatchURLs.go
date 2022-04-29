@@ -8,13 +8,6 @@ import (
 )
 
 func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Request) {
-	requestContentType := r.Header.Get("Content-Type")
-
-	if requestContentType != "application/json" {
-		http.Error(w, "Invalid Content-Type", http.StatusBadRequest)
-		return
-	}
-
 	defer r.Body.Close()
 	bodyJSON, err := io.ReadAll(r.Body)
 
