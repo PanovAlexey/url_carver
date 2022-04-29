@@ -43,7 +43,7 @@ func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 	query := "SELECT id, user_id, url, short_url, is_deleted FROM " + database.TableURLsName
 	rows, err := repository.databaseService.GetDatabaseConnection().Query(query)
 
-	if err != nil {
+	if err != nil || rows.Err() != nil {
 		return collection, err
 	}
 
@@ -120,7 +120,7 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 		strconv.Itoa(userID),
 	)
 
-	if err != nil {
+	if err != nil || rows.Err() != nil {
 		return nil, err
 	}
 
