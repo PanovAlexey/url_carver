@@ -8,6 +8,13 @@ import (
 )
 
 func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Request) {
+	userToken := h.contextStorageService.GetUserTokenFromContext(r.Context())
+
+	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	defer r.Body.Close()
 	bodyJSON, err := io.ReadAll(r.Body)
 
@@ -21,13 +28,6 @@ func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Reque
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	userToken := h.contextStorageService.GetUserTokenFromContext(r.Context())
-
-	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
-		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
