@@ -103,11 +103,12 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router.Get("/{id}", h.HandleGetURL)
 	router.Post("/", h.HandleAddURL)
 
-	router.Post("/api/shorten", h.HandleAddURLByJSON)
+	router.With(internalMiddleware.JSON).Post("/api/shorten", h.HandleAddURLByJSON)
 
 	router.Get("/api/user/urls", h.HandleGetURLsByUserToken)
 	router.Post("/api/shorten/batch", h.HandleAddBatchURLs)
-	router.Delete("/api/user/urls", h.HandleDeleteBatchURLs)
+
+	router.With(internalMiddleware.JSON).Delete("/api/user/urls", h.HandleDeleteBatchURLs)
 
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain;charset=utf-8")
