@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
@@ -112,35 +113,28 @@ func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
 	query := "UPDATE " + database.TableURLsName +
 		" SET is_deleted = true " +
 		"WHERE short_url = any($1) AND user_id=" + strconv.Itoa(userID) +
-		"RETURNING id, user_id, url, short_url, is_deleted"
+		" RETURNING id, user_id, url, short_url, is_deleted"
+
 	rows, err := repository.databaseService.GetDatabaseConnection().Query(query, pq.Array(shortURLValuesSlice))
 
 	if err != nil {
 		return nil, err
 	}
 
-	var resultID int
-	var resultUserID int
-	var resultURL string
-	var resultShortURL string
-	var resultIsDeleted bool
 	var result = make([]dto.DatabaseURL, 0)
 
 	for rows.Next() {
-		err = rows.Scan(&resultID, &resultUserID, &resultURL, &resultShortURL, &resultIsDeleted)
+		var u dto.DatabaseURL
 
-		if err != nil {
+		if err := rows.Scan(&u.ID, &u.UserID, &u.LongURL, &u.ShortURL, &u.IsDeleted); err != nil {
+			if err == sql.ErrNoRows {
+				return result, nil
+			}
+
 			return nil, err
 		}
 
-		databaseURL := dto.DatabaseURL{
-			LongURL:   resultURL,
-			ShortURL:  resultShortURL,
-			UserID:    resultUserID,
-			IsDeleted: true,
-		}
-
-		result = append(result, databaseURL)
+		result = append(result, u)
 	}
 
 	return result, nil
