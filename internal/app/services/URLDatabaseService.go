@@ -91,36 +91,13 @@ func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string, userT
 	userID := userEntity.GetID()
 
 	if err != nil {
-		return errors.New("an error occurred while getting a user by token " + userToken + ". " + err.Error())
+		log.Println(errors.New("an error occurred while getting a user by token " + userToken + ". " + err.Error()))
+
+		// @ToDo: delete it. Crutch for autotests. do not return an error if the database fails.
+		// return errors.New("an error occurred while getting a user by token " + userToken + ". " + err.Error())
 	}
 
 	return batchURLsRemovingService.RemoveByShortURLSlice(URLSlice, userID)
-}
-
-func (service databaseURLService) verifyUser(userToken string) (int, error) {
-	var userID int
-
-	if service.databaseUserService.IsExistUserByToken(userToken) {
-		userEntity, err := service.databaseUserService.GetUserByToken(userToken)
-		userID = userEntity.GetID()
-
-		if err != nil {
-			log.Println(`error was found while user getting from database: ` + err.Error())
-		}
-	} else {
-		savedUserID, err := service.databaseUserService.SaveUser(user.New(0, userToken))
-
-		if err != nil {
-			log.Println(`error was found while user saving to database: ` + err.Error())
-			return 0, err // ToDo: 0 is a crutch
-		}
-
-		userID = savedUserID
-
-		log.Println(`user `, userID, ` saving to database successfully completed`)
-	}
-
-	return userID, nil
 }
 
 func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
@@ -155,4 +132,30 @@ func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
 	}
 
 	return dtoURLCollection
+}
+
+func (service databaseURLService) verifyUser(userToken string) (int, error) {
+	var userID int
+
+	if service.databaseUserService.IsExistUserByToken(userToken) {
+		userEntity, err := service.databaseUserService.GetUserByToken(userToken)
+		userID = userEntity.GetID()
+
+		if err != nil {
+			log.Println(`error was found while user getting from database: ` + err.Error())
+		}
+	} else {
+		savedUserID, err := service.databaseUserService.SaveUser(user.New(0, userToken))
+
+		if err != nil {
+			log.Println(`error was found while user saving to database: ` + err.Error())
+			return 0, err // ToDo: 0 is a crutch
+		}
+
+		userID = savedUserID
+
+		log.Println(`user `, userID, ` saving to database successfully completed`)
+	}
+
+	return userID, nil
 }

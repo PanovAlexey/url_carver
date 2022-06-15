@@ -26,7 +26,7 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 	err = json.Unmarshal(bodyJSON, &batchInputURLDTOCollection)
 
 	if err != nil {
-		log.Println(`error while unmarshalling batch with URLs.`)
+		log.Println(`error while unmarshalling batch with URLs. ` + err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

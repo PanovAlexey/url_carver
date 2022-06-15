@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/handlers/http"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
@@ -12,7 +13,21 @@ import (
 	"log"
 )
 
+var (
+	buildVersion string
+	buildDate    string
+	buildCommit  string
+)
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Printf("error loading env variables: %s", err.Error())
+	}
+}
+
 func main() {
+	displayVersionInfo()
+
 	config := config.New()
 	databaseService, err := getDatabaseService(config)
 
@@ -98,8 +113,23 @@ func getDatabaseService(config config.Config) (database.DatabaseInterface, error
 	return databaseService, err
 }
 
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Printf("error loading env variables: %s", err.Error())
+func displayVersionInfo() {
+	const defaultInfo = "N/A"
+
+	if buildVersion == "" {
+		buildVersion = defaultInfo
 	}
+
+	if buildDate == "" {
+		buildDate = defaultInfo
+	}
+
+	if buildCommit == "" {
+		buildCommit = defaultInfo
+	}
+
+	fmt.Printf("Build version: %s\n", buildVersion)
+	fmt.Printf("Build date: %s\n", buildDate)
+	fmt.Printf("Build commit: %s\n", buildCommit)
+	fmt.Println()
 }

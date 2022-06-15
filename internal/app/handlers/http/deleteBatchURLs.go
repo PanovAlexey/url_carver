@@ -7,6 +7,8 @@ import (
 )
 
 func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	userToken := h.contextStorageService.GetUserTokenFromContext(r.Context())
 
 	if !h.userTokenAuthorizationService.IsUserTokenValid(userToken) {
@@ -39,7 +41,7 @@ func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Reque
 		w.WriteHeader(http.StatusAccepted)
 		message = "URL batch sent for deletion"
 	} else {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		message = "error while deleting batch with URLs " + err.Error()
 	}
 
