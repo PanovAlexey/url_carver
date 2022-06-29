@@ -445,7 +445,8 @@ func getRouterForRouteTest() chi.Router {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	config := config.New()
 	shorteningService := services.GetShorteningService(config)
-	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
+	memoryService := &services.MemoryService{Config: config, Repository: URLMemoryRepository, ShorteningService: *shorteningService}
+
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 
 	if err != nil {
@@ -453,26 +454,24 @@ func getRouterForRouteTest() chi.Router {
 	}
 
 	databaseService := database.GetDatabaseService(config)
-	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
-	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
+	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService.GetDatabaseConnection())
+	databaseUserService := services.GetDatabaseUserService(*databaseUserRepository)
 	databaseURLRepository := tests.GetDatabaseURLRepositoryMock(databaseService)
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
-	URLMappingService := services.GetURLMappingService()
 	httpHandler := GetHTTPHandler(
-		memoryService,
-		storageService,
+		*memoryService,
+		*storageService,
 		encryptionService,
-		shorteningService,
+		*shorteningService,
 		contextStorageService,
-		userTokenAuthorizationService,
-		URLMappingService,
+		*userTokenAuthorizationService,
 		databaseService,
-		databaseURLService,
-		databaseUserService,
+		*databaseURLService,
+		*databaseUserService,
 	)
 
 	return httpHandler.NewRouter()

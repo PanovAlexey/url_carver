@@ -11,22 +11,22 @@ import (
 const UserTokenName = `token`
 const UserTokenCookieExpirationDate = 12 * time.Hour
 
-type userTokenAuthorizationService struct {
+type UserTokenAuthorizationService struct {
 }
 
-func GetUserTokenAuthorizationService() *userTokenAuthorizationService {
-	return &userTokenAuthorizationService{}
+func GetUserTokenAuthorizationService() *UserTokenAuthorizationService {
+	return &UserTokenAuthorizationService{}
 }
 
-func (service userTokenAuthorizationService) IsUserTokenValid(userToken string) bool {
+func (service UserTokenAuthorizationService) IsUserTokenValid(userToken string) bool {
 	return len(userToken) >= 1
 }
 
-func (service userTokenAuthorizationService) UserTokenGenerate() string {
+func (service UserTokenAuthorizationService) UserTokenGenerate() string {
 	return uuid.New().String()
 }
 
-func (service userTokenAuthorizationService) GetUserTokenFromCookie(
+func (service UserTokenAuthorizationService) GetUserTokenFromCookie(
 	r *http.Request, encryptionService encryption.EncryptorInterface,
 ) string {
 	userToken := ``
@@ -50,7 +50,7 @@ func (service userTokenAuthorizationService) GetUserTokenFromCookie(
 	return userToken
 }
 
-func (service userTokenAuthorizationService) SetUserTokenToCookie(userToken string, w http.ResponseWriter) {
+func (service UserTokenAuthorizationService) SetUserTokenToCookie(userToken string, w http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:    UserTokenName,
 		Value:   userToken,

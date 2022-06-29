@@ -12,7 +12,7 @@ func Test_GetUserTokenFromContext(t *testing.T) {
 		contextStorageService := GetContextStorageService()
 		structType := fmt.Sprintf("%T", contextStorageService)
 
-		assert.Equal(t, structType, "services.contextStorageService")
+		assert.Equal(t, structType, "services.ContextStorageService")
 	})
 }
 

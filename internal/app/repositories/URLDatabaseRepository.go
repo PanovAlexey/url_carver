@@ -3,45 +3,41 @@ package repositories
 import (
 	"database/sql"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/services"
-	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/lib/pq"
 	"log"
 	"strconv"
 )
 
-type databaseURLRepository struct {
-	databaseService database.DatabaseInterface
+type DatabaseURLRepository struct {
+	SqlDB *sql.DB
 }
 
-func GetDatabaseURLRepository(databaseService database.DatabaseInterface) *databaseURLRepository {
-	return &databaseURLRepository{databaseService: databaseService}
+func GetDatabaseURLRepository(SqlDB *sql.DB) *DatabaseURLRepository {
+	return &DatabaseURLRepository{SqlDB: SqlDB}
 }
 
-func (repository databaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error) {
+func (repository DatabaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error) {
 	var insertedID int
 
-	query := "INSERT INTO " + database.TableURLsName + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
-	err := repository.databaseService.GetDatabaseConnection().
-		QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
+	query := "INSERT INTO " + `urls` + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
+	err := repository.SqlDB.QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
 
 	if err != nil {
-		errorService := services.GetErrorService()
-		err = errorService.GetActualizedError(err, url)
+		log.Println(err)
 	}
 
 	return insertedID, err
 }
 
-func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
+func (repository DatabaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 	var collection []dto.DatabaseURL
 
 	var resultID, resultUserID int
 	var resultURL, resultShortURL string
 	var isDeleted bool
 
-	query := "SELECT id, user_id, url, short_url, is_deleted FROM " + database.TableURLsName
-	rows, err := repository.databaseService.GetDatabaseConnection().Query(query)
+	query := "SELECT id, user_id, url, short_url, is_deleted FROM " + `urls`
+	rows, err := repository.SqlDB.Query(query)
 
 	if err != nil || rows.Err() != nil {
 		return collection, err
@@ -67,9 +63,8 @@ func (repository databaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 	return collection, nil
 }
 
-func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseURL) error {
-	dbConnection := repository.databaseService.GetDatabaseConnection()
-	tx, err := dbConnection.Begin()
+func (repository DatabaseURLRepository) SaveBatchURLs(collection []dto.DatabaseURL) error {
+	tx, err := repository.SqlDB.Begin()
 
 	if err != nil {
 		return err
@@ -77,7 +72,7 @@ func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseU
 
 	defer tx.Rollback()
 	statement, err := tx.Prepare(
-		"INSERT INTO " + database.TableURLsName + "(user_id, url, short_url) VALUES($1,$2,$3) RETURNING id",
+		"INSERT INTO " + `urls` + "(user_id, url, short_url) VALUES($1,$2,$3) RETURNING id",
 	)
 
 	if err != nil {
@@ -108,13 +103,13 @@ func (repository databaseURLRepository) SaveBatchURLs(collection []dto.DatabaseU
 	return tx.Commit()
 }
 
-func (repository databaseURLRepository) DeleteURLsByShortValueSlice(
+func (repository DatabaseURLRepository) DeleteURLsByShortValueSlice(
 	shortURLValuesSlice []string, userID int) ([]dto.DatabaseURL, error,
 ) {
-	query := "UPDATE " + database.TableURLsName + " SET is_deleted = true " +
+	query := "UPDATE " + `urls` + " SET is_deleted = true " +
 		"WHERE short_url = any($1) AND user_id=($2) RETURNING id, user_id, url, short_url, is_deleted"
 
-	rows, err := repository.databaseService.GetDatabaseConnection().Query(
+	rows, err := repository.SqlDB.Query(
 		query,
 		pq.Array(shortURLValuesSlice),
 		strconv.Itoa(userID),

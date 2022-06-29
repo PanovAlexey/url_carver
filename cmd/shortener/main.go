@@ -63,17 +63,16 @@ func getHTTPHandler(
 	fileStorageRepository repositories.FileStorageRepositoryInterface,
 ) servers.HandlerInterface {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	databaseURLRepository := repositories.GetDatabaseURLRepository(databaseService)
-	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
+	databaseURLRepository := &repositories.DatabaseURLRepository{SqlDB: databaseService.GetDatabaseConnection()}
+	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService.GetDatabaseConnection())
 
-	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
+	databaseUserService := services.GetDatabaseUserService(*databaseUserRepository)
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
-	memoryService := services.GetMemoryService(config, URLMemoryRepository, shorteningService)
+	memoryService := &services.MemoryService{Config: config, Repository: URLMemoryRepository, ShorteningService: *shorteningService}
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
-	URLMappingService := services.GetURLMappingService()
 	encryptionService, err := encryption.NewEncryptionService(config)
 
 	if err != nil {
@@ -85,16 +84,15 @@ func getHTTPHandler(
 	memoryService.LoadURLs(databaseURLService.GetURLCollectionFromStorage())
 
 	httpHandler := http.GetHTTPHandler(
-		memoryService,
-		storageService,
+		*memoryService,
+		*storageService,
 		encryptionService,
-		shorteningService,
+		*shorteningService,
 		contextStorageService,
-		userTokenAuthorizationService,
-		URLMappingService,
+		*userTokenAuthorizationService,
 		databaseService,
-		databaseURLService,
-		databaseUserService,
+		*databaseURLService,
+		*databaseUserService,
 	)
 
 	return httpHandler

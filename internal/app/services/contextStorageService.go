@@ -12,19 +12,19 @@ const (
 	userTokenKey key = "token"
 )
 
-type contextStorageService struct {
+type ContextStorageService struct {
 }
 
-func GetContextStorageService() contextStorageService {
-	return contextStorageService{}
+func GetContextStorageService() ContextStorageService {
+	return ContextStorageService{}
 }
 
-func (service contextStorageService) SaveUserTokenToContext(r http.Request, userToken string) http.Request {
+func (service ContextStorageService) SaveUserTokenToContext(r http.Request, userToken string) http.Request {
 	ctx := context.WithValue(r.Context(), userTokenKey, userToken)
 
 	return *r.WithContext(ctx)
 }
 
-func (service contextStorageService) GetUserTokenFromContext(ctx context.Context) string {
+func (service ContextStorageService) GetUserTokenFromContext(ctx context.Context) string {
 	return fmt.Sprintf("%v", ctx.Value(userTokenKey))
 }
