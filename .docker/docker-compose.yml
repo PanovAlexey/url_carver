@@ -1,7 +1,8 @@
 version: '3.7'
 services:
 
-  go-template:
+  url-carver-go:
+    container_name: url_carver_go
     image: golang:1.18-alpine
     ports:
       - "8080:8080"
@@ -10,7 +11,7 @@ services:
     networks:
       - backend
     environment:
-      - app_name=go-template
+      - app_name="URL carver"
       - port=8080
     volumes:
       - ../:/app
@@ -28,7 +29,7 @@ services:
       - ../:/app
     working_dir: /app
     depends_on:
-      - go-template
+      - url-carver-go
     command: sh -c "go install -v golang.org/x/tools/cmd/godoc@latest && godoc -http=:${DOC_PORT}"
 
   postgres:
