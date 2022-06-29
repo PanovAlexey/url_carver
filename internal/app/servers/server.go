@@ -24,7 +24,7 @@ type server struct {
 
 func RunServer(handler HandlerInterface, config config.Config) {
 	runDocumentationServer(config)
-	runUrlCarverServer(handler, config)
+	runURLCarverServer(handler, config)
 }
 
 func runDocumentationServer(config config.Config) {
@@ -42,7 +42,7 @@ func runDocumentationServer(config config.Config) {
 	}
 }
 
-func runUrlCarverServer(handler HandlerInterface, config config.Config) {
+func runURLCarverServer(handler HandlerInterface, config config.Config) {
 	log.Println("UrlCarver starting server...")
 	router := handler.NewRouter()
 	srv := newServer(config.GetServerAddress(), router)
