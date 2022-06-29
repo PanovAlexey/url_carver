@@ -12,6 +12,13 @@ import (
 	"log"
 )
 
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Printf("error loading env variables: %s", err.Error())
+	}
+}
+
 func main() {
 	config := config.New()
 	databaseService, err := getDatabaseService(config)
