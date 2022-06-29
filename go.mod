@@ -9,6 +9,10 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
 	github.com/stretchr/testify v1.7.0
+	github.com/go-critic/go-critic v0.6.3
+	github.com/gostaticanalysis/nilerr v0.1.1
+	golang.org/x/tools v0.1.11-0.20220513221640-090b14e8501f
+	honnef.co/go/tools v0.0.1-2020.1.4
 )
 
 require (
