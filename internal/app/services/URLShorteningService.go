@@ -15,8 +15,8 @@ func GetShorteningService(config config.Config) *ShorteningService {
 	return &ShorteningService{config: config}
 }
 
-func (service ShorteningService) GetShortURLWithDomain(shortURLCode string) (string, error) {
-	return service.config.GetBaseURL() + "/" + shortURLCode, nil
+func (service ShorteningService) GetShortURLWithDomain(shortURLCode string) string {
+	return service.config.GetBaseURL() + "/" + shortURLCode
 }
 
 func (service ShorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {

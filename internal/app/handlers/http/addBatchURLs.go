@@ -45,11 +45,7 @@ func (h *httpHandler) HandleAddBatchURLs(w http.ResponseWriter, r *http.Request)
 		h.memoryService.SaveURL(url)
 		h.storageService.SaveURL(url)
 
-		shortURLWithDomain, err := h.shorteningService.GetShortURLWithDomain(url.ShortURL)
-
-		if err != nil {
-			log.Println("error while getting short URL with domain for URL: ", url.ShortURL)
-		}
+		shortURLWithDomain := h.shorteningService.GetShortURLWithDomain(url.ShortURL)
 
 		batchOutputURLDTOCollection = append(
 			batchOutputURLDTOCollection, batch.NewBatchOutputURL(databaseURL.CorrelationID, shortURLWithDomain),

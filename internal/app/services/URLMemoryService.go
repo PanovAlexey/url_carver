@@ -37,12 +37,7 @@ func (service MemoryService) IsExistURLEntityByShortURL(shortURL string) bool {
 }
 
 func (service MemoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL {
-	shortURLWithDomain, err := service.ShorteningService.GetShortURLWithDomain(url.ShortURL)
-
-	if err != nil {
-		shortURLWithDomain = ""
-		fmt.Println("impossible to build a short url with domain.")
-	}
+	shortURLWithDomain := service.ShorteningService.GetShortURLWithDomain(url.ShortURL)
 
 	return dto.GetShortURLByValue(shortURLWithDomain)
 }
@@ -71,12 +66,7 @@ func (service MemoryService) GetURLsByUserToken(userToken string) []urlEntity.UR
 	resultCollection := []urlEntity.URL{}
 
 	for _, URL := range inputCollection {
-		shortURLWithDomain, err := service.ShorteningService.GetShortURLWithDomain(URL.ShortURL)
-
-		if err != nil {
-			shortURLWithDomain = ""
-			fmt.Println("impossible to build a short url with domain.")
-		}
+		shortURLWithDomain := service.ShorteningService.GetShortURLWithDomain(URL.ShortURL)
 
 		resultCollection = append(
 			resultCollection,
