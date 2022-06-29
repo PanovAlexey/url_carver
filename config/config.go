@@ -12,6 +12,7 @@ type ServerConfig struct {
 	ServerAddress string
 	DebugAddress  string
 	BaseURL       string
+	EnableHTTPS   bool
 }
 
 type FileStorageConfig struct {
@@ -75,6 +76,10 @@ func (config Config) IsDebug() bool {
 	return config.Application.IsDebug
 }
 
+func (config Config) IsEnableHTTPS() bool {
+	return config.Server.EnableHTTPS
+}
+
 func getEnv(key string, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -87,6 +92,7 @@ func initConfigByEnv(config Config) Config {
 	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "localhost:8080")
 	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS", "localhost:8081")
 	config.Server.BaseURL = getEnv("BASE_URL", "http://0.0.0.0:8080")
+	config.Server.EnableHTTPS = getEnv("ENABLE_HTTPS", "false") == "true"
 	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
 	config.Encryption.key = getEnv("ENCRYPTION_KEY", "234324324324234324234")
 	config.Database.dsn = getEnv("DATABASE_DSN", "postgresql://postgresql_user:user_password@postgres_container:5432/postgresql")
