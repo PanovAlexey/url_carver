@@ -12,10 +12,11 @@ import (
 )
 
 type ServerConfig struct {
-	ServerAddress string
-	DebugAddress  string
-	BaseURL       string
-	EnableHTTPS   *bool
+	ServerAddress            string
+	DebugAddress             string
+	BaseURL                  string
+	TimeoutShutdownInSeconds int
+	EnableHTTPS              *bool
 }
 
 type FileStorageConfig struct {
@@ -197,7 +198,7 @@ func initConfigByJSONConfig(config Config) Config {
 		}
 	}
 
-	if config.Server.EnableHTTPS == nil { //ToDo
+	if config.Server.EnableHTTPS == nil {
 		config.Server.EnableHTTPS = configJSON.EnableHTTPS
 	}
 
@@ -231,6 +232,10 @@ func initConfigByDefault(config Config) Config {
 
 	if len(config.Server.BaseURL) < 1 {
 		config.Server.BaseURL = "http://0.0.0.0:8080"
+	}
+
+	if config.Server.TimeoutShutdownInSeconds < 1 {
+		config.Server.TimeoutShutdownInSeconds = 15
 	}
 
 	if config.Server.EnableHTTPS == nil {
