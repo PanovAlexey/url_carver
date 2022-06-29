@@ -19,7 +19,7 @@ build:
 	go build -o ./build/shortener ./cmd/shortener
 
 exec:
-	cd .docker && docker-compose exec url_carver_go bash
+	docker exec -it url_carver_go sh
 
 test:
 	go test ./...
