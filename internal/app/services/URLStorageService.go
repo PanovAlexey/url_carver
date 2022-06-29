@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-type storageService struct {
+type StorageService struct {
 	config            config.Config
 	storageRepository storageRepositoryInterface
 }
@@ -21,11 +21,11 @@ type storageRepositoryInterface interface {
 func GetStorageService(
 	config config.Config,
 	storageRepository storageRepositoryInterface,
-) *storageService {
-	return &storageService{config: config, storageRepository: storageRepository}
+) *StorageService {
+	return &StorageService{config: config, storageRepository: storageRepository}
 }
 
-func (service storageService) GetURLCollectionFromStorage() []url.URL {
+func (service StorageService) GetURLCollectionFromStorage() []url.URL {
 	collection := []url.URL{}
 
 	isStorageExist, err := service.storageRepository.IsStorageExist()
@@ -61,7 +61,7 @@ func (service storageService) GetURLCollectionFromStorage() []url.URL {
 	return collection
 }
 
-func (service storageService) SaveURL(url url.URL) {
+func (service StorageService) SaveURL(url url.URL) {
 	isStorageExist, err := service.storageRepository.IsStorageExist()
 
 	if !isStorageExist || err != nil {

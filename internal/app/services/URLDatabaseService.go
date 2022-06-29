@@ -8,9 +8,9 @@ import (
 	"log"
 )
 
-type databaseURLService struct {
+type DatabaseURLService struct {
 	databaseRepository  databaseURLRepositoryInterface
-	databaseUserService databaseUserService
+	databaseUserService DatabaseUserService
 }
 
 type databaseURLRepositoryInterface interface {
@@ -22,15 +22,15 @@ type databaseURLRepositoryInterface interface {
 
 func GetDatabaseURLService(
 	databaseRepository databaseURLRepositoryInterface,
-	databaseUserService databaseUserService,
-) *databaseURLService {
-	return &databaseURLService{
+	databaseUserService DatabaseUserService,
+) *DatabaseURLService {
+	return &DatabaseURLService{
 		databaseRepository:  databaseRepository,
 		databaseUserService: databaseUserService,
 	}
 }
 
-func (service databaseURLService) SaveURL(url url.URL) (int, error) {
+func (service DatabaseURLService) SaveURL(url url.URL) (int, error) {
 	userID, err := service.verifyUser(url.UserID)
 
 	if err != nil {
@@ -56,7 +56,7 @@ func (service databaseURLService) SaveURL(url url.URL) (int, error) {
 	return URLID, err
 }
 
-func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
+func (service DatabaseURLService) SaveBatchURLs(collection []url.URL) {
 	var URLDatabaseCollection []dto.DatabaseURL
 
 	for _, url := range collection {
@@ -85,7 +85,7 @@ func (service databaseURLService) SaveBatchURLs(collection []url.URL) {
 	}
 }
 
-func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string, userToken string) error {
+func (service DatabaseURLService) RemoveByShortURLSlice(URLSlice []string, userToken string) error {
 	batchURLsRemovingService := GetBatchURLsRemovingService(service.databaseRepository)
 	userEntity, err := service.databaseUserService.GetUserByToken(userToken)
 	userID := userEntity.GetID()
@@ -100,7 +100,7 @@ func (service databaseURLService) RemoveByShortURLSlice(URLSlice []string, userT
 	return batchURLsRemovingService.RemoveByShortURLSlice(URLSlice, userID)
 }
 
-func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
+func (service DatabaseURLService) GetURLCollectionFromStorage() []url.URL {
 	dtoURLCollection := []url.URL{}
 
 	collection, err := service.databaseRepository.GetList()
@@ -134,7 +134,7 @@ func (service databaseURLService) GetURLCollectionFromStorage() []url.URL {
 	return dtoURLCollection
 }
 
-func (service databaseURLService) verifyUser(userToken string) (int, error) {
+func (service DatabaseURLService) verifyUser(userToken string) (int, error) {
 	var userID int
 
 	if service.databaseUserService.IsExistUserByToken(userToken) {

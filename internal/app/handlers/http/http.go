@@ -1,11 +1,8 @@
 package http
 
 import (
-	"context"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
 	internalMiddleware "github.com/PanovAlexey/url_carver/internal/app/handlers/http/middleware"
+	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/go-chi/chi/v5"
@@ -13,70 +10,29 @@ import (
 	"net/http"
 )
 
-type memoryService interface {
-	GetURLEntityByShortURL(shortURL string) (string, error)
-	IsExistURLEntityByShortURL(shortURL string) bool
-	CreateLongURLDto() dto.LongURL
-	GetShortURLDtoByURL(url url.URL) dto.ShortURL
-	SaveURL(url url.URL) bool
-	GetURLsByUserToken(userToken string) []url.URL
-	DeleteURLsByShortValueSlice([]string)
-}
-
-type storageServiceInterface interface {
-	SaveURL(url url.URL)
-}
-
-type shorteningServiceInterface interface {
-	GetURLEntityByLongURL(longURL string) (url.URL, error)
-	GetShortURLWithDomain(shortURLCode string) (string, error)
-}
-
-type contextStorageServiceInterface interface {
-	GetUserTokenFromContext(ctx context.Context) string
-}
-
-type userTokenAuthorizationServiceInterface interface {
-	IsUserTokenValid(userToken string) bool
-}
-
-type URLMappingServiceInterface interface {
-	MapURLEntityCollectionToDTO(collection []url.URL) []dto.URLForShowingUser
-}
-
-type DatabaseURLServiceInterface interface {
-	SaveURL(url url.URL) (int, error)
-	SaveBatchURLs(collection []url.URL)
-	RemoveByShortURLSlice(URLSlice []string, userToken string) error
-}
-type DatabaseUserServiceInterface interface {
-	SaveUser(user user.User) (int, error)
-}
-
 type httpHandler struct {
-	memoryService                 memoryService
-	storageService                storageServiceInterface
+	memoryService                 services.MemoryService
+	storageService                services.StorageService
 	encryptionService             encryption.EncryptorInterface
-	shorteningService             shorteningServiceInterface
-	contextStorageService         contextStorageServiceInterface
-	userTokenAuthorizationService userTokenAuthorizationServiceInterface
-	URLMappingService             URLMappingServiceInterface
+	shorteningService             services.ShorteningService
+	contextStorageService         services.ContextStorageService
+	userTokenAuthorizationService services.UserTokenAuthorizationService
+	URLMappingService             services.MappingService
 	databaseService               database.DatabaseInterface
-	databaseURLService            DatabaseURLServiceInterface
-	databaseUserService           DatabaseUserServiceInterface
+	databaseURLService            services.DatabaseURLService
+	databaseUserService           services.DatabaseUserService
 }
 
 func GetHTTPHandler(
-	memoryService memoryService,
-	storageService storageServiceInterface,
+	memoryService services.MemoryService,
+	storageService services.StorageService,
 	encryptionService encryption.EncryptorInterface,
-	shorteningService shorteningServiceInterface,
-	contextStorageService contextStorageServiceInterface,
-	userTokenAuthorizationService userTokenAuthorizationServiceInterface,
-	URLMappingService URLMappingServiceInterface,
+	shorteningService services.ShorteningService,
+	contextStorageService services.ContextStorageService,
+	userTokenAuthorizationService services.UserTokenAuthorizationService,
 	databaseService database.DatabaseInterface,
-	databaseURLService DatabaseURLServiceInterface,
-	databaseUserService DatabaseUserServiceInterface,
+	databaseURLService services.DatabaseURLService,
+	databaseUserService services.DatabaseUserService,
 ) *httpHandler {
 	return &httpHandler{
 		memoryService:                 memoryService,
@@ -85,7 +41,7 @@ func GetHTTPHandler(
 		shorteningService:             shorteningService,
 		contextStorageService:         contextStorageService,
 		userTokenAuthorizationService: userTokenAuthorizationService,
-		URLMappingService:             URLMappingService,
+		URLMappingService:             services.MappingService{},
 		databaseService:               databaseService,
 		databaseURLService:            databaseURLService,
 		databaseUserService:           databaseUserService,

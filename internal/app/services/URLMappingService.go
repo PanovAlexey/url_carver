@@ -5,14 +5,10 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
-type mappingService struct {
+type MappingService struct {
 }
 
-func GetURLMappingService() *mappingService {
-	return &mappingService{}
-}
-
-func (service mappingService) MapURLEntityCollectionToDTO(collection []url.URL) []dto.URLForShowingUser {
+func (service MappingService) MapURLEntityCollectionToDTO(collection []url.URL) []dto.URLForShowingUser {
 	collectionDto := []dto.URLForShowingUser{}
 
 	for _, url := range collection {

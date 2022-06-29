@@ -14,7 +14,7 @@ func Test_GetUserTokenAuthorizationService(t *testing.T) {
 		userTokenAuthorizationService := GetUserTokenAuthorizationService()
 		structType := fmt.Sprintf("%T", userTokenAuthorizationService)
 
-		assert.Equal(t, structType, "*services.userTokenAuthorizationService")
+		assert.Equal(t, structType, "*services.UserTokenAuthorizationService")
 	})
 }
 

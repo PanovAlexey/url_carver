@@ -2,27 +2,21 @@ package services
 
 import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
+	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"log"
 )
 
-type databaseUserService struct {
-	databaseRepository databaseUserRepositoryInterface
-}
-
-type databaseUserRepositoryInterface interface {
-	SaveUser(user user.User) (int, error)
-	GetUserByID(userID int) (user.User, error)
-	GetUserByGUID(guid string) (user.User, error)
-	IsExistUserByGUID(guid string) bool
+type DatabaseUserService struct {
+	databaseRepository repositories.DatabaseUserRepository
 }
 
 func GetDatabaseUserService(
-	databaseRepository databaseUserRepositoryInterface,
-) *databaseUserService {
-	return &databaseUserService{databaseRepository: databaseRepository}
+	databaseRepository repositories.DatabaseUserRepository,
+) *DatabaseUserService {
+	return &DatabaseUserService{databaseRepository: databaseRepository}
 }
 
-func (service databaseUserService) SaveUser(user user.User) (int, error) {
+func (service DatabaseUserService) SaveUser(user user.User) (int, error) {
 	insertedID, err := service.databaseRepository.SaveUser(user)
 
 	if err != nil {
@@ -32,14 +26,14 @@ func (service databaseUserService) SaveUser(user user.User) (int, error) {
 	return insertedID, err
 }
 
-func (service databaseUserService) GetUserByToken(token string) (user.User, error) {
+func (service DatabaseUserService) GetUserByToken(token string) (user.User, error) {
 	return service.databaseRepository.GetUserByGUID(token)
 }
 
-func (service databaseUserService) GetUserByID(userID int) (user.User, error) {
+func (service DatabaseUserService) GetUserByID(userID int) (user.User, error) {
 	return service.databaseRepository.GetUserByID(userID)
 }
 
-func (service databaseUserService) IsExistUserByToken(token string) bool {
+func (service DatabaseUserService) IsExistUserByToken(token string) bool {
 	return service.databaseRepository.IsExistUserByGUID(token)
 }

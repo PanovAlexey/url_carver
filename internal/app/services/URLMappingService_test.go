@@ -9,16 +9,16 @@ import (
 
 func Test_GetURLMappingService(t *testing.T) {
 	t.Run("Test URL mapping creating", func(t *testing.T) {
-		URLMappingService := GetURLMappingService()
+		URLMappingService := &MappingService{}
 		structType := fmt.Sprintf("%T", URLMappingService)
 
-		assert.Equal(t, "*services.mappingService", structType)
+		assert.Equal(t, "*services.MappingService", structType)
 	})
 }
 
 func Test_MapURLEntityCollectionToDTO(t *testing.T) {
 	t.Run("Test map URL entity collection to DTO", func(t *testing.T) {
-		URLMappingService := GetURLMappingService()
+		URLMappingService := &MappingService{}
 
 		URLSlice := make([]url.URL, 0)
 		URLSlice = append(URLSlice, url.URL{

@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	longURLDto := h.memoryService.CreateLongURLDto()
+	longURLDto := dto.GetLongURLByValue("")
 	err = json.Unmarshal(bodyJSON, &longURLDto)
 
 	if err != nil || len(longURLDto.Value) == 0 {

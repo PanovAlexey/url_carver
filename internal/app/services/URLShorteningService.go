@@ -7,19 +7,19 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
-type shorteningService struct {
+type ShorteningService struct {
 	config config.Config
 }
 
-func GetShorteningService(config config.Config) *shorteningService {
-	return &shorteningService{config: config}
+func GetShorteningService(config config.Config) *ShorteningService {
+	return &ShorteningService{config: config}
 }
 
-func (service shorteningService) GetShortURLWithDomain(shortURLCode string) (string, error) {
+func (service ShorteningService) GetShortURLWithDomain(shortURLCode string) (string, error) {
 	return service.config.GetBaseURL() + "/" + shortURLCode, nil
 }
 
-func (service shorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {
+func (service ShorteningService) GetURLEntityByLongURL(longURL string) (url.URL, error) {
 	shortURLHash := md5.Sum([]byte(longURL))
 	shortURLHashString := hex.EncodeToString(shortURLHash[:])
 

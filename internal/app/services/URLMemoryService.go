@@ -16,27 +16,14 @@ type repositoryInterface interface {
 	GetURLsByShortValueSlice(urlShortValuesSlice []string) []urlEntity.URL
 }
 
-type shorteningServiceInterface interface {
-	GetShortURLWithDomain(shortURLCode string) (string, error)
-	GetURLEntityByLongURL(longURL string) (urlEntity.URL, error)
+type MemoryService struct {
+	Repository        repositoryInterface
+	Config            config.Config
+	ShorteningService ShorteningService
 }
 
-type memoryService struct {
-	repository        repositoryInterface
-	config            config.Config
-	shorteningService shorteningServiceInterface
-}
-
-func GetMemoryService(
-	config config.Config,
-	repository repositoryInterface,
-	shorteningService shorteningServiceInterface,
-) *memoryService {
-	return &memoryService{config: config, repository: repository, shorteningService: shorteningService}
-}
-
-func (service memoryService) GetURLEntityByShortURL(shortURL string) (string, error) {
-	url := service.repository.GetURLByKey(shortURL)
+func (service MemoryService) GetURLEntityByShortURL(shortURL string) (string, error) {
+	url := service.Repository.GetURLByKey(shortURL)
 
 	if url.IsDeleted {
 		return "", fmt.Errorf("%v: %w", url, databaseErrors.ErrorIsDeleted)
@@ -45,16 +32,12 @@ func (service memoryService) GetURLEntityByShortURL(shortURL string) (string, er
 	return url.LongURL, nil
 }
 
-func (service memoryService) IsExistURLEntityByShortURL(shortURL string) bool {
-	return service.repository.IsExistURLByKey(shortURL)
+func (service MemoryService) IsExistURLEntityByShortURL(shortURL string) bool {
+	return service.Repository.IsExistURLByKey(shortURL)
 }
 
-func (service memoryService) CreateLongURLDto() dto.LongURL {
-	return dto.GetLongURLByValue("")
-}
-
-func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL {
-	shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(url.ShortURL)
+func (service MemoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL {
+	shortURLWithDomain, err := service.ShorteningService.GetShortURLWithDomain(url.ShortURL)
 
 	if err != nil {
 		shortURLWithDomain = ""
@@ -64,18 +47,18 @@ func (service memoryService) GetShortURLDtoByURL(url urlEntity.URL) dto.ShortURL
 	return dto.GetShortURLByValue(shortURLWithDomain)
 }
 
-func (service memoryService) LoadURLs(collection []urlEntity.URL) {
+func (service MemoryService) LoadURLs(collection []urlEntity.URL) {
 	for _, url := range collection {
 		service.SaveURL(url)
 	}
 }
 
-func (service memoryService) SaveURL(url urlEntity.URL) bool {
-	return service.repository.AddURL(url)
+func (service MemoryService) SaveURL(url urlEntity.URL) bool {
+	return service.Repository.AddURL(url)
 }
 
-func (service memoryService) DeleteURLsByShortValueSlice(urlShortValuesSlice []string) {
-	urlCollection := service.repository.GetURLsByShortValueSlice(urlShortValuesSlice)
+func (service MemoryService) DeleteURLsByShortValueSlice(urlShortValuesSlice []string) {
+	urlCollection := service.Repository.GetURLsByShortValueSlice(urlShortValuesSlice)
 
 	for _, url := range urlCollection {
 		url.IsDeleted = true
@@ -83,12 +66,12 @@ func (service memoryService) DeleteURLsByShortValueSlice(urlShortValuesSlice []s
 	}
 }
 
-func (service memoryService) GetURLsByUserToken(userToken string) []urlEntity.URL {
-	inputCollection := service.repository.GetURLsByUserToken(userToken)
+func (service MemoryService) GetURLsByUserToken(userToken string) []urlEntity.URL {
+	inputCollection := service.Repository.GetURLsByUserToken(userToken)
 	resultCollection := []urlEntity.URL{}
 
 	for _, URL := range inputCollection {
-		shortURLWithDomain, err := service.shorteningService.GetShortURLWithDomain(URL.ShortURL)
+		shortURLWithDomain, err := service.ShorteningService.GetShortURLWithDomain(URL.ShortURL)
 
 		if err != nil {
 			shortURLWithDomain = ""

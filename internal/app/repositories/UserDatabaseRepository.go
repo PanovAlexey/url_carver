@@ -1,24 +1,24 @@
 package repositories
 
 import (
+	"database/sql"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/user"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 )
 
-type databaseUserRepository struct {
-	databaseService database.DatabaseInterface
+type DatabaseUserRepository struct {
+	sqlDB *sql.DB
 }
 
-func GetDatabaseUserRepository(databaseService database.DatabaseInterface) *databaseUserRepository {
-	return &databaseUserRepository{databaseService: databaseService}
+func GetDatabaseUserRepository(sqlDB *sql.DB) *DatabaseUserRepository {
+	return &DatabaseUserRepository{sqlDB: sqlDB}
 }
 
-func (repository databaseUserRepository) SaveUser(user user.User) (int, error) {
+func (repository DatabaseUserRepository) SaveUser(user user.User) (int, error) {
 	var insertedID int
 
 	query := "INSERT INTO " + database.TableUsersName + " (guid) VALUES ($1) RETURNING id"
-	err := repository.databaseService.GetDatabaseConnection().
-		QueryRow(query, user.GetGUID()).Scan(&insertedID)
+	err := repository.sqlDB.QueryRow(query, user.GetGUID()).Scan(&insertedID)
 
 	if err != nil {
 		return 0, err // ToDo: 0 - is a crutch
@@ -27,9 +27,9 @@ func (repository databaseUserRepository) SaveUser(user user.User) (int, error) {
 	return insertedID, err
 }
 
-func (repository databaseUserRepository) GetUserByGUID(guid string) (user.User, error) {
+func (repository DatabaseUserRepository) GetUserByGUID(guid string) (user.User, error) {
 	query := "SELECT id FROM " + database.TableUsersName + " WHERE guid=($1)"
-	row := repository.databaseService.GetDatabaseConnection().QueryRow(query, guid)
+	row := repository.sqlDB.QueryRow(query, guid)
 
 	var userID int
 	err := row.Scan(&userID)
@@ -41,9 +41,9 @@ func (repository databaseUserRepository) GetUserByGUID(guid string) (user.User, 
 	return user.New(userID, guid), nil
 }
 
-func (repository databaseUserRepository) GetUserByID(userID int) (user.User, error) {
+func (repository DatabaseUserRepository) GetUserByID(userID int) (user.User, error) {
 	query := "SELECT id FROM " + database.TableUsersName + " WHERE id=($1)"
-	row := repository.databaseService.GetDatabaseConnection().QueryRow(query, userID)
+	row := repository.sqlDB.QueryRow(query, userID)
 
 	var userGUID string
 	err := row.Scan(&userGUID)
@@ -55,7 +55,7 @@ func (repository databaseUserRepository) GetUserByID(userID int) (user.User, err
 	return user.New(userID, userGUID), nil
 }
 
-func (repository databaseUserRepository) IsExistUserByGUID(guid string) bool {
+func (repository DatabaseUserRepository) IsExistUserByGUID(guid string) bool {
 	user, err := repository.GetUserByGUID(guid)
 
 	if err != nil || user.GetID() < 1 {
