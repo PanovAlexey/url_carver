@@ -7,6 +7,7 @@ services:
     ports:
       - "8080:8080"
       - "8081:8081"
+      - "4443:443"
     networks:
       - backend
     environment:

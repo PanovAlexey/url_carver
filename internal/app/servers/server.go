@@ -4,6 +4,7 @@ package servers
 import (
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/go-chi/chi/v5"
+	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -27,6 +28,12 @@ func RunServer(handler HandlerInterface, config config.Config) {
 	}
 
 	log.Println("Starting server...")
-	log.Fatal(http.ListenAndServe(config.GetServerAddress(), router))
+
+	if config.IsEnableHTTPS() {
+		log.Fatal(http.Serve(autocert.NewListener(config.GetServerAddress()), router))
+	} else {
+		log.Fatal(http.ListenAndServe(config.GetServerAddress(), router))
+	}
+
 	log.Println("Server stopped.")
 }
