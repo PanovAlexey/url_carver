@@ -24,3 +24,4 @@ vendor/
 
 # Environment variables file
 .env
+config.json
