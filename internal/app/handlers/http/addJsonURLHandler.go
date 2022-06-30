@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"io"
 	"net/http"
 )
@@ -40,9 +39,7 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	_, err = h.databaseURLService.SaveURL(url)
 
 	if err != nil {
-		errorService := services.GetErrorService()
-
-		if errorService.IsKeyDuplicated(err) {
+		if h.errorService.IsKeyDuplicated(err) {
 			w.WriteHeader(http.StatusConflict)
 		} else {
 			w.WriteHeader(http.StatusCreated)

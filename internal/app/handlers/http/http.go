@@ -11,6 +11,7 @@ import (
 )
 
 type httpHandler struct {
+	errorService                  services.ErrorService
 	memoryService                 services.MemoryService
 	storageService                services.StorageService
 	encryptionService             encryption.EncryptorInterface
@@ -24,6 +25,7 @@ type httpHandler struct {
 }
 
 func GetHTTPHandler(
+	errorService services.ErrorService,
 	memoryService services.MemoryService,
 	storageService services.StorageService,
 	encryptionService encryption.EncryptorInterface,
@@ -35,6 +37,7 @@ func GetHTTPHandler(
 	databaseUserService services.DatabaseUserService,
 ) *httpHandler {
 	return &httpHandler{
+		errorService:                  errorService,
 		memoryService:                 memoryService,
 		storageService:                storageService,
 		encryptionService:             encryptionService,
