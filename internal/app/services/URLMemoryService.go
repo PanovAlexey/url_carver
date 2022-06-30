@@ -5,19 +5,12 @@ import (
 	"github.com/PanovAlexey/url_carver/config"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	urlEntity "github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
+	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	databaseErrors "github.com/PanovAlexey/url_carver/internal/app/services/database/errors"
 )
 
-type repositoryInterface interface {
-	AddURL(url urlEntity.URL) bool
-	GetURLByKey(key string) urlEntity.URL
-	IsExistURLByKey(key string) bool
-	GetURLsByUserToken(userToken string) []urlEntity.URL
-	GetURLsByShortValueSlice(urlShortValuesSlice []string) []urlEntity.URL
-}
-
 type MemoryService struct {
-	Repository        repositoryInterface
+	Repository        repositories.URLMemoryRepository
 	Config            config.Config
 	ShorteningService ShorteningService
 }

@@ -445,7 +445,7 @@ func getRouterForRouteTest() chi.Router {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	config := config.New()
 	shorteningService := services.GetShorteningService(config)
-	memoryService := &services.MemoryService{Config: config, Repository: URLMemoryRepository, ShorteningService: *shorteningService}
+	memoryService := &services.MemoryService{Config: config, Repository: *URLMemoryRepository, ShorteningService: *shorteningService}
 
 	fileStorageRepository, err := repositories.GetFileStorageRepository(config)
 

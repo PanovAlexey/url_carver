@@ -71,7 +71,7 @@ func getHTTPHandler(
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	shorteningService := services.GetShorteningService(config)
 	storageService := services.GetStorageService(config, fileStorageRepository)
-	memoryService := &services.MemoryService{Config: config, Repository: URLMemoryRepository, ShorteningService: *shorteningService}
+	memoryService := &services.MemoryService{Config: config, Repository: *URLMemoryRepository, ShorteningService: *shorteningService}
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
 	encryptionService, err := encryption.NewEncryptionService(config)
