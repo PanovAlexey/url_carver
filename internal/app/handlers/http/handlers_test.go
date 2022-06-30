@@ -453,6 +453,7 @@ func getRouterForRouteTest() chi.Router {
 		log.Fatalln("error creating file repository by config:" + err.Error())
 	}
 
+	errorService := services.ErrorService{}
 	databaseService := database.GetDatabaseService(config)
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService.GetDatabaseConnection())
 	databaseUserService := services.GetDatabaseUserService(*databaseUserRepository)
@@ -463,6 +464,7 @@ func getRouterForRouteTest() chi.Router {
 	contextStorageService := services.GetContextStorageService()
 	userTokenAuthorizationService := services.GetUserTokenAuthorizationService()
 	httpHandler := GetHTTPHandler(
+		errorService,
 		*memoryService,
 		*storageService,
 		encryptionService,

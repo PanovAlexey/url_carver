@@ -8,12 +8,13 @@ import (
 	"strconv"
 )
 
-type DatabaseURLRepository struct {
-	SqlDB *sql.DB
+type ErrorServiceInterface interface {
+	GetActualizedError(err error, additionalInfo interface{}) error
 }
 
-func GetDatabaseURLRepository(SqlDB *sql.DB) *DatabaseURLRepository {
-	return &DatabaseURLRepository{SqlDB: SqlDB}
+type DatabaseURLRepository struct {
+	SqlDB        *sql.DB
+	ErrorService ErrorServiceInterface
 }
 
 func (repository DatabaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error) {
@@ -23,6 +24,7 @@ func (repository DatabaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error
 	err := repository.SqlDB.QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
 
 	if err != nil {
+		err = repository.ErrorService.GetActualizedError(err, url)
 		log.Println(err)
 	}
 

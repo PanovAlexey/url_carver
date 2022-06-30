@@ -62,8 +62,9 @@ func getHTTPHandler(
 	databaseService database.DatabaseInterface,
 	fileStorageRepository repositories.FileStorageRepositoryInterface,
 ) servers.HandlerInterface {
+	errorService := services.ErrorService{}
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	databaseURLRepository := &repositories.DatabaseURLRepository{SqlDB: databaseService.GetDatabaseConnection()}
+	databaseURLRepository := &repositories.DatabaseURLRepository{SqlDB: databaseService.GetDatabaseConnection(), ErrorService: errorService}
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService.GetDatabaseConnection())
 
 	databaseUserService := services.GetDatabaseUserService(*databaseUserRepository)
@@ -84,6 +85,7 @@ func getHTTPHandler(
 	memoryService.LoadURLs(databaseURLService.GetURLCollectionFromStorage())
 
 	httpHandler := http.GetHTTPHandler(
+		errorService,
 		*memoryService,
 		*storageService,
 		encryptionService,

@@ -2,7 +2,6 @@ package http
 
 import (
 	"fmt"
-	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"io"
 	"net/http"
 )
@@ -35,9 +34,7 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 	_, err = h.databaseURLService.SaveURL(url)
 
 	if err != nil || len(url.LongURL) == 0 {
-		errorService := services.GetErrorService()
-
-		if errorService.IsKeyDuplicated(err) {
+		if h.errorService.IsKeyDuplicated(err) {
 			w.WriteHeader(http.StatusConflict)
 		} else {
 			// database errors should be ignored

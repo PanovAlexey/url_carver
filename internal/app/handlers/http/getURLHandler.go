@@ -1,7 +1,6 @@
 package http
 
 import (
-	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
@@ -19,9 +18,7 @@ func (h *httpHandler) HandleGetURL(w http.ResponseWriter, r *http.Request) {
 	urlFull, err := h.memoryService.GetURLEntityByShortURL(urlID)
 
 	if err != nil {
-		errorService := services.GetErrorService()
-
-		if errorService.IsDeleted(err) {
+		if h.errorService.IsDeleted(err) {
 			w.WriteHeader(http.StatusGone)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
