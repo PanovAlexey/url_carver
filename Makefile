@@ -13,7 +13,7 @@ recreate:
 	docker-compose --file .docker/docker-compose.yml up -d
 
 logs:
-	cd .docker && docker logs url_carver_go
+	docker container logs url_carver_go
 
 build:
 	go build -o ./build/shortener ./cmd/shortener
