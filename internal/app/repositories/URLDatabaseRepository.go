@@ -8,13 +8,13 @@ import (
 	"strconv"
 )
 
-type ErrorServiceInterface interface {
+type errorServiceInterface interface {
 	GetActualizedError(err error, additionalInfo interface{}) error
 }
 
 type DatabaseURLRepository struct {
 	DB           *sql.DB
-	ErrorService ErrorServiceInterface
+	ErrorService errorServiceInterface
 }
 
 func (repository DatabaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error) {

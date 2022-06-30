@@ -89,5 +89,5 @@ func getMemoryService() *MemoryService {
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	shorteningService := GetShorteningService(config)
 
-	return &MemoryService{Config: config, Repository: URLMemoryRepository, ShorteningService: *shorteningService}
+	return &MemoryService{Config: config, Repository: *URLMemoryRepository, ShorteningService: *shorteningService}
 }

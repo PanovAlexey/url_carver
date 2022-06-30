@@ -4,29 +4,29 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 )
 
-type shortURLs struct {
+type URLMemoryRepository struct {
 	urlMap map[string]url.URL
 }
 
-var globalURLs = shortURLs{
+var globalURLs = URLMemoryRepository{
 	urlMap: make(map[string]url.URL),
 }
 
-func GetURLMemoryRepository() *shortURLs {
+func GetURLMemoryRepository() *URLMemoryRepository {
 	return &globalURLs
 }
 
-func (u *shortURLs) AddURL(url url.URL) bool {
+func (u *URLMemoryRepository) AddURL(url url.URL) bool {
 	u.urlMap[url.ShortURL] = url
 
 	return true
 }
 
-func (u shortURLs) GetURLByKey(key string) url.URL {
+func (u URLMemoryRepository) GetURLByKey(key string) url.URL {
 	return u.urlMap[key]
 }
 
-func (u shortURLs) GetURLsByShortValueSlice(urlShortValuesSlice []string) []url.URL {
+func (u URLMemoryRepository) GetURLsByShortValueSlice(urlShortValuesSlice []string) []url.URL {
 	urlCollection := make([]url.URL, 0)
 
 	for _, urlShortValue := range urlShortValuesSlice {
@@ -38,12 +38,12 @@ func (u shortURLs) GetURLsByShortValueSlice(urlShortValuesSlice []string) []url.
 	return urlCollection
 }
 
-func (u *shortURLs) IsExistURLByKey(key string) bool {
+func (u *URLMemoryRepository) IsExistURLByKey(key string) bool {
 	_, ok := u.urlMap[key]
 	return ok
 }
 
-func (u *shortURLs) GetURLsByUserToken(userToken string) []url.URL {
+func (u *URLMemoryRepository) GetURLsByUserToken(userToken string) []url.URL {
 	var collection []url.URL
 
 	for _, url := range u.urlMap {
