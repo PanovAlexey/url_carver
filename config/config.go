@@ -244,7 +244,7 @@ func initConfigByDefault(config Config) Config {
 	}
 
 	if len(config.FileStorage.FileStoragePath) < 1 {
-		config.FileStorage.FileStoragePath = "urls.txt"
+		config.FileStorage.FileStoragePath = "/app/urls.txt"
 	}
 
 	if len(config.Encryption.key) < 1 {
