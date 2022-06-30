@@ -64,7 +64,7 @@ func getHTTPHandler(
 ) servers.HandlerInterface {
 	errorService := services.ErrorService{}
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
-	databaseURLRepository := &repositories.DatabaseURLRepository{SqlDB: databaseService.GetDatabaseConnection(), ErrorService: errorService}
+	databaseURLRepository := &repositories.DatabaseURLRepository{DB: databaseService.GetDatabaseConnection(), ErrorService: errorService}
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService.GetDatabaseConnection())
 
 	databaseUserService := services.GetDatabaseUserService(*databaseUserRepository)

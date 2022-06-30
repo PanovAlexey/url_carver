@@ -1,0 +1,8 @@
+{"LongURL":"http://ya.ru","ShortURL":"1b556b44a4ee73524fb009e11918fb4f","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"http://pikabu.com","ShortURL":"6e8040b1b452170cc569a17ad1c23e13","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"https://3dnews.com","ShortURL":"f325fe609335839151c83c065975e95e","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"http://pikabu.com","ShortURL":"6e8040b1b452170cc569a17ad1c23e13","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"https://3dnews.com","ShortURL":"f325fe609335839151c83c065975e95e","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"http://twokw5qvxcc8.net/rlnnq","ShortURL":"8848d687af0fa66c0f43cc1568df1630","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"http://id204rs9w3crhe.net","ShortURL":"4810e91a0c836cb8ad4121310b2d42ce","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}
+{"LongURL":"http://codeblog.pro","ShortURL":"a3035b1ecf2ee793bfe63dc13a051da6","UserID":"6902cf9e-a723-4d58-b8e6-bec97c7f7163","IsDeleted":false}

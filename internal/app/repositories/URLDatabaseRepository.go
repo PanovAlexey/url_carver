@@ -13,7 +13,7 @@ type ErrorServiceInterface interface {
 }
 
 type DatabaseURLRepository struct {
-	SqlDB        *sql.DB
+	DB           *sql.DB
 	ErrorService ErrorServiceInterface
 }
 
@@ -21,7 +21,7 @@ func (repository DatabaseURLRepository) SaveURL(url dto.DatabaseURL) (int, error
 	var insertedID int
 
 	query := "INSERT INTO " + `urls` + " (user_id, url, short_url) VALUES ($1, $2, $3) RETURNING id"
-	err := repository.SqlDB.QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
+	err := repository.DB.QueryRow(query, url.UserID, url.LongURL, url.ShortURL).Scan(&insertedID)
 
 	if err != nil {
 		err = repository.ErrorService.GetActualizedError(err, url)
@@ -39,7 +39,7 @@ func (repository DatabaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 	var isDeleted bool
 
 	query := "SELECT id, user_id, url, short_url, is_deleted FROM " + `urls`
-	rows, err := repository.SqlDB.Query(query)
+	rows, err := repository.DB.Query(query)
 
 	if err != nil || rows.Err() != nil {
 		return collection, err
@@ -66,7 +66,7 @@ func (repository DatabaseURLRepository) GetList() ([]dto.DatabaseURL, error) {
 }
 
 func (repository DatabaseURLRepository) SaveBatchURLs(collection []dto.DatabaseURL) error {
-	tx, err := repository.SqlDB.Begin()
+	tx, err := repository.DB.Begin()
 
 	if err != nil {
 		return err
@@ -111,7 +111,7 @@ func (repository DatabaseURLRepository) DeleteURLsByShortValueSlice(
 	query := "UPDATE " + `urls` + " SET is_deleted = true " +
 		"WHERE short_url = any($1) AND user_id=($2) RETURNING id, user_id, url, short_url, is_deleted"
 
-	rows, err := repository.SqlDB.Query(
+	rows, err := repository.DB.Query(
 		query,
 		pq.Array(shortURLValuesSlice),
 		strconv.Itoa(userID),
