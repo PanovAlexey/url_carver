@@ -7,18 +7,18 @@ import (
 )
 
 type DatabaseUserRepository struct {
-	sqlDB *sql.DB
+	DB *sql.DB
 }
 
-func GetDatabaseUserRepository(sqlDB *sql.DB) *DatabaseUserRepository {
-	return &DatabaseUserRepository{sqlDB: sqlDB}
+func GetDatabaseUserRepository(DB *sql.DB) *DatabaseUserRepository {
+	return &DatabaseUserRepository{DB: DB}
 }
 
 func (repository DatabaseUserRepository) SaveUser(user user.User) (int, error) {
 	var insertedID int
 
 	query := "INSERT INTO " + database.TableUsersName + " (guid) VALUES ($1) RETURNING id"
-	err := repository.sqlDB.QueryRow(query, user.GetGUID()).Scan(&insertedID)
+	err := repository.DB.QueryRow(query, user.GetGUID()).Scan(&insertedID)
 
 	if err != nil {
 		return 0, err // ToDo: 0 - is a crutch
@@ -29,7 +29,7 @@ func (repository DatabaseUserRepository) SaveUser(user user.User) (int, error) {
 
 func (repository DatabaseUserRepository) GetUserByGUID(guid string) (user.User, error) {
 	query := "SELECT id FROM " + database.TableUsersName + " WHERE guid=($1)"
-	row := repository.sqlDB.QueryRow(query, guid)
+	row := repository.DB.QueryRow(query, guid)
 
 	var userID int
 	err := row.Scan(&userID)
@@ -43,7 +43,7 @@ func (repository DatabaseUserRepository) GetUserByGUID(guid string) (user.User, 
 
 func (repository DatabaseUserRepository) GetUserByID(userID int) (user.User, error) {
 	query := "SELECT id FROM " + database.TableUsersName + " WHERE id=($1)"
-	row := repository.sqlDB.QueryRow(query, userID)
+	row := repository.DB.QueryRow(query, userID)
 
 	var userGUID string
 	err := row.Scan(&userGUID)
