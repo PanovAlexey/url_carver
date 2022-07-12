@@ -15,6 +15,12 @@ type MemoryService struct {
 	ShorteningService ShorteningService
 }
 
+func (service MemoryService) GetAllURLsCount() int {
+	urls := service.Repository.GetAllURLs()
+
+	return len(urls)
+}
+
 func (service MemoryService) GetURLEntityByShortURL(shortURL string) (string, error) {
 	url := service.Repository.GetURLByKey(shortURL)
 
