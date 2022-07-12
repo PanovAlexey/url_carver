@@ -8,6 +8,7 @@ import (
 func AuthorizationByIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, IPNet, err := net.ParseCIDR("127.0.0.1")
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return

@@ -34,6 +34,7 @@ type DatabaseConfig struct {
 type ApplicationConfig struct {
 	IsDebug        *bool
 	ConfigJSONPath string
+	TrustedSubNet  string
 }
 
 type Config struct {
@@ -50,6 +51,7 @@ type ConfigJSON struct {
 	FileStoragePath string `json:"file_storage_path"`
 	DatabaseDSN     string `json:"database_dsn"`
 	EnableHTTPS     *bool  `json:"enable_https"`
+	TrustedSubNet   string `json:"trusted_subnet"`
 }
 
 // New returns the initialized configuration structure
@@ -99,6 +101,10 @@ func (config Config) IsEnableHTTPS() bool {
 	return *config.Server.EnableHTTPS
 }
 
+func (config Config) GetTrustedSubNet() string {
+	return config.Application.TrustedSubNet
+}
+
 func getEnv(key string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -122,6 +128,7 @@ func initConfigByEnv(config Config) Config {
 	config.Database.dsn = getEnv("DATABASE_DSN")
 
 	config.Application.ConfigJSONPath = getEnv("CONFIG")
+	config.Application.TrustedSubNet = getEnv("TRUSTED_SUBNET")
 
 	if len(getEnv("IS_DEBUG")) > 0 {
 		isDebug := getEnv("IS_DEBUG") == "true"
@@ -144,6 +151,7 @@ func initConfigByFlag(config Config) Config {
 	databaseDsn := flag.String("d", "", "DATABASE_DSN")
 	shortConfigJSONPath := flag.String("c", "", "CONFIG")
 	longConfigJSONPath := flag.String("config", "", "CONFIG")
+	trustedSubNet := flag.String("t", "", "TRUSTED_SUBNET")
 
 	flag.Parse()
 
@@ -173,6 +181,10 @@ func initConfigByFlag(config Config) Config {
 
 	if len(*longConfigJSONPath) > 0 {
 		config.Application.ConfigJSONPath = *longConfigJSONPath
+	}
+
+	if len(*trustedSubNet) > 0 {
+		config.Application.TrustedSubNet = *trustedSubNet
 	}
 
 	return config
@@ -218,6 +230,10 @@ func initConfigByJSONConfig(config Config) Config {
 		config.Database.dsn = configJSON.DatabaseDSN
 	}
 
+	if len(config.Application.TrustedSubNet) < 1 && len(configJSON.TrustedSubNet) > 0 {
+		config.Application.TrustedSubNet = configJSON.TrustedSubNet
+	}
+
 	return config
 }
 
@@ -258,6 +274,10 @@ func initConfigByDefault(config Config) Config {
 	if config.Application.IsDebug == nil {
 		defaultIsDebug := false
 		config.Application.IsDebug = &defaultIsDebug
+	}
+
+	if len(config.Application.TrustedSubNet) < 1 {
+		config.Application.TrustedSubNet = ""
 	}
 
 	return config
