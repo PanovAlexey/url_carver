@@ -47,7 +47,7 @@ func (repository DatabaseUserRepository) GetUsers() ([]user.User, error) {
 	query := "SELECT id, guid FROM " + database.TableUsersName
 	rows, err := repository.DB.Query(query)
 
-	if err != nil {
+	if err != nil || rows.Err() != nil {
 		return userCollection, err
 	}
 
