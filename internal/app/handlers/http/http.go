@@ -65,7 +65,10 @@ func (h *httpHandler) NewRouter() chi.Router {
 	router.Post("/api/shorten", h.HandleAddURLByJSON)
 
 	router.Get("/api/user/urls", h.HandleGetURLsByUserToken)
+
 	router.Post("/api/shorten/batch", h.HandleAddBatchURLs)
+
+	router.Get("/api/internal/stats", h.HandleGetAppStats)
 
 	router.With(internalMiddleware.JSON).Delete("/api/user/urls", h.HandleDeleteBatchURLs)
 
