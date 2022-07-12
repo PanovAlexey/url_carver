@@ -41,6 +41,34 @@ func (repository DatabaseUserRepository) GetUserByGUID(guid string) (user.User, 
 	return user.New(userID, guid), nil
 }
 
+func (repository DatabaseUserRepository) GetUsers() ([]user.User, error) {
+	userCollection := []user.User{}
+
+	query := "SELECT id, guid FROM " + database.TableUsersName
+	rows, err := repository.DB.Query(query)
+
+	if err != nil {
+		return userCollection, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id   int64
+			guid string
+		)
+
+		if err := rows.Scan(&id, &guid); err != nil {
+			return userCollection, err
+		}
+
+		userCollection = append(userCollection, user.New(int(id), guid))
+	}
+
+	return userCollection, nil
+}
+
 func (repository DatabaseUserRepository) GetUserByID(userID int) (user.User, error) {
 	query := "SELECT id FROM " + database.TableUsersName + " WHERE id=($1)"
 	row := repository.DB.QueryRow(query, userID)
