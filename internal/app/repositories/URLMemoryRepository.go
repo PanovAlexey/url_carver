@@ -38,6 +38,16 @@ func (u URLMemoryRepository) GetURLsByShortValueSlice(urlShortValuesSlice []stri
 	return urlCollection
 }
 
+func (u URLMemoryRepository) GetAllURLs() []url.URL {
+	var collection []url.URL
+
+	for _, url := range u.urlMap {
+		collection = append(collection, url)
+	}
+
+	return collection
+}
+
 func (u *URLMemoryRepository) IsExistURLByKey(key string) bool {
 	_, ok := u.urlMap[key]
 	return ok
