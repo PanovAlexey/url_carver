@@ -30,6 +30,16 @@ func (service DatabaseUserService) GetUserByToken(token string) (user.User, erro
 	return service.databaseRepository.GetUserByGUID(token)
 }
 
+func (service DatabaseUserService) GetAllUsersCount() (int, error) {
+	users, err := service.databaseRepository.GetUsers()
+
+	if err != nil {
+		return 0, err
+	}
+
+	return len(users), nil
+}
+
 func (service DatabaseUserService) GetUserByID(userID int) (user.User, error) {
 	return service.databaseRepository.GetUserByID(userID)
 }
