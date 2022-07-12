@@ -11,6 +11,8 @@ import (
 	"os"
 )
 
+var globalConfig *Config = nil
+
 type ServerConfig struct {
 	ServerAddress            string
 	DebugAddress             string
@@ -56,13 +58,17 @@ type ConfigJSON struct {
 
 // New returns the initialized configuration structure
 func New() Config {
-	config := Config{}
-	config = initConfigByEnv(config)
-	config = initConfigByFlag(config)
-	config = initConfigByJSONConfig(config)
-	config = initConfigByDefault(config)
+	if globalConfig == nil {
+		config := Config{}
+		config = initConfigByEnv(config)
+		config = initConfigByFlag(config)
+		config = initConfigByJSONConfig(config)
+		config = initConfigByDefault(config)
 
-	return config
+		globalConfig = &config
+	}
+
+	return *globalConfig
 }
 
 func (config Config) GetBaseURL() string {
