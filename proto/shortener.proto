@@ -1,0 +1,16 @@
+syntax = "proto3";
+package shortener;
+option go_package = "pkg/shortener_grpc";
+
+service Shortener {
+  rpc AddURL(AddURLRequest) returns(AddURLResponse);
+}
+
+message AddURLRequest {
+  string longURL = 1;
+}
+
+message AddURLResponse {
+  string shortURL = 1;
+  string error = 2;
+}
