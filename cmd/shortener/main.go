@@ -9,6 +9,7 @@ import (
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
+	grpcServices "github.com/PanovAlexey/url_carver/internal/app/services/grpc"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -74,8 +75,19 @@ func main() {
 		databaseUserService,
 	)
 
+	grpcService := grpcServices.GetGRPCShortenerService(
+		errorService,
+		memoryService,
+		storageService,
+		shorteningService,
+		contextStorageService,
+		userTokenAuthorizationService,
+		databaseService,
+		databaseURLService,
+		databaseUserService,
+	)
 
-	servers.RunServer(httpHandler, config)
+	servers.RunServer(httpHandler, grpcService, config)
 }
 
 func getGlobalURLDeletingChannel() chan string {
