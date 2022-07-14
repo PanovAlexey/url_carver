@@ -2,8 +2,15 @@ syntax = "proto3";
 package shortener;
 option go_package = "pkg/shortener_grpc";
 
+import "google/protobuf/empty.proto";
+
 service Shortener {
   rpc AddURL(AddURLRequest) returns(AddURLResponse);
+  rpc GetURLByShort(GetURLRequest) returns(GetURLResponse);
+  rpc AddBatchURLs(AddBatchURLRequest) returns(AddBatchURLResponse);
+  rpc GetURLsByUser(google.protobuf.Empty) returns(GetURLsByUserResponse);
+  rpc DeleteURLs(DeleteURLsRequest) returns(google.protobuf.Empty);
+  rpc GetStats(google.protobuf.Empty) returns(GetStatsResponse);
 }
 
 message AddURLRequest {
@@ -13,4 +20,46 @@ message AddURLRequest {
 message AddURLResponse {
   string shortURL = 1;
   string error = 2;
+}
+
+message GetURLRequest {
+  string shortURL = 1;
+}
+
+message GetURLResponse {
+  string longURL = 1;
+  string error = 2;
+}
+
+message BatchURLItem {
+  string correlationID = 1;
+  string longURL = 2;
+}
+
+message AddBatchURLRequest {
+  repeated BatchURLItem BatchURL = 1;
+}
+
+message AddBatchURLResponse {
+  repeated BatchURLItem BatchURL = 1;
+  string error = 2;
+}
+
+message URLComplex {
+  string ShortURL = 1;
+  string OriginalURL = 2;
+}
+
+message GetURLsByUserResponse {
+  repeated URLComplex URLs = 1;
+  string error = 2;
+}
+
+message DeleteURLsRequest {
+  repeated string shortURL = 1;
+}
+
+message GetStatsResponse {
+  int32 URLS = 1;
+  int32 Users = 2;
 }
