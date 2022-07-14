@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-type key string
-
-const (
-	userTokenKey key = "token"
-)
-
 type ContextStorageService struct {
 }
 
@@ -20,11 +14,11 @@ func GetContextStorageService() ContextStorageService {
 }
 
 func (service ContextStorageService) SaveUserTokenToContext(r http.Request, userToken string) http.Request {
-	ctx := context.WithValue(r.Context(), userTokenKey, userToken)
+	ctx := context.WithValue(r.Context(), UserTokenName, userToken)
 
 	return *r.WithContext(ctx)
 }
 
 func (service ContextStorageService) GetUserTokenFromContext(ctx context.Context) string {
-	return fmt.Sprintf("%v", ctx.Value(userTokenKey))
+	return fmt.Sprintf("%v", ctx.Value(UserTokenName))
 }
