@@ -1,8 +1,10 @@
 package services
 
 import (
+	"context"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/metadata"
 	"log"
 	"net/http"
 	"time"
@@ -48,6 +50,36 @@ func (service UserTokenAuthorizationService) GetUserTokenFromCookie(
 	}
 
 	return userToken
+}
+
+func (service UserTokenAuthorizationService) GetUserTokenFromGRpcMeta(
+	ctx context.Context, encryptionService encryption.EncryptorInterface,
+) string {
+	userTokenEncrypted := ``
+
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		values := md.Get(UserTokenName)
+
+		if len(values) != 0 {
+			userTokenEncrypted = values[0]
+		}
+	}
+
+	if len(userTokenEncrypted) == 0 {
+		log.Println("error with getting token from gRPC metadata")
+
+		return ""
+	}
+
+	userTokenDecrypted, err := encryptionService.Decrypt(userTokenEncrypted)
+
+	if err != nil {
+		log.Println("error with decrypting token from gRPC metadata: " + err.Error())
+
+		return ""
+	}
+
+	return userTokenDecrypted
 }
 
 func (service UserTokenAuthorizationService) SetUserTokenToCookie(userToken string, w http.ResponseWriter) {
