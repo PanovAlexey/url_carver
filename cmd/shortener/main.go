@@ -47,7 +47,33 @@ func main() {
 	globalURLDeletingChannel := getGlobalURLDeletingChannel()
 	defer close(globalURLDeletingChannel)
 
-	httpHandler := getHTTPHandler(config, databaseService, fileStorageRepository)
+	errorService,
+		databaseUserService,
+		databaseURLService,
+		shorteningService,
+		storageService,
+		memoryService,
+		contextStorageService,
+		userTokenAuthorizationService,
+		encryptionService := getGlobalDependencies(config, databaseService, fileStorageRepository)
+
+	// Load URLs to memory from other storages
+	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
+	memoryService.LoadURLs(databaseURLService.GetURLCollectionFromStorage())
+
+	httpHandler := http.GetHTTPHandler(
+		errorService,
+		memoryService,
+		storageService,
+		encryptionService,
+		shorteningService,
+		contextStorageService,
+		userTokenAuthorizationService,
+		databaseService,
+		databaseURLService,
+		databaseUserService,
+	)
+
 
 	servers.RunServer(httpHandler, config)
 }
@@ -57,11 +83,21 @@ func getGlobalURLDeletingChannel() chan string {
 	return queueMap.GetChannelByName(services.ChannelWithRemovingURLsName)
 }
 
-func getHTTPHandler(
+func getGlobalDependencies(
 	config config.Config,
 	databaseService database.DatabaseInterface,
 	fileStorageRepository repositories.FileStorageRepositoryInterface,
-) servers.HandlerInterface {
+) (
+	services.ErrorService,
+	services.DatabaseUserService,
+	services.DatabaseURLService,
+	services.ShorteningService,
+	services.StorageService,
+	services.MemoryService,
+	services.ContextStorageService,
+	services.UserTokenAuthorizationService,
+	encryption.EncryptorInterface,
+) {
 	errorService := services.ErrorService{}
 	URLMemoryRepository := repositories.GetURLMemoryRepository()
 	databaseURLRepository := &repositories.DatabaseURLRepository{DB: databaseService.GetDatabaseConnection(), ErrorService: errorService}
@@ -80,24 +116,15 @@ func getHTTPHandler(
 		log.Println("error with encryption service initialization: " + err.Error())
 	}
 
-	// Load URLs to memory from other storages
-	memoryService.LoadURLs(storageService.GetURLCollectionFromStorage())
-	memoryService.LoadURLs(databaseURLService.GetURLCollectionFromStorage())
-
-	httpHandler := http.GetHTTPHandler(
-		errorService,
-		*memoryService,
-		*storageService,
-		encryptionService,
+	return errorService,
+		*databaseUserService,
+		*databaseURLService,
 		*shorteningService,
+		*storageService,
+		*memoryService,
 		contextStorageService,
 		*userTokenAuthorizationService,
-		databaseService,
-		*databaseURLService,
-		*databaseUserService,
-	)
-
-	return httpHandler
+		encryptionService
 }
 
 func getDatabaseService(config config.Config) (database.DatabaseInterface, error) {
