@@ -26,3 +26,6 @@ test:
 
 lint:
 	golangci-lint run
+
+proto-generate:
+	protoc --go_out=./ --go-grpc_out=./ proto/shortener.proto
