@@ -53,8 +53,6 @@ func GetGRPCShortenerService(
 
 func (s ShortenerService) AddURL(ctx context.Context, request *pb.AddURLRequest) (*pb.AddURLResponse, error) {
 	var response pb.AddURLResponse
-	response.ShortURL = "shortURLMock"
-	response.Error = ""
 
 	if len(request.LongURL) == 0 {
 		response.Error = "URL is empty"
