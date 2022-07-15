@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	pb "github.com/PanovAlexey/url_carver/pkg/shortener_grpc"
@@ -155,8 +156,15 @@ func (s ShortenerService) DeleteURLs(ctx context.Context, request *pb.DeleteURLs
 
 func (s ShortenerService) GetStats(ctx context.Context, in *emptypb.Empty) (*pb.GetStatsResponse, error) {
 	var response pb.GetStatsResponse
-	response.Users = 123
-	response.URLS = 234
+	usersCount, err := s.databaseUserService.GetAllUsersCount()
+
+	if err != nil {
+		return &response, status.Errorf(codes.Unknown, err.Error())
+	}
+
+	appStat := dto.GetAppStatByURLsCountAndUsersCount(s.memoryService.GetAllURLsCount(), usersCount)
+	response.URLS = int32(appStat.Urls)
+	response.Users = int32(appStat.Users)
 
 	return &response, nil
 }
