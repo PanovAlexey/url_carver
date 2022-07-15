@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	pb "github.com/PanovAlexey/url_carver/pkg/shortener_grpc"
@@ -81,18 +80,32 @@ func (s ShortenerService) AddURL(ctx context.Context, request *pb.AddURLRequest)
 		return &response, status.Errorf(codes.Unknown, err.Error(), request.LongURL)
 	}
 
-	shortURLJSON := s.memoryService.GetShortURLDtoByURL(url)
-
-	fmt.Println("URL " + url.LongURL + " added by " + url.ShortURL)
-	response.ShortURL = shortURLJSON.Value
+	response.ShortURL = url.ShortURL
 
 	return &response, nil
 }
 
-func (s ShortenerService) GetURLByShort(ctx context.Context, in *pb.GetURLRequest) (*pb.GetURLResponse, error) {
+func (s ShortenerService) GetURLByShort(ctx context.Context, request *pb.GetURLRequest) (*pb.GetURLResponse, error) {
 	var response pb.GetURLResponse
-	response.LongURL = "longURLMock"
-	response.Error = ""
+
+	if len(request.ShortURL) == 0 || !s.memoryService.IsExistURLEntityByShortURL(request.ShortURL) {
+		response.Error = "Not found"
+		return &response, status.Errorf(codes.NotFound, response.Error, request.ShortURL)
+	}
+
+	urlFull, err := s.memoryService.GetURLEntityByShortURL(request.ShortURL)
+
+	if err != nil {
+		if s.errorService.IsDeleted(err) {
+			response.Error = "Deleted"
+			return &response, status.Errorf(codes.ResourceExhausted, response.Error, request.ShortURL)
+		} else {
+			response.Error = "NotFound"
+			return &response, status.Errorf(codes.NotFound, response.Error, request.ShortURL)
+		}
+	}
+
+	response.LongURL = urlFull
 
 	return &response, nil
 }
