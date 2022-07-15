@@ -3,6 +3,8 @@ package grpc
 import (
 	"context"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/dto/batch"
+	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	pb "github.com/PanovAlexey/url_carver/pkg/shortener_grpc"
@@ -111,28 +113,74 @@ func (s ShortenerService) GetURLByShort(ctx context.Context, request *pb.GetURLR
 	return &response, nil
 }
 
-func (s ShortenerService) AddBatchURLs(ctx context.Context, in *pb.AddBatchURLRequest) (*pb.AddBatchURLResponse, error) {
+func (s ShortenerService) AddBatchURLs(ctx context.Context, request *pb.AddBatchURLRequest) (*pb.AddBatchURLResponse, error) {
 	var response pb.AddBatchURLResponse
-	var batchURLItem pb.BatchURLItem
 
-	batchURLItem.LongURL = "longURL01Mock"
-	batchURLItem.CorrelationID = "1"
+	var URLCollection []url.URL
+	batchInputURLDTOCollection := []batch.BatchInputURL{}
+	batchOutputURLDTOCollection := []batch.BatchOutputURL{}
 
-	response.BatchURL = append(response.BatchURL, &batchURLItem)
-	response.Error = ""
+	for _, v := range request.BatchURL {
+		batchInputURLDTOCollection = append(
+			batchInputURLDTOCollection,
+			batch.BatchInputURL{CorrelationID: v.CorrelationID, OriginalURL: v.LongURL},
+		)
+	}
+
+	for _, URL := range request.BatchURL {
+		url, err := s.shorteningService.GetURLEntityByLongURL(URL.LongURL)
+
+		if err != nil || len(url.LongURL) == 0 {
+			return &response, status.Errorf(
+				codes.ResourceExhausted, `error while getting URL entity by long URL: `+URL.LongURL, URL.LongURL,
+			)
+		}
+
+		url.UserID = s.contextStorageService.GetUserTokenFromContext(ctx)
+
+		s.memoryService.SaveURL(url)
+		s.storageService.SaveURL(url)
+
+		shortURLWithDomain := s.shorteningService.GetShortURLWithDomain(url.ShortURL)
+
+		batchOutputURLDTOCollection = append(
+			batchOutputURLDTOCollection, batch.NewBatchOutputURL(URL.CorrelationID, shortURLWithDomain),
+		)
+
+		response.BatchURL = append(response.BatchURL, &pb.BatchURLItem{LongURL: url.LongURL, CorrelationID: url.ShortURL})
+		URLCollection = append(URLCollection, url)
+	}
+
+	s.databaseURLService.SaveBatchURLs(URLCollection)
 
 	return &response, nil
 }
 
-func (s ShortenerService) GetURLsByUser(ctx context.Context, in *emptypb.Empty) (*pb.GetURLsByUserResponse, error) {
+func (s ShortenerService) GetURLsByUser(ctx context.Context, request *emptypb.Empty) (*pb.GetURLsByUserResponse, error) {
 	var response pb.GetURLsByUserResponse
+
+	userToken := s.contextStorageService.GetUserTokenFromContext(ctx)
+
+	if !s.userTokenAuthorizationService.IsUserTokenValid(userToken) {
+		return &response, status.Errorf(codes.Unauthenticated, "authorization failed", userToken)
+	}
+
+	URLCollection := s.memoryService.GetURLsByUserToken(userToken)
+
+	if len(URLCollection) < 1 {
+		return &response, nil
+	}
+
+	URLCollectionForShowingUser := s.URLMappingService.MapURLEntityCollectionToDTO(URLCollection)
+
 	var URLComplex pb.URLComplex
 
-	URLComplex.ShortURL = "shortURLMock"
-	URLComplex.OriginalURL = "longURLMock"
+	for _, v := range URLCollectionForShowingUser {
+		URLComplex.ShortURL = v.ShortURL
+		URLComplex.OriginalURL = v.LongURL
 
-	response.URLs = append(response.URLs, &URLComplex)
-	response.Error = ""
+		response.URLs = append(response.URLs, &URLComplex)
+	}
 
 	return &response, nil
 }
