@@ -19,6 +19,7 @@ type ServerConfig struct {
 	BaseURL                  string
 	TimeoutShutdownInSeconds int
 	EnableHTTPS              *bool
+	GRpcPort                 string
 }
 
 type FileStorageConfig struct {
@@ -79,6 +80,10 @@ func (config Config) GetServerAddress() string {
 	return config.Server.ServerAddress
 }
 
+func (config Config) GetGRpcServerPort() string {
+	return config.Server.GRpcPort
+}
+
 func (config Config) GetServerDebugAddress() string {
 	return config.Server.DebugAddress
 }
@@ -123,6 +128,7 @@ func initConfigByEnv(config Config) Config {
 	config.Server.ServerAddress = getEnv("SERVER_ADDRESS")
 	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS")
 	config.Server.BaseURL = getEnv("BASE_URL")
+	config.Server.GRpcPort = getEnv("GRPC_PORT")
 
 	if len(getEnv("ENABLE_HTTPS")) > 0 {
 		isEnableHTTPS := getEnv("ENABLE_HTTPS") == "true"
@@ -254,6 +260,10 @@ func initConfigByDefault(config Config) Config {
 
 	if len(config.Server.BaseURL) < 1 {
 		config.Server.BaseURL = "http://0.0.0.0:8080"
+	}
+
+	if len(config.Server.GRpcPort) < 1 {
+		config.Server.GRpcPort = "3123"
 	}
 
 	if config.Server.TimeoutShutdownInSeconds < 1 {
