@@ -16,7 +16,7 @@ services:
     volumes:
       - ../:/app
     working_dir: /app
-    command: sh -c "apk update && apk --no-cache --update add build-base && go run cmd/shortener/main.go"
+    command: sh -c "go run cmd/shortener/main.go"
 
   url-carver-go-doc:
     container_name: url_carver_go_doc
