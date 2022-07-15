@@ -33,8 +33,8 @@ type grpcServer struct {
 
 func RunServer(handler HandlerInterface, grpcService grpcServices.ShortenerService, config config.Config) {
 	go runDocumentationServer(config)
-	go runURLCarverGRpcServer(grpcService, config)
-	runURLCarverServer(handler, config)
+	go runURLCarverServer(handler, config)
+	runURLCarverGRpcServer(grpcService, config)
 }
 
 func runDocumentationServer(config config.Config) {
@@ -90,7 +90,7 @@ func runURLCarverServer(handler HandlerInterface, config config.Config) {
 }
 
 func runURLCarverGRpcServer(grpcService grpcServices.ShortenerService, config config.Config) {
-	log.Println("UrlCarver gRPC starting server...")
+	log.Println("UrlCarver gRPC starting server on the port " + config.GetGRpcServerPort())
 	listen, err := net.Listen("tcp", ":"+config.GetGRpcServerPort())
 
 	if err != nil {

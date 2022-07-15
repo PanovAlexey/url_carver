@@ -263,7 +263,7 @@ func initConfigByDefault(config Config) Config {
 	}
 
 	if len(config.Server.GRpcPort) < 1 {
-		config.Server.GRpcPort = "3123"
+		config.Server.GRpcPort = "9090"
 	}
 
 	if config.Server.TimeoutShutdownInSeconds < 1 {

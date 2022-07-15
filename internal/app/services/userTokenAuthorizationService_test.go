@@ -42,7 +42,7 @@ func Test_GetUserTokenFromCookie(t *testing.T) {
 		encryptionService, _ := encryption.NewEncryptionService(config.New())
 
 		cookieCorrect := http.Cookie{
-			Name:     UserTokenName,
+			Name:     string(UserTokenName),
 			Value:    "d8270dd3786a2b6fd5594d427a67c9220aaea59797017b671907ff36c9fdab4f215c51651b37e428db3a672a59509283393a1f16",
 			HttpOnly: false,
 		}
@@ -61,7 +61,7 @@ func Test_GetUserTokenFromCookieWrong(t *testing.T) {
 		assert.Equal(t, 0, len(userTokenAuthorizationService.GetUserTokenFromCookie(r, encryptionService)))
 
 		cookie := http.Cookie{
-			Name:     UserTokenName,
+			Name:     string(UserTokenName),
 			Value:    "123456",
 			HttpOnly: false,
 		}

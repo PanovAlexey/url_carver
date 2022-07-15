@@ -26,15 +26,19 @@ func TestGRpcURLManaging(t *testing.T) {
 	userTokenSource := "8d210c867a31743ed50b4d427a67c97f0bfaa5cf960328674e56fd37cdf3f8472d5d0d6419fce9db74d72d803e35c71ad403156c"
 
 	appStatBeforeTests, token, err := getStats(conn, userTokenSource)
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, nil, err)
 	assert.Equal(t, userTokenSource, token)
-	assert.Equal(t, 0, appStatBeforeTests.Users)
 
 	shortURL, token, err := addURL(conn, correctURL.LongURL, userTokenSource)
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, correctURL.ShortURL, shortURL)
-	assert.NotEmpty(t, userTokenSource)
+	assert.NotEmpty(t, token)
 
 	longURL, token, err := getURL(conn, correctURL.ShortURL, userTokenSource)
 
@@ -49,6 +53,7 @@ func TestGRpcURLManaging(t *testing.T) {
 	appStatAfterTests, token, err := getStats(conn, userTokenSource)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, appStatBeforeTests.Users+1, appStatAfterTests.Users)
+	assert.Equal(t, userTokenSource, token)
 
 	userURLs, token, err := getURLsByUser(conn, userTokenSource)
 	assert.Equal(t, nil, err)
@@ -78,8 +83,7 @@ func TestGRpcURLManaging(t *testing.T) {
 
 func getConn() *grpc.ClientConn {
 	config := config.New()
-	port := config.GetGRpcServerPort()
-	conn, err := grpc.Dial(":"+port, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("localhost:"+config.GetGRpcServerPort(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Fatal(err)
@@ -161,10 +165,12 @@ func getStats(conn *grpc.ClientConn, inputToken string) (appStat dto.AppStat, ou
 	ctx = metadata.AppendToOutgoingContext(ctx, "token", inputToken)
 
 	response, err := client.GetStats(ctx, &emptypb.Empty{}, grpc.Header(&header))
+	if err == nil {
+		appStat.Users = int(response.Users)
+		appStat.Urls = int(response.URLS)
 
-	appStat.Users = int(response.Users)
-	appStat.Urls = int(response.URLS)
-	outputToken = header.Get("token")[0]
+		outputToken = header.Get("token")[0]
+	}
 
 	return
 }

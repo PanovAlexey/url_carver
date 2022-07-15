@@ -22,11 +22,10 @@ func AuthorizationByToken(
 	}
 
 	userTokenEncrypted := encryptionService.Encrypt(userToken)
-	tokenHeader := metadata.New(map[string]string{services.UserTokenName: userTokenEncrypted})
+	tokenHeader := metadata.New(map[string]string{string(services.UserTokenName): userTokenEncrypted})
 
 	if err := grpc.SendHeader(ctx, tokenHeader); err != nil { // For using user token on the client.
 		log.Println("setting token to gRPC meta error: " + err.Error())
-		// @ToDo: добавить нормальный возврат ошибки
 	}
 
 	// For using user token on the server down the stack.

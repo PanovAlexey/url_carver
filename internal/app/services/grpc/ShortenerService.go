@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto/batch"
 	"github.com/PanovAlexey/url_carver/internal/app/domain/entity/url"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
@@ -58,14 +57,14 @@ func (s ShortenerService) AddURL(ctx context.Context, request *pb.AddURLRequest)
 
 	if len(request.LongURL) == 0 {
 		response.Error = "URL is empty"
-		return &response, status.Errorf(codes.InvalidArgument, response.Error, request.LongURL)
+		return &response, status.Error(codes.InvalidArgument, response.Error)
 	}
 
 	url, err := s.shorteningService.GetURLEntityByLongURL(request.LongURL)
 
 	if err != nil {
 		response.Error = err.Error()
-		return &response, status.Errorf(codes.InvalidArgument, err.Error(), request.LongURL)
+		return &response, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	url.UserID = s.contextStorageService.GetUserTokenFromContext(ctx)
@@ -77,10 +76,10 @@ func (s ShortenerService) AddURL(ctx context.Context, request *pb.AddURLRequest)
 		response.Error = err.Error()
 
 		if s.errorService.IsKeyDuplicated(err) {
-			return &response, status.Errorf(codes.AlreadyExists, err.Error(), request.LongURL)
+			return &response, status.Error(codes.AlreadyExists, err.Error())
 		}
 
-		return &response, status.Errorf(codes.Unknown, err.Error(), request.LongURL)
+		return &response, status.Error(codes.Unknown, err.Error())
 	}
 
 	response.ShortURL = url.ShortURL
@@ -93,7 +92,7 @@ func (s ShortenerService) GetURLByShort(ctx context.Context, request *pb.GetURLR
 
 	if len(request.ShortURL) == 0 || !s.memoryService.IsExistURLEntityByShortURL(request.ShortURL) {
 		response.Error = "Not found"
-		return &response, status.Errorf(codes.NotFound, response.Error, request.ShortURL)
+		return &response, status.Error(codes.NotFound, response.Error)
 	}
 
 	urlFull, err := s.memoryService.GetURLEntityByShortURL(request.ShortURL)
@@ -101,10 +100,10 @@ func (s ShortenerService) GetURLByShort(ctx context.Context, request *pb.GetURLR
 	if err != nil {
 		if s.errorService.IsDeleted(err) {
 			response.Error = "Deleted"
-			return &response, status.Errorf(codes.ResourceExhausted, response.Error, request.ShortURL)
+			return &response, status.Error(codes.ResourceExhausted, response.Error)
 		} else {
 			response.Error = "NotFound"
-			return &response, status.Errorf(codes.NotFound, response.Error, request.ShortURL)
+			return &response, status.Error(codes.NotFound, response.Error)
 		}
 	}
 
@@ -117,22 +116,13 @@ func (s ShortenerService) AddBatchURLs(ctx context.Context, request *pb.AddBatch
 	var response pb.AddBatchURLResponse
 
 	var URLCollection []url.URL
-	batchInputURLDTOCollection := []batch.BatchInputURL{}
-	batchOutputURLDTOCollection := []batch.BatchOutputURL{}
-
-	for _, v := range request.BatchURL {
-		batchInputURLDTOCollection = append(
-			batchInputURLDTOCollection,
-			batch.BatchInputURL{CorrelationID: v.CorrelationID, OriginalURL: v.LongURL},
-		)
-	}
 
 	for _, URL := range request.BatchURL {
 		url, err := s.shorteningService.GetURLEntityByLongURL(URL.LongURL)
 
 		if err != nil || len(url.LongURL) == 0 {
-			return &response, status.Errorf(
-				codes.ResourceExhausted, `error while getting URL entity by long URL: `+URL.LongURL, URL.LongURL,
+			return &response, status.Error(
+				codes.ResourceExhausted, `error while getting URL entity by long URL: `+URL.LongURL,
 			)
 		}
 
@@ -140,12 +130,6 @@ func (s ShortenerService) AddBatchURLs(ctx context.Context, request *pb.AddBatch
 
 		s.memoryService.SaveURL(url)
 		s.storageService.SaveURL(url)
-
-		shortURLWithDomain := s.shorteningService.GetShortURLWithDomain(url.ShortURL)
-
-		batchOutputURLDTOCollection = append(
-			batchOutputURLDTOCollection, batch.NewBatchOutputURL(URL.CorrelationID, shortURLWithDomain),
-		)
 
 		response.BatchURL = append(response.BatchURL, &pb.BatchURLItem{LongURL: url.LongURL, CorrelationID: url.ShortURL})
 		URLCollection = append(URLCollection, url)
@@ -162,7 +146,7 @@ func (s ShortenerService) GetURLsByUser(ctx context.Context, request *emptypb.Em
 	userToken := s.contextStorageService.GetUserTokenFromContext(ctx)
 
 	if !s.userTokenAuthorizationService.IsUserTokenValid(userToken) {
-		return &response, status.Errorf(codes.Unauthenticated, "authorization failed", userToken)
+		return &response, status.Error(codes.Unauthenticated, "authorization failed by token "+userToken)
 	}
 
 	URLCollection := s.memoryService.GetURLsByUserToken(userToken)
@@ -189,14 +173,14 @@ func (s ShortenerService) DeleteURLs(ctx context.Context, request *pb.DeleteURLs
 	userToken := s.contextStorageService.GetUserTokenFromContext(ctx)
 
 	if !s.userTokenAuthorizationService.IsUserTokenValid(userToken) {
-		return &emptypb.Empty{}, status.Errorf(codes.NotFound, "authorization failed", userToken)
+		return &emptypb.Empty{}, status.Error(codes.NotFound, "authorization failed by token "+userToken)
 	}
 
 	err := s.databaseURLService.RemoveByShortURLSlice(request.ShortURL, userToken)
 	s.memoryService.DeleteURLsByShortValueSlice(request.ShortURL)
 
 	if err != nil {
-		return &emptypb.Empty{}, status.Errorf(codes.Unknown, "URL deletion failed: "+err.Error(), userToken)
+		return &emptypb.Empty{}, status.Error(codes.Unknown, "URL deletion failed: "+err.Error())
 	}
 
 	return &emptypb.Empty{}, nil
@@ -207,7 +191,7 @@ func (s ShortenerService) GetStats(ctx context.Context, in *emptypb.Empty) (*pb.
 	usersCount, err := s.databaseUserService.GetAllUsersCount()
 
 	if err != nil {
-		return &response, status.Errorf(codes.Unknown, err.Error())
+		return &response, status.Error(codes.Unknown, err.Error())
 	}
 
 	appStat := dto.GetAppStatByURLsCountAndUsersCount(s.memoryService.GetAllURLsCount(), usersCount)

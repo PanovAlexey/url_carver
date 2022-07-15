@@ -387,7 +387,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 		response, bodyString := testRequest(t, server, testData.method, testData.urlPath, testData.body, testData.headers, testData.cookies)
 
 		for _, cookie := range response.Cookies() {
-			if cookie.Name == services.UserTokenName && len(cookie.Value) > 0 {
+			if cookie.Name == string(services.UserTokenName) && len(cookie.Value) > 0 {
 				userTokenCookie = *cookie
 			}
 		}

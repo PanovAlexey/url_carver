@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-const UserTokenName = `token`
+type key string
+
+const UserTokenName key = `token`
 const UserTokenCookieExpirationDate = 12 * time.Hour
 
 type UserTokenAuthorizationService struct {
@@ -32,7 +34,7 @@ func (service UserTokenAuthorizationService) GetUserTokenFromCookie(
 	r *http.Request, encryptionService encryption.EncryptorInterface,
 ) string {
 	userToken := ``
-	userTokenCookie, err := r.Cookie(UserTokenName)
+	userTokenCookie, err := r.Cookie(string(UserTokenName))
 
 	if err != nil {
 		if err != http.ErrNoCookie {
@@ -58,7 +60,7 @@ func (service UserTokenAuthorizationService) GetUserTokenFromGRpcMeta(
 	userTokenEncrypted := ``
 
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		values := md.Get(UserTokenName)
+		values := md.Get(string(UserTokenName))
 
 		if len(values) != 0 {
 			userTokenEncrypted = values[0]
@@ -84,7 +86,7 @@ func (service UserTokenAuthorizationService) GetUserTokenFromGRpcMeta(
 
 func (service UserTokenAuthorizationService) SetUserTokenToCookie(userToken string, w http.ResponseWriter) {
 	cookie := http.Cookie{
-		Name:    UserTokenName,
+		Name:    string(UserTokenName),
 		Value:   userToken,
 		Expires: time.Now().Add(UserTokenCookieExpirationDate),
 		Path:    `/`,
