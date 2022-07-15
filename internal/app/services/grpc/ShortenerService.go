@@ -136,8 +136,21 @@ func (s ShortenerService) GetURLsByUser(ctx context.Context, in *emptypb.Empty) 
 	return &response, nil
 }
 
-func (s ShortenerService) DeleteURLs(ctx context.Context, in *pb.DeleteURLsRequest) (*emptypb.Empty, error) {
-	return nil, nil
+func (s ShortenerService) DeleteURLs(ctx context.Context, request *pb.DeleteURLsRequest) (*emptypb.Empty, error) {
+	userToken := s.contextStorageService.GetUserTokenFromContext(ctx)
+
+	if !s.userTokenAuthorizationService.IsUserTokenValid(userToken) {
+		return &emptypb.Empty{}, status.Errorf(codes.NotFound, "authorization failed", userToken)
+	}
+
+	err := s.databaseURLService.RemoveByShortURLSlice(request.ShortURL, userToken)
+	s.memoryService.DeleteURLsByShortValueSlice(request.ShortURL)
+
+	if err != nil {
+		return &emptypb.Empty{}, status.Errorf(codes.Unknown, "URL deletion failed: "+err.Error(), userToken)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func (s ShortenerService) GetStats(ctx context.Context, in *emptypb.Empty) (*pb.GetStatsResponse, error) {
