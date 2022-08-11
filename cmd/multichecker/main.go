@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gostaticanalysis/nilerr"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
 	"golang.org/x/tools/go/analysis/passes/asmdecl"
@@ -160,6 +161,9 @@ func main() {
 		stylecheck.Analyzers["ST1013"],
 		stylecheck.Analyzers["ST1012"],
 	)
+
+	// another public analyzer - nilerr package
+	analyzerList = append(analyzerList, nilerr.Analyzer)
 
 	multichecker.Main(analyzerList...)
 }
