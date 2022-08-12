@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/PanovAlexey/url_carver/cmd/multichecker/analyzers"
 	"github.com/go-critic/go-critic/checkers/analyzer"
 	"github.com/gostaticanalysis/nilerr"
 	"golang.org/x/tools/go/analysis"
