@@ -169,5 +169,8 @@ func main() {
 	// another public analyzer - go-critic package
 	analyzerList = append(analyzerList, analyzer.Analyzer)
 
+	//  append custom check for os.Exit in main func
+	analyzerList = append(analyzerList, analyzers.AnalyzerProhibitExitInMain)
+
 	multichecker.Main(analyzerList...)
 }
