@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-critic/go-critic/checkers/analyzer"
 	"github.com/gostaticanalysis/nilerr"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
@@ -164,6 +165,9 @@ func main() {
 
 	// another public analyzer - nilerr package
 	analyzerList = append(analyzerList, nilerr.Analyzer)
+
+	// another public analyzer - go-critic package
+	analyzerList = append(analyzerList, analyzer.Analyzer)
 
 	multichecker.Main(analyzerList...)
 }
