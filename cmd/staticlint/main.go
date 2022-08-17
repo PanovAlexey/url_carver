@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/PanovAlexey/url_carver/cmd/multichecker/analyzers"
+	staticlint "github.com/PanovAlexey/url_carver/cmd/staticlint/analyzers"
 	"github.com/go-critic/go-critic/checkers/analyzer"
 	"github.com/gostaticanalysis/nilerr"
 	"golang.org/x/tools/go/analysis"
@@ -171,7 +171,7 @@ func main() {
 	analyzerList = append(analyzerList, analyzer.Analyzer)
 
 	//  append custom check for os.Exit in main func
-	analyzerList = append(analyzerList, analyzers.AnalyzerProhibitExitInMain)
+	analyzerList = append(analyzerList, staticlint.AnalyzerProhibitExitInMain)
 
 	multichecker.Main(analyzerList...)
 }
