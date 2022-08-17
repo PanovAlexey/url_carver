@@ -21,7 +21,7 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 	longURLDto := h.memoryService.CreateLongURLDto()
 	err = json.Unmarshal(bodyJSON, &longURLDto)
 
-	if err != nil {
+	if err != nil || len(longURLDto.Value) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -44,8 +44,9 @@ func (h *httpHandler) HandleAddURLByJSON(w http.ResponseWriter, r *http.Request)
 		if errorService.IsKeyDuplicated(err) {
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			w.WriteHeader(http.StatusCreated)
+			// database errors should be ignored
+			// w.WriteHeader(http.StatusBadRequest)
 		}
 	} else {
 		w.WriteHeader(http.StatusCreated)

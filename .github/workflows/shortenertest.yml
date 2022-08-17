@@ -10,11 +10,7 @@ jobs:
 
   shortenertest:
     runs-on: ubuntu-latest
-<<<<<<< HEAD
     container: golang:1.18
-=======
-    container: golang:1.17
->>>>>>> c64dc21 (Initial commit)
 
     services:
       postgres:
@@ -55,12 +51,7 @@ jobs:
         if: always()
         run: |
           shortenertest -test.v -test.run=^TestIteration1$ \
-<<<<<<< HEAD
               -binary-path=cmd/shortener/shortener
-=======
-              -binary-path=cmd/shortener/shortener \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #2"
         if: always()
@@ -77,12 +68,7 @@ jobs:
         run: |
           shortenertest -test.v -test.run=^TestIteration4$ \
               -source-path=. \
-<<<<<<< HEAD
               -binary-path=cmd/shortener/shortener
-=======
-              -binary-path=cmd/shortener/shortener \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #5"
         if: always()
@@ -93,12 +79,7 @@ jobs:
               -binary-path=cmd/shortener/shortener \
               -server-host=$SERVER_HOST \
               -server-port=$SERVER_PORT \
-<<<<<<< HEAD
               -server-base-url="http://$SERVER_HOST:$SERVER_PORT"
-=======
-              -server-base-url="http://$SERVER_HOST:$SERVER_PORT" \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #6"
         if: always()
@@ -109,12 +90,7 @@ jobs:
               -binary-path=cmd/shortener/shortener \
               -server-port=$SERVER_PORT \
               -file-storage-path=$TEMP_FILE \
-<<<<<<< HEAD
               -source-path=.
-=======
-              -source-path=. \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #7"
         if: always()
@@ -125,36 +101,21 @@ jobs:
               -binary-path=cmd/shortener/shortener \
               -server-port=$SERVER_PORT \
               -file-storage-path=$TEMP_FILE \
-<<<<<<< HEAD
               -source-path=.
-=======
-              -source-path=. \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #8"
         if: always()
         run: |
           shortenertest -test.v -test.run=^TestIteration8$ \
               -source-path=. \
-<<<<<<< HEAD
               -binary-path=cmd/shortener/shortener
-=======
-              -binary-path=cmd/shortener/shortener \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #9"
         if: always()
         run: |
           shortenertest -test.v -test.run=^TestIteration9$ \
               -source-path=. \
-<<<<<<< HEAD
               -binary-path=cmd/shortener/shortener
-=======
-              -binary-path=cmd/shortener/shortener \
-              -database-dsn='postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable'
->>>>>>> c64dc21 (Initial commit)
 
       - name: "Code increment #10"
         if: always()

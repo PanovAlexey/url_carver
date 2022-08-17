@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -44,6 +43,5 @@ func (h *httpHandler) HandleDeleteBatchURLs(w http.ResponseWriter, r *http.Reque
 		message = "error while deleting batch with URLs " + err.Error()
 	}
 
-	log.Println(message)
 	w.Write([]byte(message))
 }

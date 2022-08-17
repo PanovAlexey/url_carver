@@ -40,8 +40,8 @@ func (h *httpHandler) HandleAddURL(w http.ResponseWriter, r *http.Request) {
 		if errorService.IsKeyDuplicated(err) {
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			// database errors should be ignored
+			w.WriteHeader(http.StatusCreated)
 		}
 	} else {
 		w.WriteHeader(http.StatusCreated)
