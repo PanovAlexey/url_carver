@@ -21,7 +21,7 @@ func RunServer(handler HandlerInterface, config config.Config) {
 			err := http.ListenAndServe(config.GetServerDebugAddress(), nil)
 
 			if err != nil {
-				log.Fatalln("error occurred while running http documentation server: %s", err.Error())
+				log.Printf("error occurred while running http documentation server: %s", err.Error())
 			}
 		}()
 	}
