@@ -84,8 +84,8 @@ func getEnv(key string, defaultValue string) string {
 }
 
 func initConfigByEnv(config Config) Config {
-	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "0.0.0.0:8080")
-	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS", "0.0.0.0:8081")
+	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "localhost:8080")
+	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS", "localhost:8081")
 	config.Server.BaseURL = getEnv("BASE_URL", "http://0.0.0.0:8080")
 	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
 	config.Encryption.key = getEnv("ENCRYPTION_KEY", "234324324324234324234")
