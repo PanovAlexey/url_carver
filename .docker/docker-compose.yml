@@ -1,10 +1,11 @@
-version: '3.3'
+version: '3.7'
 services:
 
   go-template:
     image: golang:1.18-alpine
     ports:
       - "8080:8080"
+      - "8081:8081"
     networks:
       - backend
     environment:
@@ -13,7 +14,8 @@ services:
     volumes:
       - ../:/app
     working_dir: /app
-    command: go run cmd/shortener/main.go
+    command: sh -c "apk update && apk --no-cache --update add build-base && go run cmd/shortener/main.go"
+
   url-carver-go-doc:
     container_name: url_carver_go_doc
     image: golang:1.18-alpine

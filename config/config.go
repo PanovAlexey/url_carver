@@ -1,3 +1,5 @@
+// Package config - a package that stores the global application configuration with all settings.
+// It is filled at the start of the application with data from the ENV file and the console.
 package config
 
 import (
@@ -8,6 +10,7 @@ import (
 
 type ServerConfig struct {
 	ServerAddress string
+	DebugAddress  string
 	BaseURL       string
 }
 
@@ -23,13 +26,19 @@ type DatabaseConfig struct {
 	dsn string
 }
 
+type ApplicationConfig struct {
+	IsDebug bool
+}
+
 type Config struct {
 	Server      ServerConfig
 	FileStorage FileStorageConfig
 	Encryption  EncryptionConfig
 	Database    DatabaseConfig
+	Application ApplicationConfig
 }
 
+// New returns the initialized configuration structure
 func New() Config {
 	config := Config{}
 	config = initConfigByEnv(config)
@@ -46,6 +55,10 @@ func (config Config) GetServerAddress() string {
 	return config.Server.ServerAddress
 }
 
+func (config Config) GetServerDebugAddress() string {
+	return config.Server.DebugAddress
+}
+
 func (config Config) GetFileStoragePath() string {
 	return config.FileStorage.FileStoragePath
 }
@@ -58,6 +71,10 @@ func (config Config) GetDatabaseDsn() string {
 	return config.Database.dsn
 }
 
+func (config Config) IsDebug() bool {
+	return config.Application.IsDebug
+}
+
 func getEnv(key string, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -68,10 +85,12 @@ func getEnv(key string, defaultValue string) string {
 
 func initConfigByEnv(config Config) Config {
 	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "localhost:8080")
+	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS", "0.0.0.0:8081")
 	config.Server.BaseURL = getEnv("BASE_URL", "http://localhost:8080")
 	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
 	config.Encryption.key = getEnv("ENCRYPTION_KEY", "1234567890")
 	config.Database.dsn = getEnv("DATABASE_DSN", "postgresql://user_name:user_password@database_host:5432/database_name")
+	config.Application.IsDebug = getEnv("IS_DEBUG", "false") == "true"
 
 	return config
 }
