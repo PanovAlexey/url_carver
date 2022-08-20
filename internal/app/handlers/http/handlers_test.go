@@ -259,6 +259,18 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				response:          "",
 			},
 		},
+
+		{
+			name:    "Positive test. Add codeblog.pro site url.",
+			urlPath: "/",
+			method:  http.MethodPost,
+			body:    []byte(`http://codeblog.pro`),
+			want: want{
+				code:              http.StatusCreated,
+				response:          config.GetBaseURL() + `/a3035b1ecf2ee793bfe63dc13a051da6`,
+				contentTypeHeader: "text/plain;charset=utf-8",
+			},
+		},
 		{
 			name:    "API. Positive test. Delete batch URLs by correct IDs.",
 			urlPath: "/api/user/urls",
