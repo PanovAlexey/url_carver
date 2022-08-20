@@ -84,7 +84,7 @@ func (responseWriterTest ResponseWriterTest) Write([]byte) (int, error) {
 func (responseWriterTest ResponseWriterTest) WriteHeader(statusCode int) {
 }
 
-// @ToDo: to finish this test
+// @ToDo: finishing this test
 func Test_SetUserTokenToCookie(t *testing.T) {
 	t.Run("Test set user token to cookie", func(t *testing.T) {
 		userTokenAuthorizationService := GetUserTokenAuthorizationService()

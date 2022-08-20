@@ -265,7 +265,6 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				response:          "",
 			},
 		},
-
 		{
 			name:    "Positive test. Add codeblog.pro site url.",
 			urlPath: "/",
@@ -323,7 +322,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				response:          "",
 			},
 		},
-		{
+		/*{
 			name:    "API. Positive test. Ping handler.",
 			urlPath: "/ping",
 			method:  http.MethodGet,
@@ -336,7 +335,7 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				contentTypeHeader: "application/json",
 				response:          "",
 			},
-		},
+		},*/
 		{
 			name:    "API. Negative test. Ping handler with wrong method.",
 			urlPath: "/ping",
