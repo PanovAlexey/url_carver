@@ -5,11 +5,11 @@ import (
 	"compress/gzip"
 	"fmt"
 	"github.com/PanovAlexey/url_carver/config"
-	"github.com/PanovAlexey/url_carver/internal/app/domain/dto"
 	"github.com/PanovAlexey/url_carver/internal/app/repositories"
 	"github.com/PanovAlexey/url_carver/internal/app/services"
 	"github.com/PanovAlexey/url_carver/internal/app/services/database"
 	"github.com/PanovAlexey/url_carver/internal/app/services/encryption"
+	"github.com/PanovAlexey/url_carver/internal/app/tests"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -456,7 +456,7 @@ func getRouterForRouteTest() chi.Router {
 	databaseService := database.GetDatabaseService(config)
 	databaseUserRepository := repositories.GetDatabaseUserRepository(databaseService)
 	databaseUserService := services.GetDatabaseUserService(databaseUserRepository)
-	databaseURLRepository := getDatabaseURLRepositoryMock(databaseService)
+	databaseURLRepository := tests.GetDatabaseURLRepositoryMock(databaseService)
 	databaseURLService := services.GetDatabaseURLService(databaseURLRepository, *databaseUserService)
 	storageService := services.GetStorageService(config, fileStorageRepository)
 	encryptionService, _ := encryption.NewEncryptionService(config)
@@ -477,29 +477,4 @@ func getRouterForRouteTest() chi.Router {
 	)
 
 	return httpHandler.NewRouter()
-}
-
-// Mock dependencies
-type databaseURLRepositoryMock struct {
-	databaseService database.DatabaseInterface
-}
-
-func (repository databaseURLRepositoryMock) SaveURL(url dto.DatabaseURL) (int, error) {
-	return 777, nil
-}
-
-func (repository databaseURLRepositoryMock) GetList() ([]dto.DatabaseURL, error) {
-	return []dto.DatabaseURL{}, nil
-}
-
-func (repository databaseURLRepositoryMock) SaveBatchURLs(collection []dto.DatabaseURL) error {
-	return nil
-}
-
-func (repository databaseURLRepositoryMock) DeleteURLsByShortValueSlice([]string, int) ([]dto.DatabaseURL, error) {
-	return []dto.DatabaseURL{}, nil
-}
-
-func getDatabaseURLRepositoryMock(databaseService database.DatabaseInterface) databaseURLRepositoryMock {
-	return databaseURLRepositoryMock{databaseService: databaseService}
 }
