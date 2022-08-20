@@ -259,6 +259,31 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 				response:          "",
 			},
 		},
+		{
+			name:    "API. Positive test. Get user URLs by user ID.",
+			urlPath: "/api/user/urls",
+			method:  http.MethodGet,
+			body:    nil,
+			headers: map[string]string{},
+			want: want{
+				code:              http.StatusOK,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
+		{
+			name:               "API. Negative test. Get user URLs by user ID without user token header.",
+			urlPath:            "/api/user/urls",
+			method:             http.MethodGet,
+			body:               nil,
+			headers:            map[string]string{},
+			isCookiesFinalized: true,
+			want: want{
+				code:              http.StatusNoContent,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
 	}
 
 	for _, testData := range tests {
