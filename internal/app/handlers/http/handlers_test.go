@@ -268,11 +268,25 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			defer response.Body.Close()
 		}
 
-		assert.Equal(t, testData.want.code, response.StatusCode)
-		assert.Equal(t, bodyString, testData.want.response)
-		assert.Equal(t, response.Header.Get("Content-Type"), testData.want.contentTypeHeader)
-		assert.Equal(t, response.Header.Get("location"), testData.want.locationHeader)
-		assert.Equal(t, response.Header.Get("Content-Encoding"), testData.want.contentEncoding)
+		if testData.want.code > 0 {
+			assert.Equal(t, testData.want.code, response.StatusCode)
+		}
+
+		if len(testData.want.response) > 0 {
+			assert.Equal(t, bodyString, testData.want.response)
+		}
+
+		if len(testData.want.contentTypeHeader) > 0 {
+			assert.Equal(t, response.Header.Get("Content-Type"), testData.want.contentTypeHeader)
+		}
+
+		if len(testData.want.locationHeader) > 0 {
+			assert.Equal(t, response.Header.Get("location"), testData.want.locationHeader)
+		}
+
+		if len(testData.want.contentEncoding) > 0 {
+			assert.Equal(t, response.Header.Get("Content-Encoding"), testData.want.contentEncoding)
+		}
 	}
 }
 
