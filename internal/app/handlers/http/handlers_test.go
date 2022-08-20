@@ -260,6 +260,34 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 		},
 		{
+			name:    "API. Positive test. Ping handler.",
+			urlPath: "/ping",
+			method:  http.MethodGet,
+			body:    nil,
+			headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			want: want{
+				code:              http.StatusOK,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
+		{
+			name:    "API. Negative test. Ping handler with wrong method.",
+			urlPath: "/ping",
+			method:  http.MethodPost,
+			body:    nil,
+			headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			want: want{
+				code:              http.StatusMethodNotAllowed,
+				contentTypeHeader: "text/plain;charset=utf-8",
+				response:          "",
+			},
+		},
+		{
 			name:    "API. Positive test. Get user URLs by user ID.",
 			urlPath: "/api/user/urls",
 			method:  http.MethodGet,
