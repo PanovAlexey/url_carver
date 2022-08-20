@@ -260,6 +260,52 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 		},
 		{
+			name:    "API. Positive test. Delete batch URLs by correct IDs.",
+			urlPath: "/api/user/urls",
+			method:  http.MethodDelete,
+			body: []byte(`
+				["a3035b1ecf2ee793bfe63dc13a051da6"]
+			`),
+			headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			want: want{
+				code:              http.StatusAccepted,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
+		{
+			name:    "API. Negative test. Delete batch URLs by empty body.",
+			urlPath: "/api/user/urls",
+			method:  http.MethodDelete,
+			body:    []byte(``),
+			headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			want: want{
+				code:              http.StatusBadRequest,
+				contentTypeHeader: "application/json",
+				response:          "",
+			},
+		},
+		{
+			name:    "API. Negative test. Delete batch URLs with wrong content type header.",
+			urlPath: "/api/user/urls",
+			method:  http.MethodDelete,
+			body: []byte(`
+				["a3035b1ecf2ee793bfe63dc13a051da6"]
+			`),
+			headers: map[string]string{
+				"Content-Type": "text/plain; charset=utf-8",
+			},
+			want: want{
+				code:              http.StatusBadRequest,
+				contentTypeHeader: "text/plain; charset=utf-8",
+				response:          "",
+			},
+		},
+		{
 			name:    "API. Positive test. Ping handler.",
 			urlPath: "/ping",
 			method:  http.MethodGet,
