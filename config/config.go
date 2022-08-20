@@ -84,12 +84,12 @@ func getEnv(key string, defaultValue string) string {
 }
 
 func initConfigByEnv(config Config) Config {
-	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "localhost:8080")
+	config.Server.ServerAddress = getEnv("SERVER_ADDRESS", "0.0.0.0:8080")
 	config.Server.DebugAddress = getEnv("DEBUG_ADDRESS", "0.0.0.0:8081")
-	config.Server.BaseURL = getEnv("BASE_URL", "http://localhost:8080")
+	config.Server.BaseURL = getEnv("BASE_URL", "http://0.0.0.0:8080")
 	config.FileStorage.FileStoragePath = getEnv("FILE_STORAGE_PATH", "urls.txt")
-	config.Encryption.key = getEnv("ENCRYPTION_KEY", "1234567890")
-	config.Database.dsn = getEnv("DATABASE_DSN", "postgresql://user_name:user_password@database_host:5432/database_name")
+	config.Encryption.key = getEnv("ENCRYPTION_KEY", "234324324324234324234")
+	config.Database.dsn = getEnv("DATABASE_DSN", "postgresql://postgresql_user:user_password@postgres_container:5432/postgresql")
 	config.Application.IsDebug = getEnv("IS_DEBUG", "false") == "true"
 
 	return config

@@ -21,7 +21,7 @@ import (
 )
 
 func testRequest(
-	t *testing.T, ts *httptest.Server, method, path string, body []byte, headers map[string]string,
+	t *testing.T, ts *httptest.Server, method, path string, body []byte, headers map[string]string, cookies []http.Cookie,
 ) (*http.Response, string) {
 	bodyIoReader := bytes.NewBuffer(body)
 	req, err := http.NewRequest(method, ts.URL+path, bodyIoReader)
@@ -29,6 +29,10 @@ func testRequest(
 
 	for key, value := range headers {
 		req.Header.Set(key, value)
+	}
+
+	for _, cookie := range cookies {
+		req.AddCookie(&cookie)
 	}
 
 	client := &http.Client{
@@ -64,12 +68,14 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 	}
 
 	tests := []struct {
-		name    string
-		urlPath string
-		method  string
-		headers map[string]string
-		body    []byte
-		want    want
+		name               string
+		urlPath            string
+		method             string
+		headers            map[string]string
+		cookies            []http.Cookie
+		isCookiesFinalized bool
+		body               []byte
+		want               want
 	}{
 		{
 			name:    "Negative test. Get short url by wrong url",
@@ -372,8 +378,20 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 		},
 	}
 
+	var userTokenCookie http.Cookie
+
 	for _, testData := range tests {
-		response, bodyString := testRequest(t, server, testData.method, testData.urlPath, testData.body, testData.headers)
+		if !testData.isCookiesFinalized && userTokenCookie.Value != "" {
+			testData.cookies = append(testData.cookies, userTokenCookie)
+		}
+
+		response, bodyString := testRequest(t, server, testData.method, testData.urlPath, testData.body, testData.headers, testData.cookies)
+
+		for _, cookie := range response.Cookies() {
+			if cookie.Name == services.UserTokenName && len(cookie.Value) > 0 {
+				userTokenCookie = *cookie
+			}
+		}
 
 		if response != nil {
 			defer response.Body.Close()
