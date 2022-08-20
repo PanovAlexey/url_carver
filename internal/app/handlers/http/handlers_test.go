@@ -205,7 +205,6 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 			want: want{
 				code:              http.StatusCreated,
-				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\x04\xc0\xdd\t\x04!\f\x04\xe0\x922\xe3o\xcenbN\xf0Apa\xd3?\xfb\xed\x88g\x88\x9c\xebv\xf6}c(\x14Җ\xa2`r\x96\x9a\xd8\xe1^\xdb\xcf\xd8\xedOOy1\u007f\x01\x00\x00\xff\xff2\xb1Q\xab6\x00\x00\x00",
 				contentTypeHeader: "text/plain;charset=utf-8",
 				locationHeader:    "",
 				contentEncoding:   "gzip",
@@ -221,7 +220,6 @@ func Test_handleAddAndGetRequests(t *testing.T) {
 			},
 			want: want{
 				code:              http.StatusCreated,
-				response:          "\x1f\x8b\b\x00\x00\x00\x00\x00\x02\xff\x04\xc0\xc1\t\xc5 \f\x06\xe0]\xb2\x80\xf1\x85ߗ\xb8M\x91\x88\a\xc1R\xd3S\xe9\xee\xfd\x1e\xba|\xdf3\xa8҈8kJs\xb5c\x8e\xb5\xa3*+\xa7.?t/l\"P\xb1\x8c\xdcT\x1a\x17\xd8\x1fnpz\xbf\x00\x00\x00\xff\xff\xe0\xe3\x05=C\x00\x00\x00",
 				contentTypeHeader: "application/json",
 				locationHeader:    "",
 				contentEncoding:   "gzip",
